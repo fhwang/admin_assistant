@@ -1,0 +1,18 @@
+<% if @records.empty? %>
+No records
+<% else %>
+<table>
+  <tr>
+    <% @records.first.class.column_names.each do |column_name| %>
+      <th><%= h(column_name) %></th>
+    <% end %>
+  </tr>
+  <% @records.each do |record| %>
+    <tr>
+      <% record.class.column_names.each do |column_name| %>
+        <td><%= h(record.send(column_name)) %></td>
+      <% end %>
+    </tr>
+  <% end %>
+</table>
+<% end %>
