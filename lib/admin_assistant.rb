@@ -1,19 +1,42 @@
 class AdminAssistant
   attr_accessor :model_class
   
-  def initialize(model_class)
-    @model_class = model_class
+  def initialize(model_class, controller_class)
+    @model_class, @controller_class = model_class, controller_class
+  end
+  
+  def create(controller)
+    @model_class.create controller.params[model_class_symbol]
+    controller.send :redirect_to, :action => 'index'
   end
   
   def index(controller)
     controller.instance_variable_set(
       :@records, model_class.find(:all, :limit => 25, :order => 'id desc')
     )
+    controller.instance_variable_set :@admin_assistant, self
     controller.send :render, :template => template('index')
+  end
+  
+  def model_class_symbol
+    model_class.name.underscore.to_sym
+  end
+  
+  def new(controller)
+    controller.instance_variable_set :@admin_assistant, self
+    controller.send :render, :template => template('new')
+  end
+  
+  def new_page_title
+    "New #{@model_class.name.gsub(/([A-Z])/, ' \1')[1..-1].downcase}"
   end
   
   def template(action)
     "../../vendor/plugins/admin_assistant/lib/views/#{action}.html.erb"
+  end
+  
+  def url_params(action)
+    {:controller => @controller_class.controller_path, :action => action}
   end
 
   module ControllerMethods
@@ -21,15 +44,23 @@ class AdminAssistant
       controller.extend ControllerClassMethods
       controller.cattr_accessor :admin_assistant
     end
+    
+    def create
+      self.class.admin_assistant.create self
+    end
   
     def index
       self.class.admin_assistant.index self
+    end
+    
+    def new
+      self.class.admin_assistant.new self
     end
   end
   
   module ControllerClassMethods
     def admin_assistant_for(model_class)
-      self.admin_assistant = AdminAssistant.new(model_class)
+      self.admin_assistant = AdminAssistant.new(model_class, self)
     end
   end
 end

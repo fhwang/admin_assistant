@@ -5,6 +5,13 @@ require File.expand_path(File.dirname(__FILE__) + "/../config/environment")
 require 'spec'
 require 'spec/rails'
 
+module SpecHelperMethods
+  def random_word( length = 25 )
+    letters = 'abcdefghijklmnopqrstuvwxyz_'.split //
+    ( 1..length ).to_a.map { letters[rand(letters.size)] }.join( '' )
+  end
+end
+
 Spec::Runner.configure do |config|
   # If you're not using ActiveRecord you should remove these
   # lines, delete config/database.yml and disable :active_record
@@ -44,4 +51,6 @@ Spec::Runner.configure do |config|
   # == Notes
   # 
   # For more information take a look at Spec::Runner::Configuration and Spec::Runner
+  
+  include SpecHelperMethods
 end
