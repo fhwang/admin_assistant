@@ -1,23 +1,6 @@
 <%= @admin_assistant.new_page_title %>
-<% form_for(
-  @admin_assistant.model_class_symbol, :url => {:action => 'create'}
-) do |form| %>
-  <table>
-  <%
-  column_names_for_form =
-      @admin_assistant.model_class.column_names.reject { |cn|
-        %w(id created_at updated_at).include?(cn)
-      }
-  %>
-  <% column_names_for_form.each do |column_name| %>
-    <tr>
-      <th><%= h(column_name) %></th>
-      <td><%= form.text_field column_name %></td>
-    </tr>
-  <% end %>
-    <tr>
-      <td></td>
-      <td><%= submit_tag('Create') %></td>
-    </tr>
-  </table>
-<% end %>
+<%= render(
+  :file => @admin_assistant.template_file('_form'),
+  :locals => {:action => 'create'}
+) %>
+

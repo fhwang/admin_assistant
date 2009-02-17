@@ -10,12 +10,24 @@ class AdminAssistant
     controller.send :redirect_to, :action => 'index'
   end
   
+  def edit(controller)
+    controller.instance_variable_set :@admin_assistant, self
+    controller.instance_variable_set(
+      :@record, model_class.find(controller.params[:id])
+    )
+    controller.send :render, :file => template_file('edit')
+  end
+  
   def index(controller)
     controller.instance_variable_set(
       :@records, model_class.find(:all, :limit => 25, :order => 'id desc')
     )
     controller.instance_variable_set :@admin_assistant, self
-    controller.send :render, :template => template('index')
+    controller.send :render, :file => template_file('index')
+  end
+  
+  def model_class_name
+    @model_class.name.gsub(/([A-Z])/, ' \1')[1..-1].downcase
   end
   
   def model_class_symbol
@@ -24,15 +36,23 @@ class AdminAssistant
   
   def new(controller)
     controller.instance_variable_set :@admin_assistant, self
-    controller.send :render, :template => template('new')
+    controller.instance_variable_set(:@record, model_class.new)
+    controller.send :render, :file => template_file('new')
   end
   
   def new_page_title
-    "New #{@model_class.name.gsub(/([A-Z])/, ' \1')[1..-1].downcase}"
+    "New #{model_class_name}"
   end
   
-  def template(action)
-    "../../vendor/plugins/admin_assistant/lib/views/#{action}.html.erb"
+  def template_file(action)
+    "#{RAILS_ROOT}/vendor/plugins/admin_assistant/lib/views/#{action}.html.erb"
+  end
+  
+  def update(controller)
+    record = model_class.find controller.params[:id]
+    record.attributes = controller.params[model_class_symbol]
+    record.save
+    controller.send :redirect_to, :action => 'index'
   end
   
   def url_params(action)
@@ -48,6 +68,10 @@ class AdminAssistant
     def create
       self.class.admin_assistant.create self
     end
+    
+    def edit
+      self.class.admin_assistant.edit self
+    end
   
     def index
       self.class.admin_assistant.index self
@@ -55,6 +79,10 @@ class AdminAssistant
     
     def new
       self.class.admin_assistant.new self
+    end
+    
+    def update
+      self.class.admin_assistant.update self
     end
   end
   

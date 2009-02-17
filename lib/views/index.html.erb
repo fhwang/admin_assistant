@@ -18,6 +18,7 @@ No records
       <% @admin_assistant.model_class.column_names.each do |column_name| %>
         <td><%= h(record.send(column_name)) %></td>
       <% end %>
+      <td><%= link_to 'Edit', :action => 'edit', :id => record.id %></td>
     </tr>
   <% end %>
 </table>
