@@ -6,8 +6,14 @@ class AdminAssistant
   end
   
   def create(controller)
-    @model_class.create controller.params[model_class_symbol]
-    controller.send :redirect_to, :action => 'index'
+    record = @model_class.new controller.params[model_class_symbol]
+    if record.save
+      controller.send :redirect_to, :action => 'index'
+    else
+      controller.instance_variable_set :@admin_assistant, self
+      controller.instance_variable_set :@record, record
+      controller.send :render, :file => template_file('new'), :layout => true
+    end
   end
   
   def edit(controller)
@@ -15,7 +21,7 @@ class AdminAssistant
     controller.instance_variable_set(
       :@record, model_class.find(controller.params[:id])
     )
-    controller.send :render, :file => template_file('edit')
+    controller.send :render, :file => template_file('edit'), :layout => true
   end
   
   def index(controller)
@@ -23,7 +29,7 @@ class AdminAssistant
       :@records, model_class.find(:all, :limit => 25, :order => 'id desc')
     )
     controller.instance_variable_set :@admin_assistant, self
-    controller.send :render, :file => template_file('index')
+    controller.send :render, :file => template_file('index'), :layout => true
   end
   
   def model_class_name
@@ -37,7 +43,7 @@ class AdminAssistant
   def new(controller)
     controller.instance_variable_set :@admin_assistant, self
     controller.instance_variable_set(:@record, model_class.new)
-    controller.send :render, :file => template_file('new')
+    controller.send :render, :file => template_file('new'), :layout => true
   end
   
   def new_page_title
@@ -51,8 +57,13 @@ class AdminAssistant
   def update(controller)
     record = model_class.find controller.params[:id]
     record.attributes = controller.params[model_class_symbol]
-    record.save
-    controller.send :redirect_to, :action => 'index'
+    if record.save
+      controller.send :redirect_to, :action => 'index'
+    else
+      controller.instance_variable_set :@admin_assistant, self
+      controller.instance_variable_set :@record, record
+      controller.send :render, :file => template_file('edit'), :layout => true
+    end
   end
   
   def url_params(action)

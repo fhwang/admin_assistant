@@ -1,3 +1,6 @@
+<% if !@record.errors.empty? %>
+  <%= error_messages_for 'record' %>
+<% end %>
 <% id = nil unless defined?(id) %>
 <% form_for(@record, :url => {:action => action, :id => id}) do |form| %>
   <table>

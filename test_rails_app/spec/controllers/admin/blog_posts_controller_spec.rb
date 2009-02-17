@@ -11,6 +11,21 @@ describe Admin::BlogPostsController do
         BlogPost.find_by_title(title).should_not be_nil
       end
     end
+    
+    describe 'when there are validation errors' do
+      before :each do
+        post :create, :blog_post => {:title => ''}
+      end
+      
+      it 'should not create a new BlogPost' do
+        BlogPost.find_by_title('').should be_nil
+      end
+      
+      it 'should print all the errors' do
+        response.should be_success
+        response.body.should match(/Title can't be blank/)
+      end
+    end
   end
   
   describe '#edit' do
@@ -57,6 +72,10 @@ describe Admin::BlogPostsController do
           "a[href=/admin/blog_posts/new]", 'New blog post'
         )
       end
+      
+      it 'should use the admin layout' do
+        response.body.should match(/ADMIN LAYOUT/)
+      end
     end
 
     describe 'when there is one record' do
@@ -101,16 +120,31 @@ describe Admin::BlogPostsController do
   end
   
   describe '#update' do
+    before :all do
+      @blog_post = BlogPost.create! :title => random_word
+    end
+    
     describe 'when there are no validation errors' do
-      before :all do
-        @blog_post = BlogPost.create! :title => random_word
-      end
-      
       it 'should update a pre-existing BlogPost' do
         title2 = random_word
         post :update, :id => @blog_post.id, :blog_post => {:title => title2}
         response.should be_redirect
         BlogPost.find_by_title(title2).should_not be_nil
+      end
+    end
+    
+    describe 'when there are validation errors' do
+      before :each do
+        post :update, :id => @blog_post.id, :blog_post => {:title => ''}
+      end
+      
+      it 'should not create a new BlogPost' do
+        BlogPost.find_by_title('').should be_nil
+      end
+      
+      it 'should print all the errors' do
+        response.should be_success
+        response.body.should match(/Title can't be blank/)
       end
     end
   end
