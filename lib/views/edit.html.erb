@@ -1,6 +1,6 @@
-Edit <%= @admin_assistant.model_class_name %>
+Edit <%= @admin_assistant_request.model_class_name %>
 <%= render(
-  :file => @admin_assistant.template_file('_form'),
+  :file => @admin_assistant_request.template_file('_form'),
   :locals => {:action => 'update', :id => @record.id}
 ) %>
 

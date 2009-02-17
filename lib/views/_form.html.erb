@@ -6,7 +6,7 @@
   <table>
   <%
   column_names_for_form =
-      @admin_assistant.model_class.column_names.reject { |cn|
+      @admin_assistant_request.model_class.column_names.reject { |cn|
         %w(id created_at updated_at).include?(cn)
       }
   %>
