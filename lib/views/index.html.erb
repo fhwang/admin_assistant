@@ -25,9 +25,7 @@ show_search_form();
 </script>
 <% end %>
 
-<% if @index.records.empty? %>
-No records
-<% else %>
+<% if !@index.records.empty? %>
 <table>
   <tr>
     <% @admin_assistant_request.model_class.column_names.each do |column_name| %>
@@ -50,3 +48,4 @@ No records
   <% end %>
 </table>
 <% end %>
+<%= @index.records.empty? ? 'No' : @index.records.size %> <%= @admin_assistant_request.model_class_name %><%= 's' unless @index.records.size == 1 %> found

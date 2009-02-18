@@ -67,8 +67,8 @@ describe Admin::BlogPostsController do
         response.should be_success
       end
       
-      it 'should say "No records"' do
-        response.body.should match(/No records/)
+      it 'should say "No blog posts found"' do
+        response.body.should match(/No blog posts found/)
       end
       
       it "should say the name of the model you're editing" do
@@ -94,6 +94,7 @@ describe Admin::BlogPostsController do
 
     describe 'when there is one record' do
       before :all do
+        BlogPost.destroy_all
         @blog_post = BlogPost.create! :title => "hi there"
       end
       
@@ -142,6 +143,10 @@ describe Admin::BlogPostsController do
             with_tag 'a', column_header
           end
         end
+      end
+      
+      it 'should say how many records are found' do
+        response.body.should match(/1 blog post found/)
       end
     end
   end
@@ -225,8 +230,8 @@ describe Admin::BlogPostsController do
     end
     
     describe 'when there are no records' do
-      it "should say 'No records'" do
-        response.body.should match(/No records/)
+      it "should say 'No blog posts found'" do
+        response.body.should match(/No blog posts found/)
       end
       
       it "should display the search with the terms" do
@@ -246,8 +251,8 @@ describe Admin::BlogPostsController do
         BlogPost.create! :title => 'no match', :body => 'no match'
       end
       
-      it "should say 'No records'" do
-        response.body.should match(/No records/)
+      it "should say 'No blog posts found'" do
+        response.body.should match(/No blog posts found/)
       end
     end
     
@@ -268,6 +273,10 @@ describe Admin::BlogPostsController do
       
       it "should show that blog post" do
         response.body.should match(/blog post title/)
+      end
+      
+      it 'should say how many records are found' do
+        response.body.should match(/1 blog post found/)
       end
     end
   end
