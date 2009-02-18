@@ -31,8 +31,12 @@ No records
 <table>
   <tr>
     <% @admin_assistant_request.model_class.column_names.each do |column_name| %>
+    <%
+    pretty_column_name = column_name.capitalize.gsub(/_/, ' ') 
+    pretty_column_name = 'ID' if column_name == 'id'
+    %>
       <th><%= link_to(
-        h(column_name), :sort => column_name, :sort_order => 'asc'
+        h(pretty_column_name), @index.next_sort_params(column_name)
       ) %></th>
     <% end %>
   </tr>

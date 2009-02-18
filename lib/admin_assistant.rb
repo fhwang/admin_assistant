@@ -57,9 +57,26 @@ class AdminAssistant
       @url_params = url_params
     end
     
+    def next_sort_params(column_name)
+      next_sort_order = 'asc'
+      if @url_params[:sort] == column_name
+        if sort_order == 'asc'
+          next_sort_order = 'desc'
+        else
+          column_name = nil
+          next_sort_order = nil
+        end
+      end
+      {:sort => column_name, :sort_order => next_sort_order}
+    end
+    
     def records
       unless @records
-        ar_query = ARQuery.new(:order => 'id desc', :limit => 25)
+        order = 'id desc'
+        if @url_params[:sort]
+          order = "#{@url_params[:sort] } #{sort_order}"
+        end
+        ar_query = ARQuery.new(:order => order, :limit => 25)
         ar_query.boolean_join = :or
         if search_terms
           searchable_columns = @model_class.columns.select { |column|
@@ -76,7 +93,11 @@ class AdminAssistant
     end
     
     def search_terms
-      @url_params['search'] && @url_params['search']['terms']
+      @url_params['search']
+    end
+    
+    def sort_order
+      @url_params[:sort_order] || 'asc'
     end
   end
   
@@ -160,19 +181,6 @@ class AdminAssistant
         render_new
       end
     end
-    
-=begin
-    class Search < Base
-      def call
-        search = AdminAssistant::Search.new(
-          model_class, @controller.params[:search]
-        )
-        @controller.instance_variable_set(:@search, search)
-        @controller.instance_variable_set(:@records, search.records)
-        render_template_file 'index'
-      end
-    end
-=end
     
     class Update < Base
       def call

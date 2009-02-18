@@ -121,25 +121,94 @@ describe Admin::BlogPostsController do
           "a[href=/admin/blog_posts/edit/#{@blog_post.id}]", 'Edit'
         )
       end
+      
+      it 'should show sort links' do
+        pretty_column_names = {
+          'id' => 'ID', 'title' => 'Title', 'created_at' => 'Created at', 
+          'updated_at' => 'Updated at', 'body' => 'Body'
+        }
+        pretty_column_names.each do |field, pretty_column_name|
+          assert_a_tag_with_get_args(
+            pretty_column_name, '/admin/blog_posts',
+            {:sort => field, :sort_order => 'asc'}, response.body
+          )
+        end
+      end
+      
+      it 'should show pretty column headers' do
+        column_headers = ['ID', 'Title', 'Created at', 'Updated at', 'Body']
+        column_headers.each do |column_header|
+          response.should have_tag('th') do
+            with_tag 'a', column_header
+          end
+        end
+      end
     end
-    
+  end
+  
+  describe '#index sorting' do
     describe 'when there are two records' do
       before :all do
         @blog_post1 = BlogPost.create! :title => "title 1", :body => "body 2"
         @blog_post2 = BlogPost.create! :title => "title 2", :body => "body 1"
       end
       
-      before :each do
-        get :index
-        response.should be_success
+      describe 'sorted by title asc' do
+        before :each do
+          get :index, :sort => 'title', :sort_order => 'asc'
+          response.should be_success
+        end
+        
+        it 'should sort by title asc' do
+          response.body.should match(%r|title 1.*title 2|m)
+        end
+      
+        it 'should show a desc sort link for title' do
+          assert_a_tag_with_get_args(
+            'Title', '/admin/blog_posts',
+            {:sort => 'title', :sort_order => 'desc'}, response.body
+          )
+        end
+        
+        it 'should show asc sort links for other fields' do
+          pretty_column_names = {
+            'id' => 'ID', 'created_at' => 'Created at',
+            'updated_at' => 'Updated at', 'body' => 'Body'
+          }
+          pretty_column_names.each do |field, pretty_column_name|
+            assert_a_tag_with_get_args(
+              pretty_column_name, '/admin/blog_posts',
+              {:sort => field, :sort_order => 'asc'}, response.body
+            )
+          end
+        end
       end
       
-      it 'should show sort links' do
-        %w(id title created_at updated_at body).each do |field|
-          assert_a_tag_with_get_args(
-            field, '/admin/blog_posts', {:sort => field, :sort_order => 'asc'},
-            response.body
-          )
+      describe 'sorted by title desc' do
+        before :each do
+          get :index, :sort => 'title', :sort_order => 'desc'
+          response.should be_success
+        end
+        
+        it 'should sort by title desc' do
+          response.body.should match(%r|title 2.*title 1|m)
+        end
+      
+        it 'should show a no-sort link for title' do
+          response.should have_tag("a[href=/admin/blog_posts]", 'Title')
+        end
+        
+        it 'should show asc sort links for other fields' do
+          pretty_column_names = {
+            'id' => 'ID', 'created_at' => 'Created at',
+            'updated_at' => 'Updated at', 'body' => 'Body'
+          }
+          pretty_column_names.each do |field, pretty_column_name|
+            assert_a_tag_with_get_args(
+              pretty_column_name, '/admin/blog_posts',
+              {:sort => field, :sort_order => 'asc'}, response.body
+            )
+          end
         end
       end
     end
@@ -151,7 +220,7 @@ describe Admin::BlogPostsController do
     end
     
     before :each do
-      get :index, :search => {:terms => 'foo'}
+      get :index, :search => 'foo'
       response.should be_success
     end
     
