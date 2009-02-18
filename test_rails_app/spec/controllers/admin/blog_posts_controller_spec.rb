@@ -25,6 +25,10 @@ describe Admin::BlogPostsController do
         response.should be_success
         response.body.should match(/Title can't be blank/)
       end
+      
+      it 'should show a link back to the index page' do
+        response.should have_tag("a[href=/admin/blog_posts]", 'Back to index')
+      end
     end
   end
   
@@ -45,6 +49,10 @@ describe Admin::BlogPostsController do
     
     it 'should prefill the values' do
       response.body.should match(%r|input.*value="#{@blog_post.title}"|)
+    end
+      
+    it 'should show a link back to the index page' do
+      response.should have_tag("a[href=/admin/blog_posts]", 'Back to index')
     end
   end
   
@@ -132,6 +140,10 @@ describe Admin::BlogPostsController do
         %r|<textarea.*name="blog_post\[body\]".*>.*</textarea>|
       )
     end
+      
+    it 'should show a link back to the index page' do
+      response.should have_tag("a[href=/admin/blog_posts]", 'Back to index')
+    end
   end
   
   describe '#search' do
@@ -150,6 +162,10 @@ describe Admin::BlogPostsController do
           %r|<div id="search_form".*show_search_form\(\)|m
         )
         response.body.should match(%r|input.*value="foo"|)
+      end
+      
+      it 'should show a link back to the index page' do
+        response.should have_tag("a[href=/admin/blog_posts]", 'Back to index')
       end
     end
     
@@ -200,6 +216,10 @@ describe Admin::BlogPostsController do
       it 'should print all the errors' do
         response.should be_success
         response.body.should match(/Title can't be blank/)
+      end
+      
+      it 'should show a link back to the index page' do
+        response.should have_tag("a[href=/admin/blog_posts]", 'Back to index')
       end
     end
   end

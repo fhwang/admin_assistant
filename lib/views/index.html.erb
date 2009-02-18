@@ -17,6 +17,9 @@ function show_search_form() { $('search_form').show(); }
     <%= text_field :search, :terms %>
     <%= submit_tag('Search') %>
   <% end %>
+  <% if action_name == 'search' %>
+    <%= link_to('Back to index', :action => 'index') %>
+  <% end %>
 </div>
 <% if action_name == 'search' %>
 <script type="text/javascript">

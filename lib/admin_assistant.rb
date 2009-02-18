@@ -75,9 +75,25 @@ class AdminAssistant
       def model_class_symbol
         model_class.name.underscore.to_sym
       end
+      
+      def render_edit
+        render_template_file(
+          'form', :locals => {:action => 'update', :id => @record.id}
+        )
+      end
+
+      def render_new
+        render_template_file 'form', :locals => {:action => 'create'}
+      end
+      
+      def render_template_file(template_name = action, options_plus = {})
+        options = {:file => template_file(template_name), :layout => true}
+        options = options.merge options_plus
+        @controller.send(:render, options)
+      end
     
-      def template_file(a = action)
-        "#{RAILS_ROOT}/vendor/plugins/admin_assistant/lib/views/#{a}.html.erb"
+      def template_file(template_name = action)
+        "#{RAILS_ROOT}/vendor/plugins/admin_assistant/lib/views/#{template_name}.html.erb"
       end
   
       def url_params(a = action)
@@ -92,21 +108,16 @@ class AdminAssistant
           @controller.send :redirect_to, :action => 'index'
         else
           @controller.instance_variable_set :@record, record
-          @controller.send(
-            :render, :file => template_file('new'), :layout => true
-          )
+          render_new
         end
       end
     end
     
     class Edit < Base
       def call
-        @controller.instance_variable_set(
-          :@record, model_class.find(@controller.params[:id])
-        )
-        @controller.send(
-          :render, :file => template_file, :layout => true
-        )
+        @record = model_class.find @controller.params[:id]
+        @controller.instance_variable_set :@record, @record
+        render_edit
       end
     end
     
@@ -118,18 +129,14 @@ class AdminAssistant
         @controller.instance_variable_set(
           :@search, AdminAssistant::Search.new(model_class)
         )
-        @controller.send(
-          :render, :file => template_file, :layout => true
-        )
+        render_template_file
       end
     end
     
     class New < Base
       def call
         @controller.instance_variable_set :@record, model_class.new
-        @controller.send(
-          :render, :file => template_file, :layout => true
-        )
+        render_new
       end
     end
     
@@ -140,23 +147,19 @@ class AdminAssistant
         )
         @controller.instance_variable_set(:@search, search)
         @controller.instance_variable_set(:@records, search.records)
-        @controller.send(
-          :render, :file => template_file('index'), :layout => true
-        )
+        render_template_file 'index'
       end
     end
     
     class Update < Base
       def call
-        record = model_class.find @controller.params[:id]
-        record.attributes = @controller.params[model_class_symbol]
-        if record.save
+        @record = model_class.find @controller.params[:id]
+        @record.attributes = @controller.params[model_class_symbol]
+        if @record.save
           @controller.send :redirect_to, :action => 'index'
         else
-          @controller.instance_variable_set :@record, record
-          @controller.send(
-            :render, :file => template_file('edit'), :layout => true
-          )
+          @controller.instance_variable_set :@record, @record
+          render_edit
         end
       end
     end
