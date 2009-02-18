@@ -1,18 +1,10 @@
 require File.dirname(__FILE__) + '/../lib/ar_query'
 
 describe ARQuery do
-  describe '#initialize' do
-    before :all do
-      @ar_query = ARQuery.new :per_page => 10
-    end
-    
-    it 'should set an initial value' do
-      @ar_query[:per_page].should == 10
-    end
-    
-    it 'should return nil conditions by default' do
-      @ar_query[:conditions].should be_nil
-    end
+  it 'should be a kind of Hash' do
+    @ar_query = ARQuery.new
+    # This is required because ActiveRecord.find uses args.extract_options!
+    @ar_query.is_a?(::Hash).should be_true
   end
   
   describe '#initialize with no values' do
@@ -20,18 +12,29 @@ describe ARQuery do
       @ar_query = ARQuery.new
     end
     
-    it 'should not have :per_page' do
-      @ar_query[:per_page].should be_nil
+    it 'should not have conditions' do
+      @ar_query[:conditions].should be_nil
+    end
+  end
+  
+  describe '#initialize with values' do
+    before :all do
+      @ar_query = ARQuery.new(:order => 'id desc', :limit => 25)
     end
     
-    it 'should not have conditions' do
+    it 'should have those values in the hash' do
+      @ar_query[:order].should == 'id desc'
+      @ar_query[:limit].should == 25
+    end
+    
+    it 'should not have other values in the hash' do
       @ar_query[:conditions].should be_nil
     end
   end
   
   describe "#condition_sqls <<" do
     before :all do
-      @ar_query = ARQuery.new :per_page => 10
+      @ar_query = ARQuery.new
       @ar_query.condition_sqls << "fname is not null"
       @ar_query.condition_sqls << "lname is not null"
     end
@@ -44,7 +47,8 @@ describe ARQuery do
   
   describe '#condition_sqls << with OR as the boolean join' do
     before :all do
-      @ar_query = ARQuery.new :per_page => 10, :boolean_join => :or
+      @ar_query = ARQuery.new
+      @ar_query.boolean_join = :or
       @ar_query.condition_sqls << "fname is not null"
       @ar_query.condition_sqls << "lname is not null"
     end
@@ -58,7 +62,7 @@ describe ARQuery do
   describe '[:conditions]' do
     describe 'with bind vars' do
       before :all do
-        @ar_query = ARQuery.new :per_page => 10
+        @ar_query = ARQuery.new
         @ar_query.condition_sqls << "fname = ?"
         @ar_query.condition_sqls << "lname = ?"
       end

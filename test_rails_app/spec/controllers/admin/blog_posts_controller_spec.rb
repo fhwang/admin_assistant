@@ -122,33 +122,36 @@ describe Admin::BlogPostsController do
         )
       end
     end
-  end
-  
-  describe '#new' do
-    before :each do
-      get :new
-    end
     
-    it 'should show a form' do
-      response.body.should match(
-        %r|<form action="/admin/blog_posts/create".*input.*name="blog_post\[title\]"|m
-      )
-    end
-    
-    it 'should use a textarea for the body field' do
-      response.body.should match(
-        %r|<textarea.*name="blog_post\[body\]".*>.*</textarea>|
-      )
-    end
+    describe 'when there are two records' do
+      before :all do
+        @blog_post1 = BlogPost.create! :title => "title 1", :body => "body 2"
+        @blog_post2 = BlogPost.create! :title => "title 2", :body => "body 1"
+      end
       
-    it 'should show a link back to the index page' do
-      response.should have_tag("a[href=/admin/blog_posts]", 'Back to index')
+      before :each do
+        get :index
+        response.should be_success
+      end
+      
+      it 'should show sort links' do
+        %w(id title created_at updated_at body).each do |field|
+          assert_a_tag_with_get_args(
+            field, '/admin/blog_posts', {:sort => field, :sort_order => 'asc'},
+            response.body
+          )
+        end
+      end
     end
   end
   
-  describe '#search' do
+  describe '#index search' do
+    before :all do
+      BlogPost.destroy_all
+    end
+    
     before :each do
-      get :search, :search => {:terms => 'foo'}
+      get :index, :search => {:terms => 'foo'}
       response.should be_success
     end
     
@@ -166,6 +169,16 @@ describe Admin::BlogPostsController do
       
       it 'should show a link back to the index page' do
         response.should have_tag("a[href=/admin/blog_posts]", 'Back to index')
+      end
+    end
+    
+    describe 'when there are no records that match' do
+      before :all do
+        BlogPost.create! :title => 'no match', :body => 'no match'
+      end
+      
+      it "should say 'No records'" do
+        response.body.should match(/No records/)
       end
     end
     
@@ -187,6 +200,28 @@ describe Admin::BlogPostsController do
       it "should show that blog post" do
         response.body.should match(/blog post title/)
       end
+    end
+  end
+  
+  describe '#new' do
+    before :each do
+      get :new
+    end
+    
+    it 'should show a form' do
+      response.body.should match(
+        %r|<form action="/admin/blog_posts/create".*input.*name="blog_post\[title\]"|m
+      )
+    end
+    
+    it 'should use a textarea for the body field' do
+      response.body.should match(
+        %r|<textarea.*name="blog_post\[body\]".*>.*</textarea>|
+      )
+    end
+      
+    it 'should show a link back to the index page' do
+      response.should have_tag("a[href=/admin/blog_posts]", 'Back to index')
     end
   end
   

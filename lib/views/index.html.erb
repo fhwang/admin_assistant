@@ -13,30 +13,30 @@ function show_search_form() { $('search_form').show(); }
 ) %>
 
 <div id="search_form" style="display: none">
-  <% form_tag({:action => 'search'}, :method => 'get') do %>
-    <%= text_field :search, :terms %>
+  <% form_tag({:action => 'index'}, :method => 'get') do %>
+    <%= text_field_tag 'search[terms]', @index.search_terms %>
     <%= submit_tag('Search') %>
   <% end %>
-  <% if action_name == 'search' %>
-    <%= link_to('Back to index', :action => 'index') %>
-  <% end %>
+  <%= link_to('Back to index', :action => 'index') if @index.search_terms %>
 </div>
-<% if action_name == 'search' %>
+<% if @index.search_terms %>
 <script type="text/javascript">
 show_search_form();
 </script>
 <% end %>
 
-<% if @records.empty? %>
+<% if @index.records.empty? %>
 No records
 <% else %>
 <table>
   <tr>
     <% @admin_assistant_request.model_class.column_names.each do |column_name| %>
-      <th><%= h(column_name) %></th>
+      <th><%= link_to(
+        h(column_name), :sort => column_name, :sort_order => 'asc'
+      ) %></th>
     <% end %>
   </tr>
-  <% @records.each do |record| %>
+  <% @index.records.each do |record| %>
     <tr>
       <% @admin_assistant_request.model_class.column_names.each do |column_name| %>
         <td><%= h(record.send(column_name)) %></td>

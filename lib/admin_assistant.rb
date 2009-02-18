@@ -10,7 +10,7 @@ class AdminAssistant
   end
   
   def method_missing(meth, *args)
-    request_methods = [:create, :edit, :index, :new, :search, :update]
+    request_methods = [:create, :edit, :index, :new, :update]
     if request_methods.include?(meth) and args.size == 1
       Request.const_get(meth.to_s.capitalize).new(model_class, *args).call
     else
@@ -40,10 +40,6 @@ class AdminAssistant
       self.class.admin_assistant.new self
     end
     
-    def search
-      self.class.admin_assistant.search self
-    end
-    
     def update
       self.class.admin_assistant.update self
     end
@@ -52,6 +48,35 @@ class AdminAssistant
   module ControllerClassMethods
     def admin_assistant_for(model_class)
       self.admin_assistant = AdminAssistant.new(model_class)
+    end
+  end
+  
+  class Index
+    def initialize(model_class, url_params = {})
+      @model_class = model_class
+      @url_params = url_params
+    end
+    
+    def records
+      unless @records
+        ar_query = ARQuery.new(:order => 'id desc', :limit => 25)
+        ar_query.boolean_join = :or
+        if search_terms
+          searchable_columns = @model_class.columns.select { |column|
+            [:string, :text].include?(column.type)
+          }
+          searchable_columns.each do |column|
+            ar_query.condition_sqls << "#{column.name} like ?"
+            ar_query.bind_vars << "%#{search_terms}%"
+          end
+        end
+        @records = @model_class.find :all, ar_query
+      end
+      @records
+    end
+    
+    def search_terms
+      @url_params['search'] && @url_params['search']['terms']
     end
   end
   
@@ -123,12 +148,8 @@ class AdminAssistant
     
     class Index < Base
       def call
-        @controller.instance_variable_set(
-          :@records, model_class.find(:all, :limit => 25, :order => 'id desc')
-        )
-        @controller.instance_variable_set(
-          :@search, AdminAssistant::Search.new(model_class)
-        )
+        index = AdminAssistant::Index.new(model_class, @controller.params)
+        @controller.instance_variable_set :@index, index
         render_template_file
       end
     end
@@ -140,6 +161,7 @@ class AdminAssistant
       end
     end
     
+=begin
     class Search < Base
       def call
         search = AdminAssistant::Search.new(
@@ -150,6 +172,7 @@ class AdminAssistant
         render_template_file 'index'
       end
     end
+=end
     
     class Update < Base
       def call
@@ -162,30 +185,6 @@ class AdminAssistant
           render_edit
         end
       end
-    end
-  end
-  
-  class Search
-    attr_accessor :terms
-    
-    def initialize(model_class, atts = {})
-      @model_class = model_class
-      atts.each do |k, v| self.send("#{k}=", v); end
-    end
-    
-    def records
-      unless @records
-        searchable_columns = @model_class.columns.select { |column|
-          [:string, :text].include?(column.type)
-        }
-        ar_query = ARQuery.new :boolean_join => :or
-        searchable_columns.each do |column|
-          ar_query.condition_sqls << "#{column.name} like ?"
-          ar_query.bind_vars << "%#{terms}%"
-        end
-        @records = @model_class.find :all, :conditions => ar_query[:conditions]
-      end
-      @records
     end
   end
 end
