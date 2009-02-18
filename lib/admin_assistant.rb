@@ -1,3 +1,7 @@
+require File.expand_path(
+  File.dirname(__FILE__) + '/../vendor/ar_query/lib/ar_query'
+)
+
 class AdminAssistant
   attr_accessor :model_class
   
@@ -6,7 +10,7 @@ class AdminAssistant
   end
   
   def method_missing(meth, *args)
-    request_methods = [:create, :edit, :index, :new, :update]
+    request_methods = [:create, :edit, :index, :new, :search, :update]
     if request_methods.include?(meth) and args.size == 1
       Request.const_get(meth.to_s.capitalize).new(model_class, *args).call
     else
@@ -34,6 +38,10 @@ class AdminAssistant
     
     def new
       self.class.admin_assistant.new self
+    end
+    
+    def search
+      self.class.admin_assistant.search self
     end
     
     def update
@@ -107,6 +115,9 @@ class AdminAssistant
         @controller.instance_variable_set(
           :@records, model_class.find(:all, :limit => 25, :order => 'id desc')
         )
+        @controller.instance_variable_set(
+          :@search, AdminAssistant::Search.new(model_class)
+        )
         @controller.send(
           :render, :file => template_file, :layout => true
         )
@@ -118,6 +129,19 @@ class AdminAssistant
         @controller.instance_variable_set :@record, model_class.new
         @controller.send(
           :render, :file => template_file, :layout => true
+        )
+      end
+    end
+    
+    class Search < Base
+      def call
+        search = AdminAssistant::Search.new(
+          model_class, @controller.params[:search]
+        )
+        @controller.instance_variable_set(:@search, search)
+        @controller.instance_variable_set(:@records, search.records)
+        @controller.send(
+          :render, :file => template_file('index'), :layout => true
         )
       end
     end
@@ -141,8 +165,24 @@ class AdminAssistant
   class Search
     attr_accessor :terms
     
-    # stop form_for from complaining, it thinks this is a model
-    def id
+    def initialize(model_class, atts = {})
+      @model_class = model_class
+      atts.each do |k, v| self.send("#{k}=", v); end
+    end
+    
+    def records
+      unless @records
+        searchable_columns = @model_class.columns.select { |column|
+          [:string, :text].include?(column.type)
+        }
+        ar_query = ARQuery.new :boolean_join => :or
+        searchable_columns.each do |column|
+          ar_query.condition_sqls << "#{column.name} like ?"
+          ar_query.bind_vars << "%#{terms}%"
+        end
+        @records = @model_class.find :all, :conditions => ar_query[:conditions]
+      end
+      @records
     end
   end
 end

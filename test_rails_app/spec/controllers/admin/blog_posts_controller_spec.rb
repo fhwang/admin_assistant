@@ -134,6 +134,46 @@ describe Admin::BlogPostsController do
     end
   end
   
+  describe '#search' do
+    before :each do
+      get :search, :search => {:terms => 'foo'}
+      response.should be_success
+    end
+    
+    describe 'when there are no records' do
+      it "should say 'No records'" do
+        response.body.should match(/No records/)
+      end
+      
+      it "should display the search with the terms" do
+        response.body.should match(
+          %r|<div id="search_form".*show_search_form\(\)|m
+        )
+        response.body.should match(%r|input.*value="foo"|)
+      end
+    end
+    
+    describe 'when there is a blog post with a matching title' do
+      before :all do
+        BlogPost.create! :title => 'foozy', :body => 'blog post body'
+      end
+      
+      it "should show that blog post" do
+        response.body.should match(/blog post body/)
+      end
+    end
+    
+    describe 'when there is a blog post with a matching body' do
+      before :all do
+        BlogPost.create! :title => 'blog post title', :body => 'barfoo'
+      end
+      
+      it "should show that blog post" do
+        response.body.should match(/blog post title/)
+      end
+    end
+  end
+  
   describe '#update' do
     before :all do
       @blog_post = BlogPost.create! :title => random_word
