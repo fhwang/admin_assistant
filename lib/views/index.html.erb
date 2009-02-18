@@ -1,10 +1,22 @@
+<script type="text/javascript">
+function show_search_form() { $('search_form').show(); }
+</script>
+
 <%= h(
   @admin_assistant_request.model_class.name.pluralize.gsub(/([A-Z])/, ' \1')[1..-1]
 ) %>
+<%= link_to_function('Search', 'show_search_form()') %>
 <%= link_to(
   "New #{@admin_assistant_request.model_class_name}",
   @admin_assistant_request.url_params(:new)
 ) %>
+<div id="search_form" style="display: none">
+  <% search = AdminAssistant::Search.new %>
+  <% form_for(search, :url => {:action => 'search'}) do |form| %>
+    <%= form.text_field :terms %>
+    <%= submit_tag('Search') %>
+  <% end %>
+</div>
 <% if @records.empty? %>
 No records
 <% else %>

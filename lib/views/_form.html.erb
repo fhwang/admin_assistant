@@ -5,15 +5,22 @@
 <% form_for(@record, :url => {:action => action, :id => id}) do |form| %>
   <table>
   <%
-  column_names_for_form =
-      @admin_assistant_request.model_class.column_names.reject { |cn|
-        %w(id created_at updated_at).include?(cn)
+  columns_for_form =
+      @admin_assistant_request.model_class.columns.reject { |cn|
+        %w(id created_at updated_at).include?(cn.name)
       }
   %>
-  <% column_names_for_form.each do |column_name| %>
+  <% columns_for_form.each do |column| %>
     <tr>
-      <th><%= h(column_name) %></th>
-      <td><%= form.text_field column_name %></td>
+      <th><%= h(column.name) %></th>
+      <td><%=
+      case column.type
+        when :text
+          form.text_area column.name
+        else
+          form.text_field column.name
+        end
+      %></td>
     </tr>
   <% end %>
     <tr>

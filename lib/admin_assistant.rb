@@ -137,4 +137,12 @@ class AdminAssistant
       end
     end
   end
+  
+  class Search
+    attr_accessor :terms
+    
+    # stop form_for from complaining, it thinks this is a model
+    def id
+    end
+  end
 end

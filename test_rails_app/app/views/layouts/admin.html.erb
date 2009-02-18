@@ -1,5 +1,10 @@
 <html>
-  <head><title>Admin</title></head>
+  <head>
+    <title>Admin</title>
+    <%= javascript_include_tag(
+      "prototype", "effects", "drapdrop", "controls"
+    ) %>
+  </head>
   <body>
     ADMIN LAYOUT
     <%= @content_for_layout %>

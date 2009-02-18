@@ -73,6 +73,12 @@ describe Admin::BlogPostsController do
         )
       end
       
+      it 'should have a search form' do
+        response.body.should match(
+          %r|<a.*onclick="show_search_form\(\);.*>Search</a>|
+        )
+      end
+      
       it 'should use the admin layout' do
         response.body.should match(/ADMIN LAYOUT/)
       end
@@ -111,10 +117,19 @@ describe Admin::BlogPostsController do
   end
   
   describe '#new' do
-    it 'should show a form' do
+    before :each do
       get :new
+    end
+    
+    it 'should show a form' do
       response.body.should match(
         %r|<form action="/admin/blog_posts/create".*input.*name="blog_post\[title\]"|m
+      )
+    end
+    
+    it 'should use a textarea for the body field' do
+      response.body.should match(
+        %r|<textarea.*name="blog_post\[body\]".*>.*</textarea>|
       )
     end
   end
