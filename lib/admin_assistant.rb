@@ -178,3 +178,7 @@ class AdminAssistant
     end
   end
 end
+
+class ::ApplicationController < ActionController::Base
+  include AdminAssistant::ControllerMethods
+end
