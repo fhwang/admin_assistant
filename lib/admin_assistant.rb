@@ -3,25 +3,45 @@ require File.expand_path(
 )
 
 class AdminAssistant
-  attr_accessor :model_class
-  
+  attr_reader :model_class, :request_configs
+
   def initialize(model_class)
     @model_class = model_class
+    @request_configs = Hash.new { |h,k| h[k] = {} }
   end
   
   def method_missing(meth, *args)
     request_methods = [:create, :edit, :index, :new, :update]
     if request_methods.include?(meth) and args.size == 1
-      Request.const_get(meth.to_s.capitalize).new(model_class, *args).call
+      klass = Request.const_get meth.to_s.capitalize
+      klass.new(model_class, args[0], request_configs[meth]).call
     else
       super
+    end
+  end
+  
+  class Builder
+    attr_reader :admin_assistant
+    
+    def initialize(admin_assistant); @admin_assistant = admin_assistant; end
+    
+    def index
+      yield Index.new(self)
+    end
+    
+    class Index
+      def initialize(builder); @builder = builder; end
+      
+      def columns(*columns)
+        @builder.admin_assistant.request_configs[:index][:columns] = columns
+      end
     end
   end
   
   module ControllerMethods
     def self.included(controller)
       controller.extend ControllerClassMethods
-      controller.cattr_accessor :admin_assistant
+      controller.class_inheritable_accessor :admin_assistant
     end
     
     def create
@@ -46,8 +66,12 @@ class AdminAssistant
   end
   
   module ControllerClassMethods
-    def admin_assistant_for(model_class)
+    def admin_assistant_for(model_class, &block)
       self.admin_assistant = AdminAssistant.new(model_class)
+      builder = Builder.new self.admin_assistant
+      if block
+        block.call builder
+      end
     end
   end
   
@@ -105,8 +129,8 @@ class AdminAssistant
     class Base
       attr_reader :model_class
       
-      def initialize(model_class, controller)
-        @model_class, @controller = model_class, controller
+      def initialize(model_class, controller, config)
+        @model_class, @controller, @config = model_class, controller, config
         @controller.instance_variable_set :@admin_assistant_request, self
       end
       
@@ -172,6 +196,14 @@ class AdminAssistant
         index = AdminAssistant::Index.new(model_class, @controller.params)
         @controller.instance_variable_set :@index, index
         render_template_file
+      end
+      
+      def column_names
+        if @config[:columns]
+          @config[:columns].map { |c| c.to_s }
+        else
+          @model_class.column_names
+        end
       end
     end
     
