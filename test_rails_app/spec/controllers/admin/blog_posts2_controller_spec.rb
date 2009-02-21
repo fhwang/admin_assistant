@@ -10,11 +10,19 @@ describe Admin::BlogPosts2Controller do
         @blog_post = BlogPost.create!(
           :title => "blog post title", :body => 'blog post body'
         )
+        tag1 = Tag.create! :tag => 'tag1'
+        BlogPostTag.create! :blog_post => @blog_post, :tag => tag1
+        tag2 = Tag.create! :tag => 'tag2'
+        BlogPostTag.create! :blog_post => @blog_post, :tag => tag2
       end
       
       before :each do
         get :index
         response.should be_success
+      end
+    
+      it 'should show the tags' do
+        response.body.should match(/(tag2 tag1|tag1 tag2)/)
       end
     
       it 'should show the title' do

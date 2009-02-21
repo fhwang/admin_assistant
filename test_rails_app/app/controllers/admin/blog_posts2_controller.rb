@@ -5,7 +5,7 @@ class Admin::BlogPosts2Controller < ApplicationController
     # for index pages:
     admin.index do |index|
       # only show some columns
-      index.columns :title
+      index.columns :title, :tags
     end
   end
 end

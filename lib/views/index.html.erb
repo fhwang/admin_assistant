@@ -41,7 +41,14 @@ show_search_form();
   <% @index.records.each do |record| %>
     <tr>
       <% @admin_assistant_request.column_names.each do |column_name| %>
-        <td><%= h(record.send(column_name)) %></td>
+        <td><%=
+          html_for_index_method = "#{column_name}_html_for_index"
+          if respond_to?(html_for_index_method)
+            self.send html_for_index_method, record
+          else
+            h(record.send(column_name))
+          end
+        %></td>
       <% end %>
       <td><%= link_to 'Edit', :action => 'edit', :id => record.id %></td>
     </tr>
