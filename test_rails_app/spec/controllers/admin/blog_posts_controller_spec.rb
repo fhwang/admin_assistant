@@ -7,8 +7,10 @@ describe Admin::BlogPostsController do
     describe 'when there are no validation errors' do
       it 'should create a new BlogPost' do
         title = random_word
-        post :create, :blog_post => {:title => title}
-        BlogPost.find_by_title(title).should_not be_nil
+        post :create, :blog_post => {:title => title, :textile => '1'}
+        blog_post = BlogPost.find_by_title(title)
+        blog_post.should_not be_nil
+        blog_post.textile?.should be_true
       end
     end
     
@@ -307,6 +309,16 @@ describe Admin::BlogPostsController do
       field_names.each do |field_name|
         response.should have_tag('th', field_name)
       end
+    end
+    
+    it "should use a checkbox for the boolean field 'textile'" do
+      response.body.should match(
+        %r!
+          <input[^>]*
+          (name="blog_post\[textile\][^>]*type="checkbox"|
+           type="checkbox"[^>]*name="blog_post\[textile\])
+        !x
+      )
     end
   end
   

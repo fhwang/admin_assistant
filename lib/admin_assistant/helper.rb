@@ -41,6 +41,8 @@ class AdminAssistant
         case column.type
           when :text
             form.text_area column.name
+          when :boolean
+            form.check_box column.name
           else
             form.text_field column.name
           end
