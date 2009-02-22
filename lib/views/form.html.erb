@@ -9,7 +9,14 @@
   <% @admin_assistant_request.columns.each do |column| %>
     <tr>
       <th><%= h(column.name) %></th>
-      <td><%= column.html_for_form(form) %></td>
+      <td><%=
+        html_method = "#{column.name}_html_for_form"
+        if respond_to?(html_method)
+          self.send(html_method, @record)
+        else
+          column.html_for_form(form)
+        end
+      %></td>
     </tr>
   <% end %>
     <tr>
