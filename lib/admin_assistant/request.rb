@@ -36,7 +36,7 @@ class AdminAssistant
         @controller.params[model_class_symbol].each do |k, v|
           if filter = @admin_assistant.params_filter_for_save[k.to_sym]
             params[k] = filter.call v
-          else
+          elsif @record.respond_to?("#{k}=")
             params[k] = v
           end
         end
@@ -57,6 +57,13 @@ class AdminAssistant
         options = {:file => template_file(template_name), :layout => true}
         options = options.merge options_plus
         @controller.send(:render, options)
+      end
+      
+      def save
+        if @admin_assistant.before_save
+          @admin_assistant.before_save.call(@record, @controller.params)
+        end
+        @record.save
       end
     
       def template_file(template_name = action)
@@ -82,11 +89,12 @@ class AdminAssistant
       include FormMethods
       
       def call
-        record = model_class.new params_for_save
-        if record.save
+        @record = model_class.new
+        @record.attributes = params_for_save
+        if save
           @controller.send :redirect_to, :action => 'index'
         else
-          @controller.instance_variable_set :@record, record
+          @controller.instance_variable_set :@record, @record
           render_new
         end
       end
@@ -133,7 +141,7 @@ class AdminAssistant
       def call
         @record = model_class.find @controller.params[:id]
         @record.attributes = params_for_save
-        if @record.save
+        if save
           @controller.send :redirect_to, :action => 'index'
         else
           @controller.instance_variable_set :@record, @record

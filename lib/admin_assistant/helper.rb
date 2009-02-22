@@ -19,7 +19,7 @@ class AdminAssistant
       value_method = "#{column.name}_value"
       if respond_to?(value_method)
         self.send value_method, record
-      else
+      elsif record.respond_to?(column.name)
         record.send column.name
       end
     end
@@ -47,10 +47,18 @@ class AdminAssistant
             form.text_field column.name
           end
       else
-        text_field_tag(
-          "#{@admin_assistant.model_class.name.underscore}[#{column.name}]",
-          field_value(record, column)
-        )
+        input_name =
+            "#{@admin_assistant.model_class.name.underscore}[#{column.name}]"
+        input_type = @admin_assistant.request_configs[:form][:inputs][
+          column.name.to_sym]
+        if input_type
+          if input_type == :check_box
+            check_box_tag(input_name, '1', field_value(record, column)) +
+                hidden_field_tag(input_name, '0')
+          end
+        else
+          text_field_tag(input_name, field_value(record, column))
+        end
       end
       if ah = after_html_for_form(column, record)
         hff << ah

@@ -4,11 +4,13 @@ require 'admin_assistant/request'
 
 class AdminAssistant
   attr_reader :model_class, :params_filter_for_save, :request_configs
+  attr_accessor :before_save
 
   def initialize(controller_class, model_class)
     @controller_class, @model_class = controller_class, model_class
     @params_filter_for_save = {}
     @request_configs = Hash.new { |h,k| h[k] = {} }
+    @request_configs[:form][:inputs] = {}
   end
   
   def method_missing(meth, *args)
@@ -74,7 +76,13 @@ class AdminAssistant
   class Builder
     attr_reader :admin_assistant
     
-    def initialize(admin_assistant); @admin_assistant = admin_assistant; end
+    def initialize(admin_assistant)
+      @admin_assistant = admin_assistant
+    end
+      
+    def before_save(&block)
+      @admin_assistant.before_save = block
+    end
     
     def form
       yield Form.new(self)
@@ -97,6 +105,10 @@ class AdminAssistant
         
       def columns(*columns)
         @builder.admin_assistant.request_configs[:form][:columns] = columns
+      end
+      
+      def inputs
+        @builder.admin_assistant.request_configs[:form][:inputs]
       end
     end
     

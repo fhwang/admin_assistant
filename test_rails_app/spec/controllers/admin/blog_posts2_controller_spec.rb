@@ -7,7 +7,12 @@ describe Admin::BlogPosts2Controller do
     describe 'when there are no validation errors' do
       before :each do
         title = random_word
-        post :create, :blog_post => {:title => title, :tags => 'tag1 tag2'}
+        post(
+          :create,
+          :blog_post => {
+            :title => title, :tags => 'tag1 tag2', :publish => '1'
+          }
+        )
         @blog_post = BlogPost.find_by_title title
       end
       
@@ -20,6 +25,10 @@ describe Admin::BlogPosts2Controller do
         %w(tag1 tag2).each do |tag_str|
           assert(@blog_post.tags.any? { |tag| tag.tag == tag_str })
         end
+      end
+      
+      it 'should set published_at because of the publish flag' do
+        @blog_post.published_at.should_not be_nil
       end
     end
   end
@@ -94,6 +103,24 @@ describe Admin::BlogPosts2Controller do
     
     it 'should show current tags' do
       response.body.should match(/tag_from_yesterday/)
+    end
+    
+    it "should show a checkbox for the 'publish' virtual field" do
+      response.body.should match(
+        %r!
+          <input[^>]*
+          (name="blog_post\[publish\][^>]*type="checkbox"[^>]value="1"|
+           type="checkbox"[^>]*name="blog_post\[publish\][^>]value="1")
+        !x
+      )
+      # needs hidden field, like form.check_box
+      response.body.should match(
+        %r!
+          <input[^>]*
+          (name="blog_post\[publish\][^>]*type="hidden"[^>]value="0"|
+          type="hidden"[^>]*name="blog_post\[publish\][^>]value="0")
+        !x
+      )
     end
   end
 end
