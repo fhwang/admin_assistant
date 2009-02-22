@@ -3,6 +3,27 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 describe Admin::BlogPosts2Controller do
   integrate_views
   
+  describe '#create' do
+    describe 'when there are no validation errors' do
+      before :each do
+        title = random_word
+        post :create, :blog_post => {:title => title, :tags => 'tag1 tag2'}
+        @blog_post = BlogPost.find_by_title title
+      end
+      
+      it 'should create a new BlogPost' do
+        @blog_post.should_not be_nil
+      end
+      
+      it 'should create tags' do
+        @blog_post.should have(2).tags
+        %w(tag1 tag2).each do |tag_str|
+          assert(@blog_post.tags.any? { |tag| tag.tag == tag_str })
+        end
+      end
+    end
+  end
+  
   describe '#edit' do
     before :all do
       BlogPost.destroy_all

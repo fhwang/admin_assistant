@@ -4,10 +4,11 @@ require File.expand_path(
 require 'admin_assistant/request'
 
 class AdminAssistant
-  attr_reader :model_class, :request_configs
+  attr_reader :model_class, :params_filter_for_save, :request_configs
 
   def initialize(model_class)
     @model_class = model_class
+    @params_filter_for_save = {}
     @request_configs = Hash.new { |h,k| h[k] = {} }
   end
   
@@ -32,6 +33,14 @@ class AdminAssistant
       
     def index
       yield Index.new(self)
+    end
+    
+    def method_missing(meth, *args, &block)
+      if meth.to_s =~ /(.*)_for_save/
+        admin_assistant.params_filter_for_save[$1.to_sym] = block
+      else
+        super
+      end
     end
     
     class Form

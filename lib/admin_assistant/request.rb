@@ -75,6 +75,18 @@ class AdminAssistant
         model_class.name.underscore.to_sym
       end
       
+      def params_for_save
+        params = {}
+        @controller.params[model_class_symbol].each do |k, v|
+          if filter = @admin_assistant.params_filter_for_save[k.to_sym]
+            params[k] = filter.call v
+          else
+            params[k] = v
+          end
+        end
+        params
+      end
+      
       def render_edit
         render_template_file(
           'form', :locals => {:action => 'update', :id => @record.id}
@@ -104,7 +116,7 @@ class AdminAssistant
       include FormMethods
       
       def call
-        record = model_class.new @controller.params[model_class_symbol]
+        record = model_class.new params_for_save
         if record.save
           @controller.send :redirect_to, :action => 'index'
         else
@@ -154,7 +166,7 @@ class AdminAssistant
       
       def call
         @record = model_class.find @controller.params[:id]
-        @record.attributes = @controller.params[model_class_symbol]
+        @record.attributes = params_for_save
         if @record.save
           @controller.send :redirect_to, :action => 'index'
         else
