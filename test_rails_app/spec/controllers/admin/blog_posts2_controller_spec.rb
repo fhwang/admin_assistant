@@ -80,12 +80,20 @@ describe Admin::BlogPosts2Controller do
   end
   
   describe '#new' do
+    before :all do
+      Tag.create! :tag => 'tag_from_yesterday'
+    end
+    
     before :each do
       get :new
     end
     
     it 'should show a field for tags' do
       response.body.should match(%r|<input.*name="blog_post\[tags\]"|m)
+    end
+    
+    it 'should show current tags' do
+      response.body.should match(/tag_from_yesterday/)
     end
   end
 end

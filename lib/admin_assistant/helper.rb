@@ -1,5 +1,20 @@
 class AdminAssistant
   module Helper
+    def after_html_for_form(column, record)
+      after_html_template = File.join(
+        RAILS_ROOT, 'app/views', controller.controller_path,
+        "_after_#{column.name}_html_for_form.html.erb"
+      )
+      if File.exist?(after_html_template)
+        render(
+          :file => after_html_template,
+          :locals => {
+            @admin_assistant.model_class.name.underscore.to_sym => record
+          }
+        )
+      end
+    end
+    
     def field_value(record, column)
       value_method = "#{column.name}_value"
       if respond_to?(value_method)
@@ -20,7 +35,7 @@ class AdminAssistant
     
     def html_for_form(column, record, form)
       html_method = "#{column.name}_html_for_form"
-      if respond_to?(html_method)
+      hff = if respond_to?(html_method)
         self.send(html_method, record)
       elsif column.is_a?(ActiveRecordColumn)
         case column.type
@@ -35,6 +50,10 @@ class AdminAssistant
           field_value(record, column)
         )
       end
+      if ah = after_html_for_form(column, record)
+        hff << ah
+      end
+      hff
     end
   end
 end
