@@ -8,15 +8,8 @@
   <table>
   <% @admin_assistant.columns.each do |column| %>
     <tr>
-      <th><%= h(column.pretty_name) %></th>
-      <td><%=
-        html_method = "#{column.name}_html_for_form"
-        if respond_to?(html_method)
-          self.send(html_method, @record)
-        else
-          column.html_for_form(form)
-        end
-      %></td>
+      <th><%= h(column.label) %></th>
+      <td><%= html_for_form(column, @record, form) %></td>
     </tr>
   <% end %>
     <tr>

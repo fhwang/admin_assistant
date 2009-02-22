@@ -29,21 +29,14 @@ show_search_form();
   <tr>
     <% @admin_assistant.columns.each do |column| %>
       <th><%= link_to(
-        h(column.pretty_name), @index.next_sort_params(column.name)
+        h(column.label), @index.next_sort_params(column.name)
       ) %></th>
     <% end %>
   </tr>
   <% @index.records.each do |record| %>
     <tr>
       <% @admin_assistant.columns.each do |column| %>
-        <td><%=
-          html_for_index_method = "#{column.name}_html_for_index"
-          if respond_to?(html_for_index_method)
-            self.send html_for_index_method, record
-          else
-            h(record.send(column.name))
-          end
-        %></td>
+        <td><%= html_for_index(column, record) %></td>
       <% end %>
       <td><%= link_to 'Edit', :action => 'edit', :id => record.id %></td>
     </tr>

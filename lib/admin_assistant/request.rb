@@ -1,9 +1,8 @@
 class AdminAssistant
-  module Request    
+  module Request
     class Base
       def initialize(admin_assistant, controller)
         @admin_assistant, @controller = admin_assistant, controller
-        @controller.instance_variable_set :@admin_assistant, @admin_assistant
       end
       
       def action
