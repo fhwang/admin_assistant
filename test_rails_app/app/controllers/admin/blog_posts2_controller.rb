@@ -8,6 +8,7 @@ class Admin::BlogPosts2Controller < ApplicationController
     a.form do |form|
       form.columns :title, :body, :tags, :textile, :publish
       form.inputs[:publish] = :check_box
+      form.submit_buttons << 'Preview'
     end
     a.tags_for_save do |tags_from_form|
       tags_from_form.split(/\s+/).map { |tag_str|
@@ -17,6 +18,11 @@ class Admin::BlogPosts2Controller < ApplicationController
     a.before_save do |blog_post, params|
       if params[:blog_post][:publish] == '1' && blog_post.published_at.nil?
         blog_post.published_at = Time.now.utc
+      end
+    end
+    a.destination_after_save do |controller, blog_post|
+      if controller.params[:commit] == 'Preview'
+        {:action => 'edit', :id => blog_post.id, :preview => '1'}
       end
     end
   end

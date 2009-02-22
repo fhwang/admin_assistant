@@ -14,7 +14,16 @@
   <% end %>
     <tr>
       <td></td>
-      <td><%= submit_tag(action.capitalize) %></td>
+      <td>
+        <%= submit_tag(action.capitalize) %>
+        <%
+        extra_submit_buttons =  
+            @admin_assistant.request_configs[:form][:extra_submit_buttons]
+        %>
+        <% extra_submit_buttons.each do |extra_submit_button| %>
+          <%= submit_tag(extra_submit_button) %>
+        <% end %>
+      </td>
     </tr>
   </table>
 <% end %>

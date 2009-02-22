@@ -331,7 +331,7 @@ describe Admin::BlogPostsController do
       it 'should update a pre-existing BlogPost' do
         title2 = random_word
         post :update, :id => @blog_post.id, :blog_post => {:title => title2}
-        response.should be_redirect
+        response.should redirect_to(:action => 'index')
         BlogPost.find_by_title(title2).should_not be_nil
       end
     end

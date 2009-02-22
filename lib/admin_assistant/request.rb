@@ -43,6 +43,14 @@ class AdminAssistant
         params
       end
       
+      def redirect_after_save
+        url_params = if @admin_assistant.destination_after_save
+          @admin_assistant.destination_after_save.call @controller, @record
+        end
+        url_params ||= {:action => 'index'}
+        @controller.send :redirect_to, url_params
+      end
+      
       def render_edit
         render_template_file(
           'form', :locals => {:action => 'update', :id => @record.id}
@@ -92,7 +100,7 @@ class AdminAssistant
         @record = model_class.new
         @record.attributes = params_for_save
         if save
-          @controller.send :redirect_to, :action => 'index'
+          redirect_after_save
         else
           @controller.instance_variable_set :@record, @record
           render_new
@@ -142,7 +150,7 @@ class AdminAssistant
         @record = model_class.find @controller.params[:id]
         @record.attributes = params_for_save
         if save
-          @controller.send :redirect_to, :action => 'index'
+          redirect_after_save
         else
           @controller.instance_variable_set :@record, @record
           render_edit

@@ -31,6 +31,26 @@ describe Admin::BlogPosts2Controller do
         @blog_post.published_at.should_not be_nil
       end
     end
+    
+    describe "when the user has clicked 'Preview'" do
+      before :each do
+        title = random_word
+        post(
+          :create,
+          :blog_post => {
+            :title => title, :tags => 'tag1 tag2', :publish => '1'
+          },
+          :commit => 'Preview'
+        )
+        @blog_post = BlogPost.find_by_title title
+      end
+
+      it 'should redirect to the edit page with the preview flag' do
+        response.should redirect_to(
+          :action => 'edit', :id => @blog_post.id, :preview => '1'
+        )
+      end
+    end
   end
   
   describe '#edit' do
@@ -53,6 +73,10 @@ describe Admin::BlogPosts2Controller do
     it 'should show the tags' do
       response.body.should match(%r|<input.*name="blog_post\[tags\]"|m)
       response.body.should match(/(tag2 tag1|tag1 tag2)/)
+    end
+    
+    it 'should show a preview button' do
+      response.should have_tag('input[type=submit][value=Preview]')
     end
   end
 
@@ -121,6 +145,33 @@ describe Admin::BlogPosts2Controller do
           type="hidden"[^>]*name="blog_post\[publish\][^>]value="0")
         !x
       )
+    end
+    
+    it 'should show a preview button' do
+      response.should have_tag('input[type=submit][value=Preview]')
+    end
+  end
+  
+  describe '#update' do
+    before :all do
+      @blog_post = BlogPost.create! :title => random_word
+    end
+    
+    describe "when the user has clicked 'Preview'" do
+      before :each do
+        title2 = random_word
+        post(
+          :update,
+          :id => @blog_post.id, :blog_post => {:title => title2},
+          :commit => 'Preview'
+        )
+      end
+      
+      it 'should redirect to the edit page with the preview flag' do
+        response.should redirect_to(
+          :action => 'edit', :id => @blog_post.id, :preview => '1'
+        )
+      end
     end
   end
 end
