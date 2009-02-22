@@ -27,25 +27,21 @@ show_search_form();
 <% if !@index.records.empty? %>
 <table>
   <tr>
-    <% @admin_assistant.column_names.each do |column_name| %>
-    <%
-    pretty_column_name = column_name.capitalize.gsub(/_/, ' ') 
-    pretty_column_name = 'ID' if column_name == 'id'
-    %>
+    <% @admin_assistant.columns.each do |column| %>
       <th><%= link_to(
-        h(pretty_column_name), @index.next_sort_params(column_name)
+        h(column.pretty_name), @index.next_sort_params(column.name)
       ) %></th>
     <% end %>
   </tr>
   <% @index.records.each do |record| %>
     <tr>
-      <% @admin_assistant.column_names.each do |column_name| %>
+      <% @admin_assistant.columns.each do |column| %>
         <td><%=
-          html_for_index_method = "#{column_name}_html_for_index"
+          html_for_index_method = "#{column.name}_html_for_index"
           if respond_to?(html_for_index_method)
             self.send html_for_index_method, record
           else
-            h(record.send(column_name))
+            h(record.send(column.name))
           end
         %></td>
       <% end %>

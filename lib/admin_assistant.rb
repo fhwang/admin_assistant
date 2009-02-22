@@ -12,22 +12,6 @@ class AdminAssistant
     @request_configs = Hash.new { |h,k| h[k] = {} }
   end
   
-  def columns
-    if from_config = @request_configs[:form][:columns]
-      from_config.map { |column_sym|
-        if ar_column = model_class.columns_hash[column_sym.to_s]
-          ActiveRecordColumn.new ar_column
-        else
-          AdminAssistantColumn.new column_sym
-        end
-      }
-    else
-      model_class.columns.reject { |ar_column|
-        %w(id created_at updated_at).include?(ar_column.name)
-      }.map { |ar_column| ActiveRecordColumn.new(ar_column) }
-    end
-  end
-  
   def method_missing(meth, *args)
     request_methods = [:create, :edit, :index, :new, :update]
     if request_methods.include?(meth) and args.size == 1
@@ -50,14 +34,19 @@ class AdminAssistant
     {:controller => @controller_class.controller_path, :action => a}
   end
   
-  class ActiveRecordColumn < Delegator
-    def initialize(ar_column)
-      super
-      @ar_column = ar_column
+  class Column
+    def pretty_name
+      if name.to_s == 'id'
+        'ID'
+      else
+        name.to_s.capitalize.gsub(/_/, ' ') 
+      end
     end
-    
-    def __getobj__
-      @ar_column
+  end
+  
+  class ActiveRecordColumn < Column
+    def initialize(ar_column)
+      @ar_column = ar_column
     end
     
     def html_for_form(form)
@@ -69,12 +58,16 @@ class AdminAssistant
         end
     end
     
+    def name
+      @ar_column.name
+    end
+    
     def type
       @ar_column.type
     end
   end
   
-  class AdminAssistantColumn
+  class AdminAssistantColumn < Column
     attr_reader :name
     
     def initialize(name)

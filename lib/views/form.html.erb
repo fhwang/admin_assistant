@@ -8,7 +8,7 @@
   <table>
   <% @admin_assistant.columns.each do |column| %>
     <tr>
-      <th><%= h(column.name) %></th>
+      <th><%= h(column.pretty_name) %></th>
       <td><%=
         html_method = "#{column.name}_html_for_form"
         if respond_to?(html_method)

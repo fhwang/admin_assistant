@@ -301,6 +301,13 @@ describe Admin::BlogPostsController do
     it 'should show a link back to the index page' do
       response.should have_tag("a[href=/admin/blog_posts]", 'Back to index')
     end
+      
+    it 'should show pretty field names' do
+      field_names = ['Title', 'Body']
+      field_names.each do |field_name|
+        response.should have_tag('th', field_name)
+      end
+    end
   end
   
   describe '#update' do

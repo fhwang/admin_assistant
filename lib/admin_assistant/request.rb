@@ -10,6 +10,20 @@ class AdminAssistant
         self.class.name.split(/::/).last.downcase
       end
       
+      def columns_from_active_record(ar_columns)
+        ar_columns.map { |ar_column| ActiveRecordColumn.new(ar_column) }
+      end
+      
+      def columns_from_config(form_config)
+        form_config.map { |column_sym|
+          if ar_column = model_class.columns_hash[column_sym.to_s]
+            ActiveRecordColumn.new ar_column
+          else
+            AdminAssistantColumn.new column_sym
+          end
+        }
+      end
+      
       def model_class
         @admin_assistant.model_class
       end
@@ -51,7 +65,23 @@ class AdminAssistant
       end
     end
     
+    module FormMethods
+      def columns
+        if form_config = @admin_assistant.request_configs[:form][:columns]
+          columns_from_config form_config
+        else
+          columns_from_active_record(
+            model_class.columns.reject { |ar_column|
+              %w(id created_at updated_at).include?(ar_column.name)
+            }
+          )
+        end
+      end
+    end
+    
     class Create < Base
+      include FormMethods
+      
       def call
         record = model_class.new params_for_save
         if record.save
@@ -64,6 +94,8 @@ class AdminAssistant
     end
     
     class Edit < Base
+      include FormMethods
+      
       def call
         @record = model_class.find @controller.params[:id]
         @controller.instance_variable_set :@record, @record
@@ -78,16 +110,18 @@ class AdminAssistant
         render_template_file
       end
       
-      def column_names
-        if columns = @admin_assistant.request_configs[:index][:columns]
-          columns.map { |c| c.to_s }
+      def columns
+        if index_config = @admin_assistant.request_configs[:index][:columns]
+          columns_from_config index_config
         else
-          model_class.column_names
+          columns_from_active_record model_class.columns
         end
       end
     end
     
     class New < Base
+      include FormMethods
+      
       def call
         @controller.instance_variable_set :@record, model_class.new
         render_new
@@ -95,6 +129,8 @@ class AdminAssistant
     end
     
     class Update < Base
+      include FormMethods
+      
       def call
         @record = model_class.find @controller.params[:id]
         @record.attributes = params_for_save
