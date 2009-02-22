@@ -6,19 +6,83 @@ require 'admin_assistant/request'
 class AdminAssistant
   attr_reader :model_class, :params_filter_for_save, :request_configs
 
-  def initialize(model_class)
-    @model_class = model_class
+  def initialize(controller_class, model_class)
+    @controller_class, @model_class = controller_class, model_class
     @params_filter_for_save = {}
     @request_configs = Hash.new { |h,k| h[k] = {} }
+  end
+  
+  def columns
+    if from_config = @request_configs[:form][:columns]
+      from_config.map { |column_sym|
+        if ar_column = model_class.columns_hash[column_sym.to_s]
+          ActiveRecordColumn.new ar_column
+        else
+          AdminAssistantColumn.new column_sym
+        end
+      }
+    else
+      model_class.columns.reject { |ar_column|
+        %w(id created_at updated_at).include?(ar_column.name)
+      }.map { |ar_column| ActiveRecordColumn.new(ar_column) }
+    end
   end
   
   def method_missing(meth, *args)
     request_methods = [:create, :edit, :index, :new, :update]
     if request_methods.include?(meth) and args.size == 1
       klass = Request.const_get meth.to_s.capitalize
-      klass.new(self, model_class, args[0]).call
+      @request = klass.new(self, args[0])
+      @request.call
+      @request = nil
+    elsif @request.respond_to?(meth)
+      @request.send meth, *args
     else
       super
+    end
+  end
+    
+  def model_class_name
+    model_class.name.gsub(/([A-Z])/, ' \1')[1..-1].downcase
+  end
+  
+  def url_params(a = action)
+    {:controller => @controller_class.controller_path, :action => a}
+  end
+  
+  class ActiveRecordColumn < Delegator
+    def initialize(ar_column)
+      super
+      @ar_column = ar_column
+    end
+    
+    def __getobj__
+      @ar_column
+    end
+    
+    def html_for_form(form)
+      case type
+        when :text
+          form.text_area name
+        else
+          form.text_field name
+        end
+    end
+    
+    def type
+      @ar_column.type
+    end
+  end
+  
+  class AdminAssistantColumn
+    attr_reader :name
+    
+    def initialize(name)
+      @name = name
+    end
+    
+    def html_for_form(form)
+      form.text_field name
     end
   end
   
@@ -89,7 +153,7 @@ class AdminAssistant
   
   module ControllerClassMethods
     def admin_assistant_for(model_class, &block)
-      self.admin_assistant = AdminAssistant.new(model_class)
+      self.admin_assistant = AdminAssistant.new(self, model_class)
       builder = Builder.new self.admin_assistant
       if block
         block.call builder

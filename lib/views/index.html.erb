@@ -3,13 +3,12 @@ function show_search_form() { $('search_form').show(); }
 </script>
 
 <%= h(
-  @admin_assistant_request.model_class.name.pluralize.gsub(/([A-Z])/, ' \1')[1..-1]
+  @admin_assistant.model_class.name.pluralize.gsub(/([A-Z])/, ' \1')[1..-1]
 ) %>
 
 <%= link_to_function('Search', 'show_search_form()') %>
 <%= link_to(
-  "New #{@admin_assistant_request.model_class_name}",
-  @admin_assistant_request.url_params(:new)
+  "New #{@admin_assistant.model_class_name}", @admin_assistant.url_params(:new)
 ) %>
 
 <div id="search_form" style="display: none">
@@ -28,7 +27,7 @@ show_search_form();
 <% if !@index.records.empty? %>
 <table>
   <tr>
-    <% @admin_assistant_request.column_names.each do |column_name| %>
+    <% @admin_assistant.column_names.each do |column_name| %>
     <%
     pretty_column_name = column_name.capitalize.gsub(/_/, ' ') 
     pretty_column_name = 'ID' if column_name == 'id'
@@ -40,7 +39,7 @@ show_search_form();
   </tr>
   <% @index.records.each do |record| %>
     <tr>
-      <% @admin_assistant_request.column_names.each do |column_name| %>
+      <% @admin_assistant.column_names.each do |column_name| %>
         <td><%=
           html_for_index_method = "#{column_name}_html_for_index"
           if respond_to?(html_for_index_method)
@@ -55,4 +54,4 @@ show_search_form();
   <% end %>
 </table>
 <% end %>
-<%= @index.records.empty? ? 'No' : @index.records.size %> <%= @admin_assistant_request.model_class_name %><%= 's' unless @index.records.size == 1 %> found
+<%= @index.records.empty? ? 'No' : @index.records.size %> <%= @admin_assistant.model_class_name %><%= 's' unless @index.records.size == 1 %> found

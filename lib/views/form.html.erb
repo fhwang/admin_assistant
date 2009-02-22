@@ -1,12 +1,12 @@
 <% id = nil unless defined?(id) %>
-<%= id ? 'Edit' : 'New' %> <%= h(@admin_assistant_request.model_class_name) %>
+<%= id ? 'Edit' : 'New' %> <%= h(@admin_assistant.model_class_name) %>
 <%= link_to('Back to index', :action => 'index') %>
 <% if !@record.errors.empty? %>
   <%= error_messages_for 'record' %>
 <% end %>
 <% form_for(@record, :url => {:action => action, :id => id}) do |form| %>
   <table>
-  <% @admin_assistant_request.columns.each do |column| %>
+  <% @admin_assistant.columns.each do |column| %>
     <tr>
       <th><%= h(column.name) %></th>
       <td><%=
