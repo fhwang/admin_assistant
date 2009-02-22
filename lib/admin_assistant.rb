@@ -50,15 +50,6 @@ class AdminAssistant
       @ar_column = ar_column
     end
     
-    def html_for_form(form)
-      case type
-        when :text
-          form.text_area name
-        else
-          form.text_field name
-        end
-    end
-    
     def name
       @ar_column.name
     end
