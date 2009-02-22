@@ -15,7 +15,7 @@ class AdminAssistant
     request_methods = [:create, :edit, :index, :new, :update]
     if request_methods.include?(meth) and args.size == 1
       klass = Request.const_get meth.to_s.capitalize
-      klass.new(model_class, args[0], request_configs[meth]).call
+      klass.new(self, model_class, args[0]).call
     else
       super
     end
@@ -26,8 +26,20 @@ class AdminAssistant
     
     def initialize(admin_assistant); @admin_assistant = admin_assistant; end
     
+    def form
+      yield Form.new(self)
+    end
+      
     def index
       yield Index.new(self)
+    end
+    
+    class Form
+      def initialize(builder); @builder = builder; end
+        
+      def columns(*columns)
+        @builder.admin_assistant.request_configs[:form][:columns] = columns
+      end
     end
     
     class Index

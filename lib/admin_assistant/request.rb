@@ -1,10 +1,65 @@
 class AdminAssistant
   module Request
+    module FormMethods
+      def columns
+        if from_config = @admin_assistant.request_configs[:form][:columns]
+          from_config.map { |column_sym|
+            if ar_column = model_class.columns_hash[column_sym.to_s]
+              ActiveRecordColumn.new ar_column
+            else
+              AdminAssistantColumn.new column_sym
+            end
+          }
+        else
+          model_class.columns.reject { |ar_column|
+            %w(id created_at updated_at).include?(ar_column.name)
+          }.map { |ar_column| ActiveRecordColumn.new(ar_column) }
+        end
+      end
+      
+      class ActiveRecordColumn < Delegator
+        def initialize(ar_column)
+          super
+          @ar_column = ar_column
+        end
+        
+        def __getobj__
+          @ar_column
+        end
+        
+        def html_for_form(form)
+          case type
+            when :text
+              form.text_area name
+            else
+              form.text_field name
+            end
+        end
+        
+        def type
+          @ar_column.type
+        end
+      end
+      
+      class AdminAssistantColumn
+        attr_reader :name
+        
+        def initialize(name)
+          @name = name
+        end
+        
+        def html_for_form(form)
+          form.text_field name
+        end
+      end
+    end
+    
     class Base
       attr_reader :model_class
       
-      def initialize(model_class, controller, config)
-        @model_class, @controller, @config = model_class, controller, config
+      def initialize(admin_assistant, model_class, controller)
+        @admin_assistant, @model_class, @controller =
+            admin_assistant, model_class, controller
         @controller.instance_variable_set :@admin_assistant_request, self
       end
       
@@ -46,6 +101,8 @@ class AdminAssistant
     end
     
     class Create < Base
+      include FormMethods
+      
       def call
         record = model_class.new @controller.params[model_class_symbol]
         if record.save
@@ -58,6 +115,8 @@ class AdminAssistant
     end
     
     class Edit < Base
+      include FormMethods
+      
       def call
         @record = model_class.find @controller.params[:id]
         @controller.instance_variable_set :@record, @record
@@ -73,8 +132,8 @@ class AdminAssistant
       end
       
       def column_names
-        if @config[:columns]
-          @config[:columns].map { |c| c.to_s }
+        if columns = @admin_assistant.request_configs[:index][:columns]
+          columns.map { |c| c.to_s }
         else
           @model_class.column_names
         end
@@ -82,6 +141,8 @@ class AdminAssistant
     end
     
     class New < Base
+      include FormMethods
+      
       def call
         @controller.instance_variable_set :@record, model_class.new
         render_new
@@ -89,6 +150,8 @@ class AdminAssistant
     end
     
     class Update < Base
+      include FormMethods
+      
       def call
         @record = model_class.find @controller.params[:id]
         @record.attributes = @controller.params[model_class_symbol]

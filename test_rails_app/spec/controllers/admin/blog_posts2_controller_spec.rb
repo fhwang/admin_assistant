@@ -34,4 +34,14 @@ describe Admin::BlogPosts2Controller do
       end
     end
   end
+  
+  describe '#new' do
+    before :each do
+      get :new
+    end
+    
+    it 'should show a field for tags' do
+      response.body.should match(%r|<input.*name="blog_post\[tags\]"|m)
+    end
+  end
 end

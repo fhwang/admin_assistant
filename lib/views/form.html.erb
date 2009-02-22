@@ -6,23 +6,10 @@
 <% end %>
 <% form_for(@record, :url => {:action => action, :id => id}) do |form| %>
   <table>
-  <%
-  columns_for_form =
-      @admin_assistant_request.model_class.columns.reject { |cn|
-        %w(id created_at updated_at).include?(cn.name)
-      }
-  %>
-  <% columns_for_form.each do |column| %>
+  <% @admin_assistant_request.columns.each do |column| %>
     <tr>
       <th><%= h(column.name) %></th>
-      <td><%=
-      case column.type
-        when :text
-          form.text_area column.name
-        else
-          form.text_field column.name
-        end
-      %></td>
+      <td><%= column.html_for_form(form) %></td>
     </tr>
   <% end %>
     <tr>
