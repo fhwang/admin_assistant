@@ -126,6 +126,49 @@ describe Admin::BlogPosts2Controller do
       it 'should not show the body' do
         response.body.should_not match(/blog post body/)
       end
+      
+      it 'should show a link to the all index page' do
+        response.body.should match(%r|<a.*href="/admin/blog_posts2\?all=1"|)
+      end
+    end
+    
+    describe 'when there is one published post and one unpublished post' do
+      before :all do
+        BlogPost.create! :title => "--unpublished--"
+        BlogPost.create!(
+          :title => "--published--", :published_at => Time.now.utc
+        )
+      end
+      
+      before :each do
+        get :index
+        response.should be_success
+      end
+      
+      it 'should show the unpublished post' do
+        response.body.should match(/--unpublished--/)
+      end
+      
+      it 'should not show the published post' do
+        response.body.should_not match(/--published--/)
+      end
+    end
+  end
+  
+  describe '#index?all=1' do
+    before :all do
+      BlogPost.create!(
+        :title => "--published--", :published_at => Time.now.utc
+      )
+    end
+      
+    before :each do
+      get :index, :all => '1'
+      response.should be_success
+    end
+
+    it 'should show published posts' do
+      response.body.should match(/--published--/)
     end
   end
   

@@ -192,6 +192,13 @@ class AdminAssistant
   end
   
   class IndexSettings < Settings
+    attr_reader :actions
+    
+    def initialize(admin_assistant)
+      super
+      @actions = {}
+    end
+    
     def columns(*args)
       if args.empty?
         if @columns
@@ -202,6 +209,10 @@ class AdminAssistant
       else
         @columns = args
       end
+    end
+    
+    def conditions(&block)
+      block ? (@conditions = block) : @conditions
     end
   end
 end

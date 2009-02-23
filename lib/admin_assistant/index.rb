@@ -4,9 +4,13 @@ require File.expand_path(
 
 class AdminAssistant
   class Index
-    def initialize(model_class, url_params = {})
-      @model_class = model_class
+    def initialize(admin_assistant, url_params = {})
+      @admin_assistant = admin_assistant
       @url_params = url_params
+    end
+    
+    def model_class
+      @admin_assistant.model_class
     end
     
     def next_sort_params(column_name)
@@ -40,13 +44,18 @@ class AdminAssistant
             ar_query.bind_vars << "%#{search_terms}%"
           end
         end
-        @records = @model_class.find :all, ar_query
+        if @admin_assistant.index_settings.conditions
+          conditions =
+              @admin_assistant.index_settings.conditions.call(@url_params)
+          ar_query.condition_sqls << conditions if conditions
+        end
+        @records = model_class.find :all, ar_query
       end
       @records
     end
     
     def searchable_columns
-      @model_class.columns.select { |column|
+      model_class.columns.select { |column|
         [:string, :text].include?(column.type)
       }
     end

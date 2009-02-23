@@ -43,6 +43,20 @@ describe ARQuery do
       @ar_query[:conditions].should ==
           "(fname is not null) AND (lname is not null)"
     end
+    
+    it "should prevent you from appending nil" do
+      lambda { @ar_query.condition_sqls << nil }.should raise_error(
+        ArgumentError,
+        "Tried appending nil to ARQuery#condition_sqls: Only strings are allowed"
+      )
+    end
+    
+    it "should prevent you from appending a value besides a string" do
+      lambda { @ar_query.condition_sqls << 55 }.should raise_error(
+        ArgumentError,
+        "Tried appending 55 to ARQuery#condition_sqls: Only strings are allowed"
+      )
+    end
   end
   
   describe '#condition_sqls << with OR as the boolean join' do

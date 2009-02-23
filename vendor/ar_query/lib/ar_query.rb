@@ -8,7 +8,7 @@ class ARQuery < Hash
     super nil
     initial_values.each do |k,v| self[k] = v; end
     @bind_vars = []
-    @condition_sqls = []
+    @condition_sqls = ConditionSQLs.new
     @boolean_join = :and
   end
     
@@ -20,6 +20,19 @@ class ARQuery < Hash
       @bind_vars.empty? ? condition_sql : [ condition_sql, *@bind_vars ]
     else
       super
+    end
+  end
+  
+  class ConditionSQLs < Array
+    def <<(elt)
+      if elt.is_a?(String)
+        super
+      else
+        raise(
+          ArgumentError,
+          "Tried appending #{elt.inspect} to ARQuery#condition_sqls: Only strings are allowed"
+        )
+      end
     end
   end
 end

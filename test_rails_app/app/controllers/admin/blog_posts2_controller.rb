@@ -4,6 +4,10 @@ class Admin::BlogPosts2Controller < ApplicationController
   admin_assistant_for BlogPost do |a|
     a.index do |index|
       index.columns :title, :tags, :published_at
+      index.actions['All'] = {:all => '1'}
+      index.conditions do |params|
+        "published_at is null" unless params[:all]
+      end
     end
     a.form do |form|
       form.columns :title, :body, :tags, :textile, :publish
@@ -20,8 +24,8 @@ class Admin::BlogPosts2Controller < ApplicationController
         blog_post.published_at = Time.now.utc
       end
     end
-    a.destination_after_save do |controller, blog_post|
-      if controller.params[:commit] == 'Preview'
+    a.destination_after_save do |blog_post, params|
+      if params[:commit] == 'Preview'
         {:action => 'edit', :id => blog_post.id, :preview => '1'}
       end
     end

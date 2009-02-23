@@ -10,6 +10,9 @@ function show_search_form() { $('search_form').show(); }
 <%= link_to(
   "New #{@admin_assistant.model_class_name}", @admin_assistant.url_params(:new)
 ) %>
+<% @admin_assistant.index_settings.actions.each do |action, params| %>
+  <%= link_to_unless_current(action, params) %>
+<% end %>
 
 <div id="search_form" style="display: none">
   <% form_tag({:action => 'index'}, :method => 'get') do %>

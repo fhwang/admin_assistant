@@ -31,7 +31,9 @@ class AdminAssistant
       
       def redirect_after_save
         url_params = if @admin_assistant.destination_after_save
-          @admin_assistant.destination_after_save.call @controller, @record
+          @admin_assistant.destination_after_save.call(
+            @record, @controller.params
+          )
         end
         url_params ||= {:action => 'index'}
         @controller.send :redirect_to, url_params
@@ -113,7 +115,7 @@ class AdminAssistant
     
     class Index < Base
       def call
-        index = AdminAssistant::Index.new(model_class, @controller.params)
+        index = AdminAssistant::Index.new(@admin_assistant, @controller.params)
         @controller.instance_variable_set :@index, index
         render_template_file
       end
