@@ -49,8 +49,7 @@ class AdminAssistant
       else
         input_name =
             "#{@admin_assistant.model_class.name.underscore}[#{column.name}]"
-        input_type = @admin_assistant.request_configs[:form][:inputs][
-          column.name.to_sym]
+        input_type = @admin_assistant.form_settings.inputs[column.name.to_sym]
         if input_type
           if input_type == :check_box
             check_box_tag(input_name, '1', field_value(record, column)) +

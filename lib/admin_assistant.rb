@@ -3,15 +3,15 @@ require 'admin_assistant/index'
 require 'admin_assistant/request'
 
 class AdminAssistant
-  attr_reader :model_class, :params_filter_for_save, :request_configs
+  attr_reader :form_settings, :index_settings, :model_class,
+              :params_filter_for_save
   attr_accessor :before_save, :destination_after_save
 
   def initialize(controller_class, model_class)
     @controller_class, @model_class = controller_class, model_class
+    @form_settings = FormSettings.new self
+    @index_settings = IndexSettings.new self
     @params_filter_for_save = {}
-    @request_configs = Hash.new { |h,k| h[k] = {} }
-    @request_configs[:form][:inputs] = {}
-    @request_configs[:form][:extra_submit_buttons] = []
   end
   
   def method_missing(meth, *args)
@@ -90,11 +90,11 @@ class AdminAssistant
     end
     
     def form
-      yield Form.new(self)
+      yield @admin_assistant.form_settings
     end
       
     def index
-      yield Index.new(self)
+      yield @admin_assistant.index_settings
     end
     
     def method_missing(meth, *args, &block)
@@ -102,30 +102,6 @@ class AdminAssistant
         admin_assistant.params_filter_for_save[$1.to_sym] = block
       else
         super
-      end
-    end
-    
-    class Form
-      def initialize(builder); @builder = builder; end
-        
-      def columns(*columns)
-        @builder.admin_assistant.request_configs[:form][:columns] = columns
-      end
-      
-      def submit_buttons
-        @builder.admin_assistant.request_configs[:form][:extra_submit_buttons]
-      end
-      
-      def inputs
-        @builder.admin_assistant.request_configs[:form][:inputs]
-      end
-    end
-    
-    class Index
-      def initialize(builder); @builder = builder; end
-      
-      def columns(*columns)
-        @builder.admin_assistant.request_configs[:index][:columns] = columns
       end
     end
   end
@@ -164,6 +140,67 @@ class AdminAssistant
       builder = Builder.new self.admin_assistant
       if block
         block.call builder
+      end
+    end
+  end
+  
+  class Settings
+    def initialize(admin_assistant)
+      @admin_assistant = admin_assistant
+    end
+    
+    def columns_from_active_record(ar_columns)
+      ar_columns.map { |ar_column| ActiveRecordColumn.new(ar_column) }
+    end
+      
+    def columns_from_settings(column_syms)
+      column_syms.map { |column_sym|
+        ar_column = @admin_assistant.model_class.columns_hash[column_sym.to_s]
+        if ar_column
+          ActiveRecordColumn.new ar_column
+        else
+          AdminAssistantColumn.new column_sym
+        end
+      }
+    end
+  end
+  
+  class FormSettings < Settings
+    attr_reader :inputs, :submit_buttons
+    
+    def initialize(admin_assistant)
+      super
+      @inputs = {}
+      @submit_buttons = []
+    end
+    
+    def columns(*args)
+      if args.empty?
+        if @columns
+          columns_from_settings @columns
+        else
+          columns_from_active_record(
+            @admin_assistant.model_class.columns.reject { |ar_column|
+              %w(id created_at updated_at).include?(ar_column.name)
+            }
+          )
+        end
+      else
+        @columns = args
+      end
+    end
+  end
+  
+  class IndexSettings < Settings
+    def columns(*args)
+      if args.empty?
+        if @columns
+          columns_from_settings @columns
+        else
+          columns_from_active_record @admin_assistant.model_class.columns
+        end
+      else
+        @columns = args
       end
     end
   end

@@ -4,23 +4,9 @@ class AdminAssistant
       def initialize(admin_assistant, controller)
         @admin_assistant, @controller = admin_assistant, controller
       end
-      
+  
       def action
-        self.class.name.split(/::/).last.downcase
-      end
-      
-      def columns_from_active_record(ar_columns)
-        ar_columns.map { |ar_column| ActiveRecordColumn.new(ar_column) }
-      end
-      
-      def columns_from_config(form_config)
-        form_config.map { |column_sym|
-          if ar_column = model_class.columns_hash[column_sym.to_s]
-            ActiveRecordColumn.new ar_column
-          else
-            AdminAssistantColumn.new column_sym
-          end
-        }
+        @controller.action_name
       end
       
       def model_class
@@ -81,15 +67,7 @@ class AdminAssistant
     
     module FormMethods
       def columns
-        if form_config = @admin_assistant.request_configs[:form][:columns]
-          columns_from_config form_config
-        else
-          columns_from_active_record(
-            model_class.columns.reject { |ar_column|
-              %w(id created_at updated_at).include?(ar_column.name)
-            }
-          )
-        end
+        @admin_assistant.form_settings.columns
       end
     end
     
@@ -126,11 +104,7 @@ class AdminAssistant
       end
       
       def columns
-        if index_config = @admin_assistant.request_configs[:index][:columns]
-          columns_from_config index_config
-        else
-          columns_from_active_record model_class.columns
-        end
+        @admin_assistant.index_settings.columns
       end
     end
     
