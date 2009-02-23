@@ -38,13 +38,28 @@ class AdminAssistant
       end
       
       def render_edit
-        render_template_file(
-          'form', :locals => {:action => 'update', :id => @record.id}
+        render_form :locals => {:action => 'update', :id => @record.id}
+      end
+      
+      def render_form(options_plus = {})
+        options = {:file => template_file('form'), :layout => true}
+        options = options.merge options_plus
+        html = @controller.send(:render_to_string, options)
+        after_form_html_template = File.join(
+          RAILS_ROOT, 'app/views/', @controller.controller_path, 
+          '_after_form.html.erb'
         )
+        if File.exist?(after_form_html_template)
+          partial_options = {
+            :file => after_form_html_template, :layout => false
+          }.merge options_plus
+          html << @controller.send(:render_to_string, partial_options)
+        end
+        @controller.send :render, :text => html
       end
 
       def render_new
-        render_template_file 'form', :locals => {:action => 'create'}
+        render_form :locals => {:action => 'create'}
       end
       
       def render_template_file(template_name = action, options_plus = {})

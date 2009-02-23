@@ -79,6 +79,23 @@ describe Admin::BlogPosts2Controller do
       response.should have_tag('input[type=submit][value=Preview]')
     end
   end
+  
+  describe '#edit in preview mode' do
+    before :all do
+      @blog_post = BlogPost.create!(
+        :title => "blog post title", :body => 'blog post body'
+      )
+    end
+    
+    before :each do
+      get :edit, :id => @blog_post.id, :preview => '1'
+      response.should be_success
+    end
+
+    it 'should render the preview HTML' do
+      response.should have_tag('h4', 'Preview')
+    end
+  end
 
   describe '#index' do
     describe 'when there is one record' do
