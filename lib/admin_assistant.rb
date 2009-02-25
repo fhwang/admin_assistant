@@ -110,27 +110,6 @@ class AdminAssistant
     def self.included(controller)
       controller.extend ControllerClassMethods
       controller.class_inheritable_accessor :admin_assistant
-      controller.helper AdminAssistant::Helper
-    end
-    
-    def create
-      self.class.admin_assistant.create self
-    end
-    
-    def edit
-      self.class.admin_assistant.edit self
-    end
-  
-    def index
-      self.class.admin_assistant.index self
-    end
-    
-    def new
-      self.class.admin_assistant.new self
-    end
-    
-    def update
-      self.class.admin_assistant.update self
     end
   end
   
@@ -140,6 +119,12 @@ class AdminAssistant
       builder = Builder.new self.admin_assistant
       if block
         block.call builder
+      end
+      self.helper AdminAssistant::Helper
+      [:create, :edit, :index, :new, :update].each do |action|
+        self.send(:define_method, action) do
+          self.class.admin_assistant.send(action, self)
+        end
       end
     end
   end
