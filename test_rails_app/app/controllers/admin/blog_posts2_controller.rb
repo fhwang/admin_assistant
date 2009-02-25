@@ -14,20 +14,25 @@ class Admin::BlogPosts2Controller < ApplicationController
       form.inputs[:publish] = :check_box
       form.submit_buttons << 'Preview'
     end
-    a.tags_for_save do |tags_from_form|
-      tags_from_form.split(/\s+/).map { |tag_str|
-        Tag.find_by_tag(tag_str) || Tag.create(:tag => tag_str)
-      }
+  end
+  
+  protected
+  
+  def before_save(blog_post, params)
+    if params[:blog_post][:publish] == '1' && blog_post.published_at.nil?
+      blog_post.published_at = Time.now.utc
     end
-    a.before_save do |blog_post, params|
-      if params[:blog_post][:publish] == '1' && blog_post.published_at.nil?
-        blog_post.published_at = Time.now.utc
-      end
+  end
+
+  def destination_after_save(blog_post, params)
+    if params[:commit] == 'Preview'
+      {:action => 'edit', :id => blog_post.id, :preview => '1'}
     end
-    a.destination_after_save do |blog_post, params|
-      if params[:commit] == 'Preview'
-        {:action => 'edit', :id => blog_post.id, :preview => '1'}
-      end
-    end
+  end
+  
+  def tags_from_form(tags_strings)
+    tags_strings.split(/\s+/).map { |tag_str|
+      Tag.find_by_tag(tag_str) || Tag.create(:tag => tag_str)
+    }
   end
 end

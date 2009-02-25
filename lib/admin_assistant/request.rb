@@ -20,8 +20,9 @@ class AdminAssistant
       def params_for_save
         params = {}
         @controller.params[model_class_symbol].each do |k, v|
-          if filter = @admin_assistant.params_filter_for_save[k.to_sym]
-            params[k] = filter.call v
+          from_form_method = "#{k}_from_form".to_sym
+          if @controller.respond_to?(from_form_method)
+            params[k] = @controller.send(from_form_method, v)
           elsif @record.respond_to?("#{k}=")
             params[k] = v
           end
@@ -30,9 +31,9 @@ class AdminAssistant
       end
       
       def redirect_after_save
-        url_params = if @admin_assistant.destination_after_save
-          @admin_assistant.destination_after_save.call(
-            @record, @controller.params
+        url_params = if @controller.respond_to?(:destination_after_save)
+          @controller.send(
+            :destination_after_save, @record, @controller.params
           )
         end
         url_params ||= {:action => 'index'}
@@ -71,8 +72,8 @@ class AdminAssistant
       end
       
       def save
-        if @admin_assistant.before_save
-          @admin_assistant.before_save.call(@record, @controller.params)
+        if @controller.respond_to?(:before_save)
+          @controller.send(:before_save, @record, @controller.params)
         end
         @record.save
       end

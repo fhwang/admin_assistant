@@ -3,15 +3,12 @@ require 'admin_assistant/index'
 require 'admin_assistant/request'
 
 class AdminAssistant
-  attr_reader :form_settings, :index_settings, :model_class,
-              :params_filter_for_save
-  attr_accessor :before_save, :destination_after_save
+  attr_reader :form_settings, :index_settings, :model_class
 
   def initialize(controller_class, model_class)
     @controller_class, @model_class = controller_class, model_class
     @form_settings = FormSettings.new self
     @index_settings = IndexSettings.new self
-    @params_filter_for_save = {}
   end
   
   def method_missing(meth, *args)
@@ -81,28 +78,12 @@ class AdminAssistant
       @admin_assistant = admin_assistant
     end
       
-    def before_save(&block)
-      @admin_assistant.before_save = block
-    end
-    
-    def destination_after_save(&block)
-      @admin_assistant.destination_after_save = block
-    end
-    
     def form
       yield @admin_assistant.form_settings
     end
       
     def index
       yield @admin_assistant.index_settings
-    end
-    
-    def method_missing(meth, *args, &block)
-      if meth.to_s =~ /(.*)_for_save/
-        admin_assistant.params_filter_for_save[$1.to_sym] = block
-      else
-        super
-      end
     end
   end
   
