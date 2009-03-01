@@ -3,10 +3,38 @@ require File.expand_path(
 )
 
 class AdminAssistant
+  module ColumnsMethods
+    def columns_from_active_record(ar_columns)
+      ar_columns.map { |ar_column| ActiveRecordColumn.new(ar_column) }
+    end
+      
+    def columns_from_settings(column_syms)
+      column_syms.map { |column_sym|
+        ar_column = @admin_assistant.model_class.columns_hash[column_sym.to_s]
+        if ar_column
+          ActiveRecordColumn.new ar_column
+        else
+          AdminAssistantColumn.new column_sym
+        end
+      }
+    end
+  end
+  
   class Index
+    include ColumnsMethods
+    
     def initialize(admin_assistant, url_params = {})
       @admin_assistant = admin_assistant
       @url_params = url_params
+    end
+    
+    def columns
+      columns_from_settings = @admin_assistant.index_settings.columns
+      if columns_from_settings
+        columns_from_settings columns_from_settings
+      else
+        columns_from_active_record model_class.columns
+      end
     end
     
     def model_class

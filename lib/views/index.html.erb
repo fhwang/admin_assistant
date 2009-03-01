@@ -30,7 +30,7 @@ show_search_form();
 <% if !@index.records.empty? %>
 <table>
   <tr>
-    <% @admin_assistant.columns.each do |column| %>
+    <% @index.columns.each do |column| %>
       <th><%= link_to(
         h(column.label), @index.next_sort_params(column.name)
       ) %></th>
@@ -38,7 +38,7 @@ show_search_form();
   </tr>
   <% @index.records.each do |record| %>
     <tr>
-      <% @admin_assistant.columns.each do |column| %>
+      <% @index.columns.each do |column| %>
         <td><%= html_for_index(column, record) %></td>
       <% end %>
       <td><%= link_to 'Edit', :action => 'edit', :id => record.id %></td>

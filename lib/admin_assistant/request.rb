@@ -141,12 +141,23 @@ class AdminAssistant
   end
   
   class Form
+    include ColumnsMethods
+
     def initialize(record, action, admin_assistant)
       @record, @action, @admin_assistant = record, action, admin_assistant
     end
     
     def columns
-      @admin_assistant.form_settings.columns
+      specified_columns = @admin_assistant.form_settings.columns
+      if specified_columns
+        columns_from_settings specified_columns
+      else
+        columns_from_active_record(
+          @admin_assistant.model_class.columns.reject { |ar_column|
+            %w(id created_at updated_at).include?(ar_column.name)
+          }
+        )
+      end
     end
     
     def extra_submit_buttons

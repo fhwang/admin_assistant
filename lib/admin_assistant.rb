@@ -115,19 +115,12 @@ class AdminAssistant
       @admin_assistant = admin_assistant
     end
     
-    def columns_from_active_record(ar_columns)
-      ar_columns.map { |ar_column| ActiveRecordColumn.new(ar_column) }
-    end
-      
-    def columns_from_settings(column_syms)
-      column_syms.map { |column_sym|
-        ar_column = @admin_assistant.model_class.columns_hash[column_sym.to_s]
-        if ar_column
-          ActiveRecordColumn.new ar_column
-        else
-          AdminAssistantColumn.new column_sym
-        end
-      }
+    def columns(*args)
+      if args.empty?
+        @columns
+      else
+        @columns = args
+      end
     end
   end
   
@@ -139,22 +132,6 @@ class AdminAssistant
       @inputs = {}
       @submit_buttons = []
     end
-    
-    def columns(*args)
-      if args.empty?
-        if @columns
-          columns_from_settings @columns
-        else
-          columns_from_active_record(
-            @admin_assistant.model_class.columns.reject { |ar_column|
-              %w(id created_at updated_at).include?(ar_column.name)
-            }
-          )
-        end
-      else
-        @columns = args
-      end
-    end
   end
   
   class IndexSettings < Settings
@@ -163,18 +140,6 @@ class AdminAssistant
     def initialize(admin_assistant)
       super
       @actions = {}
-    end
-    
-    def columns(*args)
-      if args.empty?
-        if @columns
-          columns_from_settings @columns
-        else
-          columns_from_active_record @admin_assistant.model_class.columns
-        end
-      else
-        @columns = args
-      end
     end
     
     def conditions(&block)
