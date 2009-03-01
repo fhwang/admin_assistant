@@ -1,25 +1,22 @@
 <% id = nil unless defined?(id) %>
-<%= id ? 'Edit' : 'New' %> <%= h(@admin_assistant.model_class_name) %>
+<%= h(form.title) %>
 <%= link_to('Back to index', :action => 'index') %>
 <% if !@record.errors.empty? %>
   <%= error_messages_for 'record' %>
 <% end %>
-<% form_for(@record, :url => {:action => action, :id => id}) do |form| %>
+<% form_for(@record, :url => form.url_opts) do |rails_form| %>
   <table>
-  <% @admin_assistant.columns.each do |column| %>
+  <% form.columns.each do |column| %>
     <tr>
       <th><%= h(column.label) %></th>
-      <td><%= html_for_form(column, @record, form) %></td>
+      <td><%= html_for_form(column, @record, rails_form) %></td>
     </tr>
   <% end %>
     <tr>
       <td></td>
       <td>
-        <%= submit_tag(action.capitalize) %>
-        <%
-        extra_submit_buttons = @admin_assistant.form_settings.submit_buttons
-        %>
-        <% extra_submit_buttons.each do |extra_submit_button| %>
+        <%= submit_tag(form.submit_value) %>
+        <% form.extra_submit_buttons.each do |extra_submit_button| %>
           <%= submit_tag(extra_submit_button) %>
         <% end %>
       </td>

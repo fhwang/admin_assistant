@@ -41,28 +41,30 @@ class AdminAssistant
       end
       
       def render_edit
-        render_form :locals => {:action => 'update', :id => @record.id}
+        render_form 'update'
       end
       
-      def render_form(options_plus = {})
-        options = {:file => template_file('form'), :layout => true}
-        options = options.merge options_plus
+      def render_form(action)
+        options = {
+          :file => template_file('form'), :layout => true,
+          :locals => {:form => Form.new(@record, action, @admin_assistant)}
+        }
         html = @controller.send(:render_to_string, options)
         after_form_html_template = File.join(
           RAILS_ROOT, 'app/views/', @controller.controller_path, 
           '_after_form.html.erb'
         )
         if File.exist?(after_form_html_template)
-          partial_options = {
+          html << @controller.send(
+            :render_to_string,
             :file => after_form_html_template, :layout => false
-          }.merge options_plus
-          html << @controller.send(:render_to_string, partial_options)
+          )
         end
         @controller.send :render, :text => html
       end
 
       def render_new
-        render_form :locals => {:action => 'create'}
+        render_form 'create'
       end
       
       def render_template_file(template_name = action, options_plus = {})
@@ -83,15 +85,7 @@ class AdminAssistant
       end
     end
     
-    module FormMethods
-      def columns
-        @admin_assistant.form_settings.columns
-      end
-    end
-    
     class Create < Base
-      include FormMethods
-      
       def call
         @record = model_class.new
         @record.attributes = params_for_save
@@ -105,8 +99,6 @@ class AdminAssistant
     end
     
     class Edit < Base
-      include FormMethods
-      
       def call
         @record = model_class.find @controller.params[:id]
         @controller.instance_variable_set :@record, @record
@@ -127,17 +119,14 @@ class AdminAssistant
     end
     
     class New < Base
-      include FormMethods
-      
       def call
-        @controller.instance_variable_set :@record, model_class.new
+        @record = model_class.new
+        @controller.instance_variable_set :@record, @record
         render_new
       end
     end
     
     class Update < Base
-      include FormMethods
-      
       def call
         @record = model_class.find @controller.params[:id]
         @record.attributes = params_for_save
@@ -148,6 +137,32 @@ class AdminAssistant
           render_edit
         end
       end
+    end
+  end
+  
+  class Form
+    def initialize(record, action, admin_assistant)
+      @record, @action, @admin_assistant = record, action, admin_assistant
+    end
+    
+    def columns
+      @admin_assistant.form_settings.columns
+    end
+    
+    def extra_submit_buttons
+      @admin_assistant.form_settings.submit_buttons
+    end
+    
+    def submit_value
+      @action.capitalize
+    end
+    
+    def title
+      (@record.id ? "Edit" : "New") + " #{@admin_assistant.model_class_name}"
+    end
+    
+    def url_opts
+      {:action => @action, :id => @record.id}
     end
   end
 end
