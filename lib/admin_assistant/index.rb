@@ -75,7 +75,9 @@ class AdminAssistant
     
     def records
       unless @records
-        ar_query = ARQuery.new(:order => order_sql, :limit => 25)
+        ar_query = ARQuery.new(
+          :order => order_sql, :per_page => 25, :page => @url_params[:page]
+        )
         ar_query.boolean_join = :or
         if search_terms
           searchable_columns.each do |column|
@@ -88,7 +90,7 @@ class AdminAssistant
               @admin_assistant.index_settings.conditions.call(@url_params)
           ar_query.condition_sqls << conditions if conditions
         end
-        @records = model_class.find :all, ar_query
+        @records = model_class.paginate :all, ar_query
       end
       @records
     end

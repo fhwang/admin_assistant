@@ -13,4 +13,6 @@ Gem::Specification.new do |s|
     'lib/*.rb', 'MIT-LICENSE', 'README', '*.rb', 'spec/*.rb', 
     'tasks/*.rake', 'lib/views/*.erb', 'Rakefile'
   ].to_a
+  s.add_dependency 'ar_query'
+  s.add_dependency 'mislav-will_paginate'
 end

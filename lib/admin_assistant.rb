@@ -1,6 +1,7 @@
 require 'admin_assistant/helper'
 require 'admin_assistant/index'
 require 'admin_assistant/request'
+require 'will_paginate'
 
 class AdminAssistant
   attr_reader :form_settings, :index_settings, :model_class

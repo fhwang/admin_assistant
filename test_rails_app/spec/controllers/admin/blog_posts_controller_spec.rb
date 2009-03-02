@@ -283,6 +283,90 @@ describe Admin::BlogPostsController do
     end
   end
   
+  describe '#index pagination with 51 records' do
+    before :all do
+      BlogPost.destroy_all
+      1.upto(51) do |i|
+        BlogPost.create! :title => "title -#{i}-", :body => "body -#{i}-"
+      end
+    end
+    
+    describe 'when looking at the first page' do
+      before :each do
+        get :index
+        response.should be_success
+      end
+      
+      it 'should have a link to the next page' do
+        response.should have_tag(
+          "a[href=/admin/blog_posts?page=2]", 'Next &raquo;'
+        )
+        response.should have_tag("a[href=/admin/blog_posts?page=2]", '2')
+      end
+      
+      it 'should not have a link to the previous page' do
+        response.should_not have_tag(
+          "a[href=/admin/blog_posts?page=0]", '&laquo; Previous'
+        )
+        response.should_not have_tag("a[href=/admin/blog_posts?page=0]", '0')
+      end
+      
+      it 'should the full number of posts found' do
+        response.body.should match(/51 blog posts found/)
+      end
+    end
+    
+    describe 'when looking at the second page' do
+      before :each do
+        get :index, :page => '2'
+        response.should be_success
+      end
+      
+      it 'should have a link to the next page' do
+        response.should have_tag(
+          "a[href=/admin/blog_posts?page=3]", 'Next &raquo;'
+        )
+        response.should have_tag("a[href=/admin/blog_posts?page=3]", '3')
+      end
+      
+      it 'should have a link to the previous page' do
+        response.should have_tag(
+          "a[href=/admin/blog_posts?page=1]", '&laquo; Previous'
+        )
+        response.should have_tag("a[href=/admin/blog_posts?page=1]", '1')
+      end
+      
+      it 'should the full number of posts found' do
+        response.body.should match(/51 blog posts found/)
+      end
+    end
+    
+    describe 'when looking at the third page' do
+      before :each do
+        get :index, :page => '3'
+        response.should be_success
+      end
+
+      it 'should not have a link to the next page' do
+        response.should_not have_tag(
+          "a[href=/admin/blog_posts?page=4]", 'Next &raquo;'
+        )
+        response.should_not have_tag("a[href=/admin/blog_posts?page=3]", '3')
+      end
+      
+      it 'should have a link to the previous page' do
+        response.should have_tag(
+          "a[href=/admin/blog_posts?page=2]", '&laquo; Previous'
+        )
+        response.should have_tag("a[href=/admin/blog_posts?page=2]", '2')
+      end
+      
+      it 'should the full number of posts found' do
+        response.body.should match(/51 blog posts found/)
+      end
+    end
+  end
+  
   describe '#new' do
     before :each do
       get :new
