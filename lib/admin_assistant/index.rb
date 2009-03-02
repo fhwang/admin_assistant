@@ -4,17 +4,17 @@ require File.expand_path(
 
 class AdminAssistant
   module ColumnsMethods
-    def columns_from_active_record(ar_columns)
-      ar_columns.map { |ar_column| ActiveRecordColumn.new(ar_column) }
-    end
-      
-    def columns_from_settings(column_syms)
-      column_syms.map { |column_sym|
-        ar_column = @admin_assistant.model_class.columns_hash[column_sym.to_s]
+    def columns
+      column_names = @admin_assistant.send(
+        "#{self.class.name.split(/::/).last.downcase}_settings"
+      ).column_names
+      column_names = default_column_names unless column_names
+      column_names.map { |column_name|
+        ar_column = @admin_assistant.model_class.columns_hash[column_name]
         if ar_column
           ActiveRecordColumn.new ar_column
         else
-          AdminAssistantColumn.new column_sym
+          AdminAssistantColumn.new column_name
         end
       }
     end
@@ -28,13 +28,8 @@ class AdminAssistant
       @url_params = url_params
     end
     
-    def columns
-      columns_from_settings = @admin_assistant.index_settings.columns
-      if columns_from_settings
-        columns_from_settings columns_from_settings
-      else
-        columns_from_active_record model_class.columns
-      end
+    def default_column_names
+      model_class.columns.map { |c| c.name }
     end
     
     def model_class

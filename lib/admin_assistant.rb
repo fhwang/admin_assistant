@@ -111,16 +111,14 @@ class AdminAssistant
   end
   
   class Settings
+    attr_reader :column_names
+    
     def initialize(admin_assistant)
       @admin_assistant = admin_assistant
     end
     
     def columns(*args)
-      if args.empty?
-        @columns
-      else
-        @columns = args
-      end
+      @column_names = args
     end
   end
   
