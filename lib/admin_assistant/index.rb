@@ -25,11 +25,17 @@ class AdminAssistant
       columns
     end
     
+    def model_class
+      @admin_assistant.model_class
+    end
+    
     def paperclip_attachments
       pa = []
-      if @record.respond_to?(:each_attachment)
-        @record.each_attachment do |name, definition|
-          pa << name
+      if model_class.respond_to?(:attachment_definitions)
+        if model_class.attachment_definitions
+          pa = model_class.attachment_definitions.map { |name, definition|
+            name
+          }
         end
       end
       pa
@@ -46,10 +52,6 @@ class AdminAssistant
     
     def default_column_names
       model_class.columns.map { |c| c.name }
-    end
-    
-    def model_class
-      @admin_assistant.model_class
     end
     
     def next_sort_params(column_name)
