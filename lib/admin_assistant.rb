@@ -50,6 +50,17 @@ class AdminAssistant
       @ar_column = ar_column
     end
     
+    def add_to_form(form)
+      case @ar_column.type
+        when :text
+          form.text_area name
+        when :boolean
+          form.check_box name
+        else
+          form.text_field name
+        end
+    end
+    
     def contains?(ar_column)
       ar_column.name == @ar_column.name
     end
@@ -80,6 +91,10 @@ class AdminAssistant
     
     def initialize(name)
       @name = name
+    end
+    
+    def add_to_form(form)
+      form.file_field name
     end
     
     def contains?(ar_column)

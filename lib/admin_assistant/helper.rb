@@ -37,17 +37,8 @@ class AdminAssistant
       html_method = "#{column.name}_html_for_form"
       hff = if respond_to?(html_method)
         self.send(html_method, record)
-      elsif column.is_a?(ActiveRecordColumn)
-        case column.type
-          when :text
-            form.text_area column.name
-          when :boolean
-            form.check_box column.name
-          else
-            form.text_field column.name
-          end
-      elsif column.is_a?(PaperclipColumn)
-        form.file_field column.name
+      elsif column.respond_to?(:add_to_form)
+        column.add_to_form(form)
       else
         input_name =
             "#{@admin_assistant.model_class.name.underscore}[#{column.name}]"
