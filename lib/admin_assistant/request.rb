@@ -81,7 +81,7 @@ class AdminAssistant
       end
     
       def template_file(template_name = action)
-        "#{RAILS_ROOT}/vendor/plugins/admin_assistant/lib/views/#{template_name}.html.erb"
+        "#{File.dirname(__FILE__)}/../views/#{template_name}.html.erb"
       end
     end
     

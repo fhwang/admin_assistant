@@ -1,6 +1,4 @@
-require File.expand_path(
-  File.dirname(__FILE__) + '/../../vendor/ar_query/lib/ar_query'
-)
+require 'ar_query'
 
 class AdminAssistant
   module ColumnsMethods
