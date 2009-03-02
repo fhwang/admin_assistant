@@ -4,7 +4,7 @@
 <% if !@record.errors.empty? %>
   <%= error_messages_for 'record' %>
 <% end %>
-<% form_for(@record, :url => form.url_opts) do |rails_form| %>
+<% form_for(@record, form.form_for_args) do |rails_form| %>
   <table>
   <% form.columns.each do |column| %>
     <tr>

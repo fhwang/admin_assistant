@@ -157,16 +157,18 @@ class AdminAssistant
       @admin_assistant.form_settings.submit_buttons
     end
     
+    def form_for_args
+      args = {:url => {:action => @action, :id => @record.id}}
+      args[:html] = {:multipart => true} unless paperclip_attachments.empty?
+      args
+    end
+    
     def submit_value
       @action.capitalize
     end
     
     def title
       (@record.id ? "Edit" : "New") + " #{@admin_assistant.model_class_name}"
-    end
-    
-    def url_opts
-      {:action => @action, :id => @record.id}
     end
   end
 end

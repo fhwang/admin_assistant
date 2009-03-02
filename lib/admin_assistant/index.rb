@@ -9,14 +9,30 @@ class AdminAssistant
         "#{self.class.name.split(/::/).last.downcase}_settings"
       ).column_names
       column_names = default_column_names unless column_names
-      column_names.map { |column_name|
+      columns = paperclip_attachments.map { |paperclip_attachment|
+        PaperclipColumn.new paperclip_attachment
+      }
+      column_names.each do |column_name|
         ar_column = @admin_assistant.model_class.columns_hash[column_name]
         if ar_column
-          ActiveRecordColumn.new ar_column
+          if columns.all? { |column| !column.contains?(ar_column) }
+            columns << ActiveRecordColumn.new(ar_column)
+          end
         else
-          AdminAssistantColumn.new column_name
+          columns << AdminAssistantColumn.new(column_name)
         end
-      }
+      end
+      columns
+    end
+    
+    def paperclip_attachments
+      pa = []
+      if @record.respond_to?(:each_attachment)
+        @record.each_attachment do |name, definition|
+          pa << name
+        end
+      end
+      pa
     end
   end
   

@@ -46,6 +46,8 @@ class AdminAssistant
           else
             form.text_field column.name
           end
+      elsif column.is_a?(PaperclipColumn)
+        form.file_field column.name
       else
         input_name =
             "#{@admin_assistant.model_class.name.underscore}[#{column.name}]"

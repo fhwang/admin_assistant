@@ -50,6 +50,10 @@ class AdminAssistant
       @ar_column = ar_column
     end
     
+    def contains?(ar_column)
+      ar_column.name == @ar_column.name
+    end
+    
     def name
       @ar_column.name
     end
@@ -66,8 +70,21 @@ class AdminAssistant
       @name = name
     end
     
-    def html_for_form(form)
-      form.text_field name
+    def contains?(ar_column)
+      ar_column.name == @name
+    end
+  end
+  
+  class PaperclipColumn < Column
+    attr_reader :name
+    
+    def initialize(name)
+      @name = name
+    end
+    
+    def contains?(ar_column)
+      ar_column.name =~
+          /^#{@name}_(file_name|content_type|file_size|updated_at)$/
     end
   end
   
