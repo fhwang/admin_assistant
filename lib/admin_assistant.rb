@@ -193,3 +193,8 @@ end
 class ::ApplicationController < ActionController::Base
   include AdminAssistant::ControllerMethods
 end
+
+FileUtils.copy(
+  "#{File.dirname(__FILE__)}/stylesheets/admin_assistant.css",
+  "#{RAILS_ROOT}/public/stylesheets/admin_assistant.css"
+)

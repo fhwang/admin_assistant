@@ -1,0 +1,12 @@
+/******************************************************************************
+Don't edit this file: It gets re-copied every time the server starts.
+******************************************************************************/
+
+body { font-family: "Georgia","Times Roman" }
+h2 { font-size: large; font-weight: bold }
+table { width: 100% }
+th { background: #ccc; padding: 5px }
+td { background: #cff; border: 1px solid #ccc; padding: 5px }
+
+#header { position: relative }
+.actions { position: absolute; right: 5px; top: 5px; text-align: right }

@@ -2,10 +2,8 @@
 function show_search_form() { $('search_form').show(); }
 </script>
 
-<%= h(
-  @admin_assistant.model_class.name.pluralize.gsub(/([A-Z])/, ' \1')[1..-1]
-) %>
-
+<div id="header">
+<div class="actions">
 <%= link_to_function('Search', 'show_search_form()') %>
 <%= link_to(
   "New #{@admin_assistant.model_class_name}", @admin_assistant.url_params(:new)
@@ -13,6 +11,11 @@ function show_search_form() { $('search_form').show(); }
 <% @admin_assistant.index_settings.actions.each do |action, params| %>
   <%= link_to_unless_current(action, params) %>
 <% end %>
+</div>
+<h2><%= h(
+  @admin_assistant.model_class.name.pluralize.gsub(/([A-Z])/, ' \1')[1..-1]
+) %></h2>
+</div>
 
 <div id="search_form" style="display: none">
   <% form_tag({:action => 'index'}, :method => 'get') do %>

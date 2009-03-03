@@ -1,5 +1,9 @@
 class AdminAssistant
   module Helper
+    def admin_assistant_includes
+      stylesheet_link_tag 'admin_assistant'
+    end
+    
     def after_html_for_form(column, record)
       after_html_template = File.join(
         RAILS_ROOT, 'app/views', controller.controller_path,
