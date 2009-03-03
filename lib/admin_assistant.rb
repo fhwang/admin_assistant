@@ -5,9 +5,11 @@ require 'will_paginate'
 
 class AdminAssistant
   attr_reader :form_settings, :index_settings, :model_class
-
+  attr_accessor :actions
+  
   def initialize(controller_class, model_class)
     @controller_class, @model_class = controller_class, model_class
+    @actions = [:index, :create, :update, :delete]
     @form_settings = FormSettings.new self
     @index_settings = IndexSettings.new self
   end
@@ -21,10 +23,14 @@ class AdminAssistant
       @request = klass.new(self, controller)
       @request.call
       @request = nil
-    elsif @request.respond_to?(meth)
-      @request.send meth, *args
     else
-      super
+      if meth.to_s =~ /(.*)\?/ && request_methods.include?($1.to_sym)
+        @actions.include?($1.to_sym)
+      elsif @request.respond_to?(meth)
+        @request.send meth, *args
+      else
+        super
+      end
     end
   end
     
@@ -110,6 +116,10 @@ class AdminAssistant
     
     def initialize(admin_assistant)
       @admin_assistant = admin_assistant
+    end
+    
+    def actions(*a)
+      @admin_assistant.actions = a
     end
       
     def form

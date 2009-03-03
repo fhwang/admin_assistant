@@ -41,7 +41,9 @@ show_search_form();
       <% @index.columns.each do |column| %>
         <td><%= html_for_index(column, record) %></td>
       <% end %>
+      <% if @admin_assistant.update? %>
       <td><%= link_to 'Edit', :action => 'edit', :id => record.id %></td>
+      <% end %>
     </tr>
   <% end %>
 </table>

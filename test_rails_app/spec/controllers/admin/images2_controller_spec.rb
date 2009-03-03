@@ -22,8 +22,17 @@ describe Admin::Images2Controller do
     end
     
     it 'should not show the image path on its own as a value' do
-#puts response.body
       response.should_not have_tag('td', @path)
+    end
+    
+    it 'should show path text field' do
+      response.should have_tag('input[value=?]', "http://test.host#{@path}")
+    end
+    
+    it 'should not show an edit link since we can only create or index' do
+      response.should_not have_tag(
+        'a[href=?]', "/admin/images2/edit/#{@image.id}"
+      )
     end
   end
 end
