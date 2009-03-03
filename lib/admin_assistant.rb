@@ -62,8 +62,8 @@ class AdminAssistant
         end
     end
     
-    def contains?(ar_column)
-      ar_column.name == @ar_column.name
+    def contains?(column_name)
+      column_name.to_s == @ar_column.name
     end
     
     def name
@@ -79,11 +79,11 @@ class AdminAssistant
     attr_reader :name
     
     def initialize(name)
-      @name = name
+      @name = name.to_s
     end
     
-    def contains?(ar_column)
-      ar_column.name == @name
+    def contains?(column_name)
+      column_name.to_s == @name
     end
   end
   
@@ -91,15 +91,16 @@ class AdminAssistant
     attr_reader :name
     
     def initialize(name)
-      @name = name
+      @name = name.to_s
     end
     
     def add_to_form(form)
       form.file_field name
     end
     
-    def contains?(ar_column)
-      ar_column.name =~
+    def contains?(column_name)
+      column_name.to_s == @name ||
+      column_name.to_s =~
           /^#{@name}_(file_name|content_type|file_size|updated_at)$/
     end
   end

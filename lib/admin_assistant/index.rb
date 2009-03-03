@@ -11,13 +11,13 @@ class AdminAssistant
         PaperclipColumn.new paperclip_attachment
       }
       column_names.each do |column_name|
-        ar_column = @admin_assistant.model_class.columns_hash[column_name]
-        if ar_column
-          if columns.all? { |column| !column.contains?(ar_column) }
+        if columns.all? { |column| !column.contains?(column_name) }
+          ar_column = @admin_assistant.model_class.columns_hash[column_name]
+          if ar_column
             columns << ActiveRecordColumn.new(ar_column)
+          else
+            columns << AdminAssistantColumn.new(column_name)
           end
-        else
-          columns << AdminAssistantColumn.new(column_name)
         end
       end
       columns

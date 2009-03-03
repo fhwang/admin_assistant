@@ -2,6 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 describe Admin::ImagesController do
   integrate_views
+  
   describe '#index' do
     before :all do
       @image = Image.create!(
