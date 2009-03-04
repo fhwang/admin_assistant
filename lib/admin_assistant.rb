@@ -190,9 +190,7 @@ class AdminAssistant
   end
 end
 
-class ::ApplicationController < ActionController::Base
-  include AdminAssistant::ControllerMethods
-end
+ActionController::Base.send :include, AdminAssistant::ControllerMethods
 
 FileUtils.copy(
   "#{File.dirname(__FILE__)}/stylesheets/admin_assistant.css",
