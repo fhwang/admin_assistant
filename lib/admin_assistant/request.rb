@@ -75,7 +75,7 @@ class AdminAssistant
       
       def save
         if @controller.respond_to?(:before_save)
-          @controller.send(:before_save, @record, @controller.params)
+          @controller.send(:before_save, @record)
         end
         @record.save
       end
@@ -95,6 +95,14 @@ class AdminAssistant
           @controller.instance_variable_set :@record, @record
           render_new
         end
+      end
+      
+      def save
+        result = super
+        if @controller.respond_to?(:after_create)
+          @controller.send(:after_create, @record)
+        end
+        result
       end
     end
     

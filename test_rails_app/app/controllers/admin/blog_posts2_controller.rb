@@ -38,7 +38,7 @@ class Admin::BlogPosts2Controller < ApplicationController
   protected
   
   # This is run before all saves, whether they're creates or updates
-  def before_save(blog_post, params)
+  def before_save(blog_post)
     if params[:blog_post][:publish] == '1' && blog_post.published_at.nil?
       blog_post.published_at = Time.now.utc
     end
