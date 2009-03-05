@@ -172,6 +172,25 @@ describe Admin::BlogPosts2Controller do
     end
   end
   
+  describe '#index?all=1 with two published posts' do
+    before :all do
+      BlogPost.create!(
+        :title => 'published later', :published_at => Time.utc(2009, 2, 1)
+      )
+      BlogPost.create!(
+        :title => 'published earlier', :published_at => Time.utc(2009, 1, 1)
+      )
+    end
+    
+    before :each do
+      get :index, :all => '1'
+    end
+    
+    it 'should order by published_at desc' do
+      response.body.should match(/published later.*published earlier/m)
+    end
+  end
+  
   describe '#new' do
     before :all do
       Tag.create! :tag => 'tag_from_yesterday'

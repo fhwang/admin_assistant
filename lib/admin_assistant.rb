@@ -177,15 +177,24 @@ class AdminAssistant
   end
   
   class IndexSettings < Settings
-    attr_reader :actions
+    attr_reader :actions, :sort_by
     
     def initialize(admin_assistant)
       super
       @actions = {}
+      @sort_by = 'id desc'
     end
     
     def conditions(&block)
       block ? (@conditions = block) : @conditions
+    end
+    
+    def sort_by(*sb)
+      if sb.empty?
+        @sort_by
+      else
+        @sort_by = sb
+      end
     end
   end
 end

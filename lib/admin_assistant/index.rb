@@ -69,7 +69,7 @@ class AdminAssistant
       if @url_params[:sort]
         "#{@url_params[:sort] } #{sort_order}"
       else
-        'id desc'
+        @admin_assistant.index_settings.sort_by
       end
     end
     
