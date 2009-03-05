@@ -1,3 +1,4 @@
+require 'admin_assistant/column'
 require 'admin_assistant/helper'
 require 'admin_assistant/index'
 require 'admin_assistant/request'
@@ -40,75 +41,6 @@ class AdminAssistant
   
   def url_params(a = action)
     {:controller => @controller_class.controller_path, :action => a}
-  end
-  
-  class Column
-    def label
-      if name.to_s == 'id'
-        'ID'
-      else
-        name.to_s.capitalize.gsub(/_/, ' ') 
-      end
-    end
-  end
-  
-  class ActiveRecordColumn < Column
-    def initialize(ar_column)
-      @ar_column = ar_column
-    end
-    
-    def add_to_form(form)
-      case @ar_column.type
-        when :text
-          form.text_area name
-        when :boolean
-          form.check_box name
-        else
-          form.text_field name
-        end
-    end
-    
-    def contains?(column_name)
-      column_name.to_s == @ar_column.name
-    end
-    
-    def name
-      @ar_column.name
-    end
-    
-    def type
-      @ar_column.type
-    end
-  end
-  
-  class AdminAssistantColumn < Column
-    attr_reader :name
-    
-    def initialize(name)
-      @name = name.to_s
-    end
-    
-    def contains?(column_name)
-      column_name.to_s == @name
-    end
-  end
-  
-  class PaperclipColumn < Column
-    attr_reader :name
-    
-    def initialize(name)
-      @name = name.to_s
-    end
-    
-    def add_to_form(form)
-      form.file_field name
-    end
-    
-    def contains?(column_name)
-      column_name.to_s == @name ||
-      column_name.to_s =~
-          /^#{@name}_(file_name|content_type|file_size|updated_at)$/
-    end
   end
   
   class Builder

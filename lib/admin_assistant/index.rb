@@ -1,45 +1,6 @@
 require 'ar_query'
 
 class AdminAssistant
-  module ColumnsMethods
-    def columns
-      column_names = @admin_assistant.send(
-        "#{self.class.name.split(/::/).last.downcase}_settings"
-      ).column_names
-      column_names = default_column_names unless column_names
-      columns = paperclip_attachments.map { |paperclip_attachment|
-        PaperclipColumn.new paperclip_attachment
-      }
-      column_names.each do |column_name|
-        if columns.all? { |column| !column.contains?(column_name) }
-          ar_column = @admin_assistant.model_class.columns_hash[column_name]
-          if ar_column
-            columns << ActiveRecordColumn.new(ar_column)
-          else
-            columns << AdminAssistantColumn.new(column_name)
-          end
-        end
-      end
-      columns
-    end
-    
-    def model_class
-      @admin_assistant.model_class
-    end
-    
-    def paperclip_attachments
-      pa = []
-      if model_class.respond_to?(:attachment_definitions)
-        if model_class.attachment_definitions
-          pa = model_class.attachment_definitions.map { |name, definition|
-            name
-          }
-        end
-      end
-      pa
-    end
-  end
-  
   class Index
     include ColumnsMethods
     
