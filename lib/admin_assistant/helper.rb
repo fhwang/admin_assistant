@@ -41,9 +41,8 @@ class AdminAssistant
     
     def html_for_form(column, record, form)
       html_method = "#{column.name}_html_for_form"
-      hff = if respond_to?(html_method)
-        self.send(html_method, record)
-      elsif column.respond_to?(:add_to_form)
+      hff = respond_to?(html_method) && self.send(html_method, record)
+      hff ||= if column.respond_to?(:add_to_form)
         column.add_to_form(form)
       else
         input_name =
