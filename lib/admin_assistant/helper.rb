@@ -26,7 +26,14 @@ class AdminAssistant
       elsif column.belongs_to_assoc
         assoc_value = record.send column.belongs_to_assoc.name
         if assoc_value.respond_to?(:name_for_admin_assistant)
-          assoc_value.name_for_admin_assistant 
+          assoc_value.name_for_admin_assistant
+        else
+          default_name_method = [:name, :title, :login, :username].detect { |m|
+            assoc_value.respond_to? m
+          }
+          if default_name_method
+            assoc_value.send default_name_method
+          end
         end
       end
       if fv.nil? && record.respond_to?(column.name)

@@ -163,7 +163,7 @@ describe Admin::BlogPostsController do
         response.body.should match(/1 blog post found/)
       end
       
-      it "should say username because that's what's set in User#name_for_admin_assistant" do
+      it "should say username because that's one of our default name fields" do
         response.should have_tag('td', :text => 'soren')
       end
     end
