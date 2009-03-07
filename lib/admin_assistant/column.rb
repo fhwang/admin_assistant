@@ -10,7 +10,8 @@ class AdminAssistant
       }
       column_names.each do |column_name|
         if columns.all? { |column| !column.contains?(column_name) }
-          ar_column = @admin_assistant.model_class.columns_hash[column_name]
+          ar_column =
+              @admin_assistant.model_class.columns_hash[column_name.to_s]
           if ar_column
              columns << ActiveRecordColumn.new(ar_column)
           else

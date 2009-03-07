@@ -229,6 +229,22 @@ describe Admin::BlogPosts2Controller do
     it 'should show a preview button' do
       response.should have_tag('input[type=submit][value=Preview]')
     end
+    
+    it 'should use a textarea for the body field' do
+      response.body.should match(
+        %r|<textarea.*name="blog_post\[body\]".*>.*</textarea>|
+      )
+    end
+    
+    it "should use a checkbox for the boolean field 'textile'" do
+      response.body.should match(
+        %r!
+          <input[^>]*
+          (name="blog_post\[textile\][^>]*type="checkbox"|
+           type="checkbox"[^>]*name="blog_post\[textile\])
+        !x
+      )
+    end
   end
   
   describe '#update' do
