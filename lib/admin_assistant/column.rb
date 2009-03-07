@@ -1,6 +1,6 @@
 class AdminAssistant
   module ColumnsMethods
-    def columns
+    def columns_without_options
       column_names = @admin_assistant.send(
         "#{self.class.name.split(/::/).last.downcase}_settings"
       ).column_names
@@ -39,12 +39,18 @@ class AdminAssistant
   end
   
   class Column
+    attr_accessor :sort_order
+    
     def label
       if name.to_s == 'id'
         'ID'
       else
         name.to_s.capitalize.gsub(/_/, ' ') 
       end
+    end
+    
+    def index_header_css_class
+      "sort #{sort_order}" if sort_order
     end
   end
   

@@ -2,11 +2,26 @@
 Don't edit this file: It gets re-copied every time the server starts.
 ******************************************************************************/
 
-body { font-family: "Georgia","Times Roman" }
-h2 { font-size: large; font-weight: bold }
-table { width: 100% }
-th { background: #ccc; padding: 5px }
-td { background: #cff; border: 1px solid #ccc; padding: 5px }
+#admin_assistant { font-family: "Verdana","Arial", sans-serif }
+#admin_assistant h2 { font-size: large; font-weight: bold }
 
-#header { position: relative }
-.actions { position: absolute; right: 5px; top: 5px; text-align: right }
+#admin_assistant.index #header { position: relative }
+#admin_assistant.index .actions {
+  position: absolute; right: 5px; top: 5px; text-align: right
+}
+#admin_assistant.index table { width: 100%; margin: 0px; padding: 0px }
+
+#admin_assistant.index th {
+  background: #666; color: white; padding: 5px
+}
+#admin_assistant.index th a {
+  color: white
+}
+#admin_assistant.index th.sort.asc {
+  background: #000 url(/images/admin_assistant/sort-asc.png) no-repeat right
+}
+#admin_assistant.index th.sort.desc {
+  background: #000 url(/images/admin_assistant/sort-desc.png) no-repeat right
+}
+
+#admin_assistant.index td { background: #cff; border: 1px solid #ccc; padding: 5px }

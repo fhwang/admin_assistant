@@ -189,6 +189,18 @@ describe Admin::BlogPostsController do
             )
           end
         end
+        
+        it 'should use the right CSS classes in the title header' do
+          response.should have_tag('th[class="sort asc"]') do
+            with_tag 'a', :text => 'Title'
+          end
+        end
+        
+        it 'should have no CSS sorting classes in the header for ID' do
+          response.should have_tag('th:not([class])') do
+            with_tag 'a', :text => 'ID'
+          end
+        end
       end
       
       describe 'sorted by title desc' do
@@ -215,6 +227,18 @@ describe Admin::BlogPostsController do
               pretty_column_name, '/admin/blog_posts',
               {:sort => field, :sort_order => 'asc'}, response.body
             )
+          end
+        end
+        
+        it 'should use the right CSS classes in the title header' do
+          response.should have_tag('th[class="sort desc"]') do
+            with_tag 'a', :text => 'Title'
+          end
+        end
+        
+        it 'should have no CSS sorting classes in the header for ID' do
+          response.should have_tag('th:not([class])') do
+            with_tag 'a', :text => 'ID'
           end
         end
       end

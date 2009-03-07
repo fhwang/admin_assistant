@@ -154,6 +154,10 @@ class AdminAssistant
     def initialize(record, action, admin_assistant)
       @record, @action, @admin_assistant = record, action, admin_assistant
     end
+    
+    def columns
+      columns_without_options
+    end
 
     def default_column_names
       @admin_assistant.model_class.columns.reject { |ar_column|

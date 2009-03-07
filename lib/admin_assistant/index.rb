@@ -9,6 +9,16 @@ class AdminAssistant
       @url_params = url_params
     end
     
+    def columns
+      c = columns_without_options
+      if sort
+        c.each do |column|
+          column.sort_order = sort_order if column.name == sort
+        end
+      end
+      c
+    end
+    
     def default_column_names
       model_class.columns.map { |c| c.name }
     end
@@ -64,6 +74,10 @@ class AdminAssistant
     
     def search_terms
       @url_params['search']
+    end
+    
+    def sort
+      @url_params[:sort]
     end
     
     def sort_order
