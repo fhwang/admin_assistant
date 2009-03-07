@@ -37,9 +37,15 @@ show_search_form();
     <tr>
     <% @index.columns.each do |column| %>
       <% th_class = column.index_header_css_class %>
-      <th<%= " class=\"#{th_class}\"" if th_class %>><%= link_to(
-        h(column.label), @index.next_sort_params(column.name)
-      ) %></th>
+      <th<%= " class=\"#{th_class}\"" if th_class %>><%=
+        if @index.sort_possible?(column)
+          link_to(
+            h(column.label), @index.next_sort_params(column.name)
+          )
+        else
+          h(column.label)
+        end
+      %></th>
     <% end %>
     <% if @admin_assistant.update? %><th></th><% end %>
     </tr>

@@ -130,6 +130,10 @@ describe Admin::BlogPosts2Controller do
       it 'should show a link to the all index page' do
         response.body.should match(%r|<a.*href="/admin/blog_posts2\?all=1"|)
       end
+      
+      it 'should not show a sort link for tags' do
+        response.should_not have_tag("a", :text => 'Tags')
+      end
     end
     
     describe 'when there is one published post and one unpublished post' do

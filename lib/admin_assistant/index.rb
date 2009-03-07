@@ -83,5 +83,9 @@ class AdminAssistant
     def sort_order
       @url_params[:sort_order] || 'asc'
     end
+    
+    def sort_possible?(column)
+      column.is_a?(ActiveRecordColumn)
+    end
   end
 end
