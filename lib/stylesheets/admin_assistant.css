@@ -9,6 +9,7 @@ Don't edit this file: It gets re-copied every time the server starts.
 }
 #admin_assistant #header { position: relative }
 
+/***** Index stuff ***********************************************************/
 
 #admin_assistant.index table {
   width: 100%; margin: 0px 0px 10px 0px; padding: 0px
@@ -45,9 +46,14 @@ Don't edit this file: It gets re-copied every time the server starts.
   background: #ccc
 }
 
+/***** Form stuff ************************************************************/
+
 #admin_assistant.form .column {
   margin-bottom: 10px;
 }
 #admin_assistant.form input[type=text] {
+  width: 100%
+}
+#admin_assistant.form textarea {
   width: 100%
 }
