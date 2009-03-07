@@ -10,8 +10,9 @@ Gem::Specification.new do |s|
   s.email = 'sera@fhwang.net'
   s.homepage = 'http://github.com/fhwang/admin_assistant/tree/master'
   s.files = FileList[
-    'lib/*.rb', 'MIT-LICENSE', 'README', '*.rb', 'spec/*.rb', 
-    'tasks/*.rake', 'lib/views/*.erb', 'Rakefile'
+    'MIT-LICENSE', 'README', '*.rb', 'Rakefile',
+    'lib/*.rb', 'lib/admin_assistant/*.rb', 'lib/stylesheets/*.css', 
+    'lib/views/*.erb', 'tasks/*.rake',
   ].to_a
   s.add_dependency 'ar_query'
   s.add_dependency 'mislav-will_paginate'
