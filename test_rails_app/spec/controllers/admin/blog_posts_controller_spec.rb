@@ -3,11 +3,21 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 describe Admin::BlogPostsController do
   integrate_views
   
+  before :all do
+    User.destroy_all
+    @user = User.create! :username => 'soren'
+  end
+  
   describe '#create' do
     describe 'when there are no validation errors' do
       it 'should create a new BlogPost' do
         title = random_word
-        post :create, :blog_post => {:title => title, :textile => '1'}
+        post(
+          :create,
+          :blog_post => {
+            :title => title, :textile => '1', :user_id => @user.id
+          }
+        )
         blog_post = BlogPost.find_by_title(title)
         blog_post.should_not be_nil
         blog_post.textile?.should be_true
@@ -36,7 +46,7 @@ describe Admin::BlogPostsController do
   
   describe '#edit' do
     before :all do
-      @blog_post = BlogPost.create! :title => random_word
+      @blog_post = BlogPost.create! :title => random_word, :user => @user
     end
     
     before :each do
@@ -97,7 +107,7 @@ describe Admin::BlogPostsController do
     describe 'when there is one record' do
       before :all do
         BlogPost.destroy_all
-        @blog_post = BlogPost.create! :title => "hi there"
+        @blog_post = BlogPost.create! :title => "hi there", :user => @user
       end
       
       before :each do
@@ -128,7 +138,7 @@ describe Admin::BlogPostsController do
       it 'should show sort links' do
         pretty_column_names = {
           'id' => 'ID', 'title' => 'Title', 'created_at' => 'Created at', 
-          'updated_at' => 'Updated at', 'body' => 'Body'
+          'updated_at' => 'Updated at', 'body' => 'Body', 'user' => 'User'
         }
         pretty_column_names.each do |field, pretty_column_name|
           assert_a_tag_with_get_args(
@@ -139,7 +149,9 @@ describe Admin::BlogPostsController do
       end
       
       it 'should show pretty column headers' do
-        column_headers = ['ID', 'Title', 'Created at', 'Updated at', 'Body']
+        column_headers = [
+          'ID', 'Title', 'Created at', 'Updated at', 'Body', 'User'
+        ]
         column_headers.each do |column_header|
           response.should have_tag('th') do
             with_tag 'a', column_header
@@ -150,6 +162,10 @@ describe Admin::BlogPostsController do
       it 'should say how many records are found' do
         response.body.should match(/1 blog post found/)
       end
+      
+      it "should say username because that's what's set in User#name_for_admin_assistant" do
+        response.should have_tag('td', :text => 'soren')
+      end
     end
   end
   
@@ -157,8 +173,12 @@ describe Admin::BlogPostsController do
     describe 'when there are two records' do
       before :all do
         BlogPost.destroy_all
-        @blog_post1 = BlogPost.create! :title => "title 1", :body => "body 2"
-        @blog_post2 = BlogPost.create! :title => "title 2", :body => "body 1"
+        @blog_post1 = BlogPost.create!(
+          :title => "title 1", :body => "body 2", :user => @user
+        )
+        @blog_post2 = BlogPost.create!(
+          :title => "title 2", :body => "body 1", :user => @user
+        )
       end
       
       describe 'sorted by title asc' do
@@ -283,7 +303,9 @@ describe Admin::BlogPostsController do
     
     describe 'when there are no records that match' do
       before :all do
-        BlogPost.create! :title => 'no match', :body => 'no match'
+        BlogPost.create!(
+          :title => 'no match', :body => 'no match', :user => @user
+        )
       end
       
       it "should say 'No blog posts found'" do
@@ -293,7 +315,9 @@ describe Admin::BlogPostsController do
     
     describe 'when there is a blog post with a matching title' do
       before :all do
-        BlogPost.create! :title => 'foozy', :body => 'blog post body'
+        BlogPost.create!(
+          :title => 'foozy', :body => 'blog post body', :user => @user
+        )
       end
       
       it "should show that blog post" do
@@ -303,7 +327,9 @@ describe Admin::BlogPostsController do
     
     describe 'when there is a blog post with a matching body' do
       before :all do
-        BlogPost.create! :title => 'blog post title', :body => 'barfoo'
+        BlogPost.create!(
+          :title => 'blog post title', :body => 'barfoo', :user => @user
+        )
       end
       
       it "should show that blog post" do
@@ -320,7 +346,9 @@ describe Admin::BlogPostsController do
     before :all do
       BlogPost.destroy_all
       1.upto(51) do |i|
-        BlogPost.create! :title => "title -#{i}-", :body => "body -#{i}-"
+        BlogPost.create!(
+          :title => "title -#{i}-", :body => "body -#{i}-", :user => @user
+        )
       end
     end
     
@@ -441,7 +469,7 @@ describe Admin::BlogPostsController do
   
   describe '#update' do
     before :all do
-      @blog_post = BlogPost.create! :title => random_word
+      @blog_post = BlogPost.create! :title => random_word, :user => @user
     end
     
     describe 'when there are no validation errors' do

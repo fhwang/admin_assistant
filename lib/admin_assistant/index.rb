@@ -23,17 +23,18 @@ class AdminAssistant
       model_class.columns.map { |c| c.name }
     end
     
-    def next_sort_params(column_name)
+    def next_sort_params(column)
+      name_for_sort = column.name_for_sort
       next_sort_order = 'asc'
-      if @url_params[:sort] == column_name
+      if @url_params[:sort] == name_for_sort
         if sort_order == 'asc'
           next_sort_order = 'desc'
         else
-          column_name = nil
+          name_for_sort = nil
           next_sort_order = nil
         end
       end
-      {:sort => column_name, :sort_order => next_sort_order}
+      {:sort => name_for_sort, :sort_order => next_sort_order}
     end
     
     def order_sql

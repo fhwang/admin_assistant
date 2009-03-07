@@ -21,22 +21,31 @@ class AdminAssistant
     
     def field_value(record, column)
       value_method = "#{column.name}_value"
-      if respond_to?(value_method)
+      fv = if respond_to?(value_method)
         self.send value_method, record
-      elsif record.respond_to?(column.name)
-        record.send column.name
+      elsif column.belongs_to_assoc
+        assoc_value = record.send column.belongs_to_assoc.name
+        if assoc_value.respond_to?(:name_for_admin_assistant)
+          assoc_value.name_for_admin_assistant 
+        end
       end
+      if fv.nil? && record.respond_to?(column.name)
+        fv = record.send(column.name)
+      end
+      fv
     end
     
     def html_for_index(column, record)
       html_for_index_method = "#{column.name}_html_for_index"
-      if respond_to?(html_for_index_method)
+      hfi = if respond_to?(html_for_index_method)
         self.send html_for_index_method, record
       elsif column.is_a?(PaperclipColumn)
         image_tag(record.send(column.name).url)
       else
         h(field_value(record, column))
       end
+      hfi = '&nbsp;' if hfi.blank?
+      hfi
     end
     
     def html_for_form(column, record, form)

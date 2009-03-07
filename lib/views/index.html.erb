@@ -40,7 +40,7 @@ show_search_form();
       <th<%= " class=\"#{th_class}\"" if th_class %>><%=
         if @index.sort_possible?(column)
           link_to(
-            h(column.label), @index.next_sort_params(column.name)
+            h(column.label), @index.next_sort_params(column)
           )
         else
           h(column.label)
@@ -56,12 +56,7 @@ show_search_form();
       <% @index.columns.each do |column| %>
         <% td_class = column.index_td_css_class %>
         <td<%= " class=\"#{td_class}\"" if td_class %>><%=
-        html = html_for_index(column, record)
-        if html.blank?
-          '&nbsp;'
-        else
-          html
-        end
+          html_for_index(column, record)
         %></td>
       <% end %>
       <% if @admin_assistant.update? %>

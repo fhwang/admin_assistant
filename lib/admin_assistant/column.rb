@@ -13,7 +13,7 @@ class AdminAssistant
           ar_column =
               @admin_assistant.model_class.columns_hash[column_name.to_s]
           if ar_column
-             columns << ActiveRecordColumn.new(ar_column)
+            columns << ActiveRecordColumn.new(ar_column, model_class)
           else
             columns << AdminAssistantColumn.new(column_name)
           end
@@ -60,8 +60,8 @@ class AdminAssistant
   end
   
   class ActiveRecordColumn < Column
-    def initialize(ar_column)
-      @ar_column = ar_column
+    def initialize(ar_column, model_class)
+      @ar_column, @model_class = ar_column, model_class
     end
     
     def add_to_form(form)
@@ -79,8 +79,26 @@ class AdminAssistant
       column_name.to_s == @ar_column.name
     end
     
+    def belongs_to_assoc
+      @model_class.reflect_on_all_associations.detect { |assoc|
+        assoc.macro == :belongs_to && assoc.association_foreign_key == name
+      }
+    end
+    
+    def label
+      if belongs_to_assoc
+        belongs_to_assoc.name.to_s.capitalize.gsub(/_/, ' ') 
+      else
+        super
+      end
+    end
+    
     def name
       @ar_column.name
+    end
+    
+    def name_for_sort
+      belongs_to_assoc ? belongs_to_assoc.name : name
     end
     
     def type
@@ -93,6 +111,9 @@ class AdminAssistant
     
     def initialize(name)
       @name = name.to_s
+    end
+    
+    def belongs_to_assoc
     end
     
     def contains?(column_name)

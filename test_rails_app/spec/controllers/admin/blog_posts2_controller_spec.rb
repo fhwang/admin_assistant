@@ -3,6 +3,11 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 describe Admin::BlogPosts2Controller do
   integrate_views
   
+  before :all do
+    User.destroy_all
+    @user = User.create! :username => 'soren'
+  end
+  
   describe '#create' do
     describe 'when there are no validation errors' do
       before :each do
@@ -10,7 +15,8 @@ describe Admin::BlogPosts2Controller do
         post(
           :create,
           :blog_post => {
-            :title => title, :tags => 'tag1 tag2', :publish => '1'
+            :title => title, :tags => 'tag1 tag2', :publish => '1',
+            :user_id => @user.id
           }
         )
         @blog_post = BlogPost.find_by_title title
@@ -38,7 +44,8 @@ describe Admin::BlogPosts2Controller do
         post(
           :create,
           :blog_post => {
-            :title => title, :tags => 'tag1 tag2', :publish => '1'
+            :title => title, :tags => 'tag1 tag2', :publish => '1',
+            :user_id => @user.id
           },
           :commit => 'Preview'
         )
@@ -57,7 +64,7 @@ describe Admin::BlogPosts2Controller do
     before :all do
       BlogPost.destroy_all
       @blog_post = BlogPost.create!(
-        :title => "blog post title", :body => 'blog post body'
+        :title => "blog post title", :body => 'blog post body', :user => @user
       )
       tag1 = Tag.create! :tag => 'tag1'
       BlogPostTag.create! :blog_post => @blog_post, :tag => tag1
@@ -83,7 +90,7 @@ describe Admin::BlogPosts2Controller do
   describe '#edit in preview mode' do
     before :all do
       @blog_post = BlogPost.create!(
-        :title => "blog post title", :body => 'blog post body'
+        :title => "blog post title", :body => 'blog post body', :user => @user
       )
     end
     
@@ -102,7 +109,8 @@ describe Admin::BlogPosts2Controller do
       before :all do
         BlogPost.destroy_all
         @blog_post = BlogPost.create!(
-          :title => "blog post title", :body => 'blog post body'
+          :title => "blog post title", :body => 'blog post body',
+          :user => @user
         )
         tag1 = Tag.create! :tag => 'tag1'
         BlogPostTag.create! :blog_post => @blog_post, :tag => tag1
@@ -138,9 +146,10 @@ describe Admin::BlogPosts2Controller do
     
     describe 'when there is one published post and one unpublished post' do
       before :all do
-        BlogPost.create! :title => "--unpublished--"
+        BlogPost.create! :title => "--unpublished--", :user => @user
         BlogPost.create!(
-          :title => "--published--", :published_at => Time.now.utc
+          :title => "--published--", :published_at => Time.now.utc,
+          :user => @user
         )
       end
       
@@ -162,7 +171,8 @@ describe Admin::BlogPosts2Controller do
   describe '#index?all=1' do
     before :all do
       BlogPost.create!(
-        :title => "--published--", :published_at => Time.now.utc
+        :title => "--published--", :published_at => Time.now.utc,
+        :user => @user
       )
     end
       
@@ -179,10 +189,12 @@ describe Admin::BlogPosts2Controller do
   describe '#index?all=1 with two published posts' do
     before :all do
       BlogPost.create!(
-        :title => 'published later', :published_at => Time.utc(2009, 2, 1)
+        :title => 'published later', :published_at => Time.utc(2009, 2, 1),
+        :user => @user
       )
       BlogPost.create!(
-        :title => 'published earlier', :published_at => Time.utc(2009, 1, 1)
+        :title => 'published earlier', :published_at => Time.utc(2009, 1, 1),
+        :user => @user
       )
     end
     
@@ -253,7 +265,7 @@ describe Admin::BlogPosts2Controller do
   
   describe '#update' do
     before :all do
-      @blog_post = BlogPost.create! :title => random_word
+      @blog_post = BlogPost.create! :title => random_word, :user => @user
     end
     
     describe "when the user has clicked 'Preview'" do
