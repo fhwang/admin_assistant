@@ -156,6 +156,7 @@ describe Admin::BlogPostsController do
   describe '#index sorting' do
     describe 'when there are two records' do
       before :all do
+        BlogPost.destroy_all
         @blog_post1 = BlogPost.create! :title => "title 1", :body => "body 2"
         @blog_post2 = BlogPost.create! :title => "title 2", :body => "body 1"
       end
@@ -201,6 +202,10 @@ describe Admin::BlogPostsController do
             with_tag 'a', :text => 'ID'
           end
         end
+        
+        it 'should mark the title cells with CSS sorting classes' do
+          response.should have_tag('td[class="sort"]', :text => 'title 1')
+        end
       end
       
       describe 'sorted by title desc' do
@@ -240,6 +245,10 @@ describe Admin::BlogPostsController do
           response.should have_tag('th:not([class])') do
             with_tag 'a', :text => 'ID'
           end
+        end
+        
+        it 'should mark the title cells with CSS sorting classes' do
+          response.should have_tag('td[class="sort"]', :text => 'title 1')
         end
       end
     end

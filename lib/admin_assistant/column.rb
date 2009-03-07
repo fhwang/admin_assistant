@@ -52,6 +52,10 @@ class AdminAssistant
     def index_header_css_class
       "sort #{sort_order}" if sort_order
     end
+    
+    def index_td_css_class
+      'sort' if sort_order
+    end
   end
   
   class ActiveRecordColumn < Column

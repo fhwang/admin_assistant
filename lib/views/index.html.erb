@@ -41,13 +41,22 @@ show_search_form();
         h(column.label), @index.next_sort_params(column.name)
       ) %></th>
     <% end %>
+    <% if @admin_assistant.update? %><th></th><% end %>
     </tr>
   </thead>
   <tbody>
   <% @index.records.each do |record| %>
-    <tr>
+    <tr class="<%= cycle('odd', 'even') %>">
       <% @index.columns.each do |column| %>
-        <td><%= html_for_index(column, record) %></td>
+        <% td_class = column.index_td_css_class %>
+        <td<%= " class=\"#{td_class}\"" if td_class %>><%=
+        html = html_for_index(column, record)
+        if html.blank?
+          '&nbsp;'
+        else
+          html
+        end
+        %></td>
       <% end %>
       <% if @admin_assistant.update? %>
       <td><%= link_to 'Edit', :action => 'edit', :id => record.id %></td>
