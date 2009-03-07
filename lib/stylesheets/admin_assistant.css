@@ -4,13 +4,15 @@ Don't edit this file: It gets re-copied every time the server starts.
 
 #admin_assistant { font-family: "Verdana","Arial", sans-serif }
 #admin_assistant h2 { font-size: large; font-weight: bold }
-
-#admin_assistant.index #header { position: relative }
-#admin_assistant.index .actions {
+#admin_assistant .actions {
   position: absolute; right: 5px; top: 5px; text-align: right
 }
-#admin_assistant.index table { width: 100%; margin: 0px 0px 10px 0px; padding: 0px }
+#admin_assistant #header { position: relative }
 
+
+#admin_assistant.index table {
+  width: 100%; margin: 0px 0px 10px 0px; padding: 0px
+}
 #admin_assistant.index th {
   background: #666; color: white; padding: 5px 20px 5px 5px
 }
@@ -23,7 +25,6 @@ Don't edit this file: It gets re-copied every time the server starts.
 #admin_assistant.index th.sort.desc {
   background: #000 url(/images/admin_assistant/sort-desc.png) no-repeat right
 }
-
 #admin_assistant.index td {
   background: white;
   border-bottom: 1px solid #ccc;
@@ -42,4 +43,11 @@ Don't edit this file: It gets re-copied every time the server starts.
 }
 #admin_assistant.index tbody tr.even td.sort {
   background: #ccc
+}
+
+#admin_assistant.form .column {
+  margin-bottom: 10px;
+}
+#admin_assistant.form input[type=text] {
+  width: 100%
 }

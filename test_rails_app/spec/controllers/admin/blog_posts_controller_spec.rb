@@ -424,7 +424,7 @@ describe Admin::BlogPostsController do
     it 'should show pretty field names' do
       field_names = ['Title', 'Body']
       field_names.each do |field_name|
-        response.should have_tag('th', field_name)
+        response.should have_tag('label', field_name)
       end
     end
     
