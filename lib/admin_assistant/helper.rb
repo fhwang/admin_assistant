@@ -23,13 +23,8 @@ class AdminAssistant
       value_method = "#{column.name}_value"
       fv = if respond_to?(value_method)
         self.send value_method, record
-      elsif column.belongs_to_assoc
-        assoc_value = record.send column.belongs_to_assoc.name
-        if assoc_value.respond_to?(:name_for_admin_assistant)
-          assoc_value.name_for_admin_assistant
-        elsif assoc_value && column.default_name_method
-          assoc_value.send column.default_name_method
-        end
+      elsif column.respond_to?(:field_value)
+        column.field_value record
       end
       if fv.nil? && record.respond_to?(column.name)
         fv = record.send(column.name)

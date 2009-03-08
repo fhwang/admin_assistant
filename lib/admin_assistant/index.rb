@@ -10,9 +10,8 @@ class AdminAssistant
     end
     
     def belongs_to_sort_column
-      columns_without_options.detect { |c|
-        c.belongs_to_assoc && 
-            c.belongs_to_assoc.name.to_s == @url_params[:sort]
+      belongs_to_columns.detect { |btc|
+        btc.name.to_s == @url_params[:sort]
       }
     end
     
@@ -34,7 +33,7 @@ class AdminAssistant
     
     def find_include
       if by_assoc = belongs_to_sort_column
-        by_assoc.belongs_to_assoc.name
+        by_assoc.name
       end
     end
     
@@ -55,12 +54,7 @@ class AdminAssistant
     def order_sql
       if (sc = sort_column)
         first_part = if (by_assoc = belongs_to_sort_column)
-          belongs_to = by_assoc.belongs_to_assoc
-          if by_assoc.default_name_method
-            "#{belongs_to.table_name}.#{by_assoc.default_name_method}"
-          else
-            "#{belongs_to.table_name}.#{belongs_to.association_foreign_key}"
-          end
+          by_assoc.order_sql_field
         else
           sc.name
         end
@@ -120,7 +114,7 @@ class AdminAssistant
     end
     
     def sort_possible?(column)
-      column.is_a?(ActiveRecordColumn)
+      column.is_a?(ActiveRecordColumn) || column.is_a?(BelongsToColumn)
     end
   end
 end

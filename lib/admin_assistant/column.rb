@@ -1,5 +1,9 @@
 class AdminAssistant
   module ColumnsMethods
+    def belongs_to_columns
+      columns_without_options.select { |c| c.is_a?(BelongsToColumn) }
+    end
+    
     def columns_without_options
       column_names = @admin_assistant.send(
         "#{self.class.name.split(/::/).last.downcase}_settings"
@@ -13,7 +17,15 @@ class AdminAssistant
           ar_column =
               @admin_assistant.model_class.columns_hash[column_name.to_s]
           if ar_column
-            columns << ActiveRecordColumn.new(ar_column, model_class)
+            associations = model_class.reflect_on_all_associations
+            if belongs_to_assoc = associations.detect { |assoc|
+              assoc.macro == :belongs_to &&
+                  assoc.association_foreign_key == column_name
+            }
+              columns << BelongsToColumn.new(belongs_to_assoc)
+            else
+              columns << ActiveRecordColumn.new(ar_column)
+            end
           else
             columns << AdminAssistantColumn.new(column_name)
           end
@@ -60,54 +72,23 @@ class AdminAssistant
   end
   
   class ActiveRecordColumn < Column
-    def initialize(ar_column, model_class)
-      @ar_column, @model_class = ar_column, model_class
+    def initialize(ar_column)
+      @ar_column = ar_column
     end
     
     def add_to_form(form)
-      if belongs_to_assoc
-        form.select(
-          name,
-          belongs_to_assoc.klass.find(:all).map { |model| 
-            [model.send(default_name_method), model.id]
-          }
-        )
-      else
-        case @ar_column.type
-          when :text
-            form.text_area name
-          when :boolean
-            form.check_box name
-          else
-            form.text_field name
-          end
-      end
+      case @ar_column.type
+        when :text
+          form.text_area name
+        when :boolean
+          form.check_box name
+        else
+          form.text_field name
+        end
     end
     
     def contains?(column_name)
       column_name.to_s == @ar_column.name
-    end
-    
-    def belongs_to_assoc
-      @model_class.reflect_on_all_associations.detect { |assoc|
-        assoc.macro == :belongs_to && assoc.association_foreign_key == name
-      }
-    end
-    
-    def default_name_method
-      [:name, :title, :login, :username].detect { |m|
-        belongs_to_assoc.klass.columns.any? { |column|
-          column.name.to_s == m.to_s
-        }
-      }
-    end
-    
-    def label
-      if belongs_to_assoc
-        belongs_to_assoc.name.to_s.capitalize.gsub(/_/, ' ') 
-      else
-        super
-      end
     end
     
     def name
@@ -115,7 +96,7 @@ class AdminAssistant
     end
     
     def name_for_sort
-      belongs_to_assoc ? belongs_to_assoc.name.to_s : name
+      name
     end
     
     def type
@@ -135,6 +116,59 @@ class AdminAssistant
     
     def contains?(column_name)
       column_name.to_s == @name
+    end
+  end
+  
+  class BelongsToColumn < Column
+    def initialize(belongs_to_assoc)
+      @belongs_to_assoc = belongs_to_assoc
+    end
+    
+    def add_to_form(form)
+      form.select(
+        @belongs_to_assoc.association_foreign_key,
+        @belongs_to_assoc.klass.find(:all).map { |model| 
+          [model.send(default_name_method), model.id]
+        }
+      )
+    end
+    
+    def default_name_method
+      [:name, :title, :login, :username].detect { |m|
+        @belongs_to_assoc.klass.columns.any? { |column|
+          column.name.to_s == m.to_s
+        }
+      }
+    end
+    
+    def field_value(record)
+      assoc_value = record.send name
+      if assoc_value.respond_to?(:name_for_admin_assistant)
+        assoc_value.name_for_admin_assistant
+      elsif assoc_value && default_name_method
+        assoc_value.send default_name_method
+      end
+    end
+    
+    def label
+      @belongs_to_assoc.name.to_s.capitalize.gsub(/_/, ' ') 
+    end
+    
+    def name
+      @belongs_to_assoc.name.to_s
+    end
+    
+    def name_for_sort
+      name
+    end
+    
+    def order_sql_field
+      sql = "#{@belongs_to_assoc.table_name}. "
+      sql << if default_name_method
+        default_name_method.to_s
+      else
+        @belongs_to_assoc.association_foreign_key
+      end
     end
   end
   

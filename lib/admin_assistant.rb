@@ -15,15 +15,18 @@ class AdminAssistant
     @index_settings = IndexSettings.new self
   end
   
+  def dispatch_to_request_method(request_method, controller)
+    controller.instance_variable_set :@admin_assistant, self
+    klass = Request.const_get request_method.to_s.capitalize
+    @request = klass.new(self, controller)
+    @request.call
+    @request = nil
+  end
+  
   def method_missing(meth, *args)
     request_methods = [:create, :edit, :index, :new, :update]
     if request_methods.include?(meth) and args.size == 1
-      controller = args.first
-      controller.instance_variable_set :@admin_assistant, self
-      klass = Request.const_get meth.to_s.capitalize
-      @request = klass.new(self, controller)
-      @request.call
-      @request = nil
+      dispatch_to_request_method meth, args.first
     else
       if meth.to_s =~ /(.*)\?/ && request_methods.include?($1.to_sym)
         @actions.include?($1.to_sym)
