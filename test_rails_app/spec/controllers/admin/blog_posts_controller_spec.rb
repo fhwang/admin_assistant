@@ -532,6 +532,13 @@ describe Admin::BlogPostsController do
         !x
       )
     end
+    
+    it 'should use a drop-down for the user field' do
+      response.should have_tag("select[name=?]", "blog_post[user_id]") do
+        with_tag "option[value=?]", @user.id, :text => 'soren'
+      end
+      response.should_not have_tag("option[value='']")
+    end
   end
   
   describe '#update' do

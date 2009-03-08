@@ -65,14 +65,23 @@ class AdminAssistant
     end
     
     def add_to_form(form)
-      case @ar_column.type
-        when :text
-          form.text_area name
-        when :boolean
-          form.check_box name
-        else
-          form.text_field name
-        end
+      if belongs_to_assoc
+        form.select(
+          name,
+          belongs_to_assoc.klass.find(:all).map { |model| 
+            [model.send(default_name_method), model.id]
+          }
+        )
+      else
+        case @ar_column.type
+          when :text
+            form.text_area name
+          when :boolean
+            form.check_box name
+          else
+            form.text_field name
+          end
+      end
     end
     
     def contains?(column_name)
