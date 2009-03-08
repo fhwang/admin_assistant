@@ -100,7 +100,7 @@ describe Admin::BlogPostsController do
       end
       
       it 'should use the admin layout' do
-        response.body.should match(/ADMIN LAYOUT/)
+        response.body.should match(/admin_assistant sample Rails app/)
       end
     end
 

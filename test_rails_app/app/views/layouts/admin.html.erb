@@ -5,7 +5,24 @@
     <%= admin_assistant_includes %>
   </head>
   <body>
-    ADMIN LAYOUT
+    <h1>admin_assistant sample Rails app</h1>
+    <p>
+      <%= link_to_unless_current(
+        'blog_posts', :controller => 'admin/blog_posts'
+      ) %>
+      | <%= link_to_unless_current(
+        'blog_posts2', :controller => 'admin/blog_posts2'
+      ) %>
+      | <%= link_to_unless_current(
+        'images', :controller => 'admin/images'
+      ) %>
+      | <%= link_to_unless_current(
+        'images2', :controller => 'admin/images2'
+      ) %>
+      | <%= link_to_unless_current(
+        'users', :controller => 'admin/users'
+      ) %>
+    </p>
     <%= @content_for_layout %>
   </body>
 </html>
