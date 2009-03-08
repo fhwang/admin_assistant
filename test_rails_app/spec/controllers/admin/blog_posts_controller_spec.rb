@@ -167,6 +167,21 @@ describe Admin::BlogPostsController do
         response.should have_tag('td', :text => 'soren')
       end
     end
+    
+    describe 'when there is one record that somehow has a nil User' do
+      before :all do
+        @blog_post = BlogPost.create! :title => "hi there", :user => @user
+        BlogPost.update_all "user_id = null"
+      end
+      
+      before :each do
+        get :index
+      end
+      
+      it 'should be fine with a nil User' do
+        response.should be_success
+      end
+    end
   end
   
   describe '#index sorting' do
@@ -269,6 +284,41 @@ describe Admin::BlogPostsController do
         
         it 'should mark the title cells with CSS sorting classes' do
           response.should have_tag('td[class="sort"]', :text => 'title 1')
+        end
+      end
+    end
+    
+    describe 'by #user, a belongs_to association' do
+      before :all do
+        BlogPost.destroy_all
+        jean_paul = User.create! :username => 'jean-paul'
+        BlogPost.create!(
+          :title => 'title 1', :body => 'body 1', :user => @user
+        )
+        BlogPost.create!(
+          :title => 'title 2', :body => 'body 2', :user => jean_paul
+        )
+      end
+      
+      describe 'asc' do
+        before :each do
+          get :index, :sort => 'user', :sort_order => 'asc'
+          response.should be_success
+        end
+        
+        it "should show jean-paul's blog post before soren's" do
+          response.body.should match(%r|jean-paul.*soren|m)
+        end
+      end
+      
+      describe 'desc' do
+        before :each do
+          get :index, :sort => 'user', :sort_order => 'desc'
+          response.should be_success
+        end
+        
+        it "should show soren's blog post before jean-paul's" do
+          response.body.should match(%r|soren.*jean-paul|m)
         end
       end
     end

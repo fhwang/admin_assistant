@@ -9,6 +9,13 @@ class AdminAssistant
       @url_params = url_params
     end
     
+    def belongs_to_sort_column
+      columns.detect { |c|
+        c.belongs_to_assoc && 
+            c.belongs_to_assoc.name.to_s == @url_params[:sort]
+      }
+    end
+    
     def columns
       c = columns_without_options
       if sort
@@ -21,6 +28,12 @@ class AdminAssistant
     
     def default_column_names
       model_class.columns.map { |c| c.name }
+    end
+    
+    def find_include
+      if by_assoc = belongs_to_sort_column
+        by_assoc.belongs_to_assoc.name
+      end
     end
     
     def next_sort_params(column)
@@ -39,7 +52,19 @@ class AdminAssistant
     
     def order_sql
       if @url_params[:sort]
-        "#{@url_params[:sort] } #{sort_order}"
+        sort_column = columns.detect { |c| c.name.to_s == @url_params[:sort] }
+        first_part = if sort_column
+          sort_column.name
+        else
+          by_assoc = belongs_to_sort_column
+          belongs_to = by_assoc.belongs_to_assoc
+          if by_assoc.default_name_method
+            "#{belongs_to.table_name}.#{by_assoc.default_name_method}"
+          else
+            "#{belongs_to.table_name}.#{belongs_to.association_foreign_key}"
+          end
+        end
+        "#{first_part} #{sort_order}"
       else
         @admin_assistant.index_settings.sort_by
       end
@@ -48,7 +73,8 @@ class AdminAssistant
     def records
       unless @records
         ar_query = ARQuery.new(
-          :order => order_sql, :per_page => 25, :page => @url_params[:page]
+          :order => order_sql, :include => find_include,
+          :per_page => 25, :page => @url_params[:page]
         )
         ar_query.boolean_join = :or
         if search_terms

@@ -85,6 +85,14 @@ class AdminAssistant
       }
     end
     
+    def default_name_method
+      [:name, :title, :login, :username].detect { |m|
+        belongs_to_assoc.klass.columns.any? { |column|
+          column.name.to_s == m.to_s
+        }
+      }
+    end
+    
     def label
       if belongs_to_assoc
         belongs_to_assoc.name.to_s.capitalize.gsub(/_/, ' ') 
@@ -130,6 +138,9 @@ class AdminAssistant
     
     def add_to_form(form)
       form.file_field name
+    end
+    
+    def belongs_to_assoc
     end
     
     def contains?(column_name)
