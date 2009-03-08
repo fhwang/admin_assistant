@@ -106,7 +106,7 @@ class AdminAssistant
     end
     
     def name_for_sort
-      belongs_to_assoc ? belongs_to_assoc.name : name
+      belongs_to_assoc ? belongs_to_assoc.name.to_s : name
     end
     
     def type

@@ -309,6 +309,23 @@ describe Admin::BlogPostsController do
         it "should show jean-paul's blog post before soren's" do
           response.body.should match(%r|jean-paul.*soren|m)
         end
+        
+        it 'should use the right CSS classes in the user header' do
+          response.should have_tag('th[class="sort asc"]') do
+            with_tag 'a', :text => 'User'
+          end
+        end
+        
+        it 'should mark the title cells with CSS sorting classes' do
+          response.should have_tag('td[class="sort"]', :text => 'jean-paul')
+        end
+      
+        it 'should show a desc sort link for user' do
+          assert_a_tag_with_get_args(
+            'User', '/admin/blog_posts',
+            {:sort => 'user', :sort_order => 'desc'}, response.body
+          )
+        end
       end
       
       describe 'desc' do

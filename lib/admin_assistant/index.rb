@@ -10,7 +10,7 @@ class AdminAssistant
     end
     
     def belongs_to_sort_column
-      columns.detect { |c|
+      columns_without_options.detect { |c|
         c.belongs_to_assoc && 
             c.belongs_to_assoc.name.to_s == @url_params[:sort]
       }
@@ -18,9 +18,11 @@ class AdminAssistant
     
     def columns
       c = columns_without_options
-      if sort
+      if sort_column
         c.each do |column|
-          column.sort_order = sort_order if column.name == sort
+          if column.name == sort_column.name.to_s
+            column.sort_order = sort_order
+          end
         end
       end
       c
@@ -51,18 +53,16 @@ class AdminAssistant
     end
     
     def order_sql
-      if @url_params[:sort]
-        sort_column = columns.detect { |c| c.name.to_s == @url_params[:sort] }
-        first_part = if sort_column
-          sort_column.name
-        else
-          by_assoc = belongs_to_sort_column
+      if (sc = sort_column)
+        first_part = if (by_assoc = belongs_to_sort_column)
           belongs_to = by_assoc.belongs_to_assoc
           if by_assoc.default_name_method
             "#{belongs_to.table_name}.#{by_assoc.default_name_method}"
           else
             "#{belongs_to.table_name}.#{belongs_to.association_foreign_key}"
           end
+        else
+          sc.name
         end
         "#{first_part} #{sort_order}"
       else
@@ -105,6 +105,14 @@ class AdminAssistant
     
     def sort
       @url_params[:sort]
+    end
+    
+    def sort_column
+      if @url_params[:sort]
+        columns_without_options.detect { |c|
+          c.name.to_s == @url_params[:sort]
+        } || belongs_to_sort_column
+      end
     end
     
     def sort_order
