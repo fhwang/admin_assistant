@@ -5,7 +5,7 @@ class Admin::BlogPosts2Controller < ApplicationController
     # For the index view:
     a.index do |index|
       # Only show these columns
-      index.columns :title, :tags, :published_at
+      index.columns :user, :title, :tags, :published_at
       
       # Add the link 'All' to the top-right corner
       index.actions['All'] = {:all => '1'}
@@ -23,7 +23,7 @@ class Admin::BlogPosts2Controller < ApplicationController
     # For any form page:
     a.form do |form|
       # Only show inputs for these fields
-      form.columns :title, :body, :tags, :textile, :publish
+      form.columns :user, :title, :body, :tags, :textile, :publish
       
       # 'publish' isn't defined on BlogPost, we have to specify that it's a
       # check box

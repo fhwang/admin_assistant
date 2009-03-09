@@ -142,6 +142,17 @@ describe Admin::BlogPosts2Controller do
       it 'should not show a sort link for tags' do
         response.should_not have_tag("a", :text => 'Tags')
       end
+      
+      it 'should show a sort link for users' do
+        assert_a_tag_with_get_args(
+          'User', '/admin/blog_posts2',
+          {:sort => 'user', :sort_order => 'asc'}, response.body
+        )
+      end
+      
+      it "should say username because that's one of our default name fields" do
+        response.should have_tag('td', :text => 'soren')
+      end
     end
     
     describe 'when there is one published post and one unpublished post' do

@@ -9,7 +9,7 @@ class AdminAssistant
     def default_column_names
       @admin_assistant.model_class.columns.reject { |ar_column|
         %w(id created_at updated_at).include?(ar_column.name)
-      }.map { |ar_column| ar_column.name }
+      }.map { |ar_column| column_name_or_assoc_name(ar_column.name) }
     end
     
     def extra_submit_buttons

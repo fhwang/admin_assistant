@@ -7,17 +7,31 @@ class AdminAssistant
     def column_from_name(name)
       ar_column = @admin_assistant.model_class.columns_hash[name.to_s]
       if ar_column
+        ActiveRecordColumn.new(ar_column)
+      else
+        associations = model_class.reflect_on_all_associations
+        if belongs_to_assoc = associations.detect { |assoc|
+          assoc.macro == :belongs_to && assoc.name.to_s == name.to_s
+        }
+          BelongsToColumn.new(belongs_to_assoc)
+        else
+          AdminAssistantColumn.new(name)
+        end
+      end
+    end
+    
+    def column_name_or_assoc_name(name)
+      result = name
+      ar_column = model_class.columns_hash[name.to_s]
+      if ar_column
         associations = model_class.reflect_on_all_associations
         if belongs_to_assoc = associations.detect { |assoc|
           assoc.macro == :belongs_to && assoc.association_foreign_key == name
         }
-          BelongsToColumn.new(belongs_to_assoc)
-        else
-          ActiveRecordColumn.new(ar_column)
+          result = belongs_to_assoc.name.to_s
         end
-      else
-        AdminAssistantColumn.new(name)
       end
+      result
     end
     
     def columns
@@ -138,6 +152,10 @@ class AdminAssistant
     
     def associated_class
       @belongs_to_assoc.klass
+    end
+    
+    def contains?(column_name)
+      column_name.to_s == name
     end
     
     def default_name_method

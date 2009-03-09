@@ -32,7 +32,7 @@ class AdminAssistant
       fv
     end
     
-    def html_for_column_and_record(column, record)
+    def html_for_form_column_and_record(column, record)
       input_name =
           "#{@admin_assistant.model_class.name.underscore}[#{column.name}]"
       input_type = @admin_assistant.form_settings.inputs[column.name.to_sym]
@@ -46,6 +46,20 @@ class AdminAssistant
       end
     end
     
+    def html_for_form(column, record, form)
+      html_method = "#{column.name}_html_for_form"
+      hff = respond_to?(html_method) && self.send(html_method, record)
+      hff ||= if column.respond_to?(:add_to_form)
+        column.add_to_form(form)
+      else
+        html_for_form_column_and_record column, record
+      end
+      if ah = after_html_for_form(column, record)
+        hff << ah
+      end
+      hff
+    end
+    
     def html_for_index(column, record)
       html_for_index_method = "#{column.name}_html_for_index"
       hfi = if respond_to?(html_for_index_method)
@@ -57,20 +71,6 @@ class AdminAssistant
       end
       hfi = '&nbsp;' if hfi.blank?
       hfi
-    end
-    
-    def html_for_form(column, record, form)
-      html_method = "#{column.name}_html_for_form"
-      hff = respond_to?(html_method) && self.send(html_method, record)
-      hff ||= if column.respond_to?(:add_to_form)
-        column.add_to_form(form)
-      else
-        html_for_column_and_record column, record
-      end
-      if ah = after_html_for_form(column, record)
-        hff << ah
-      end
-      hff
     end
   end
 end
