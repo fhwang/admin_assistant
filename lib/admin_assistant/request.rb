@@ -9,6 +9,17 @@ class AdminAssistant
         @controller.action_name
       end
       
+      def after_form_html_template
+        File.join(
+          RAILS_ROOT, 'app/views/', @controller.controller_path, 
+          '_after_form.html.erb'
+        )
+      end
+      
+      def after_form_html_template_exists?
+        File.exist? after_form_html_template
+      end
+      
       def model_class
         @admin_assistant.model_class
       end
@@ -44,22 +55,20 @@ class AdminAssistant
         render_form 'update'
       end
       
+      def render_after_form
+        @controller.send(
+          :render_to_string,
+          :file => after_form_html_template, :layout => false
+        )
+      end
+      
       def render_form(action)
         options = {
           :file => template_file('form'), :layout => true,
           :locals => {:form => Form.new(@record, action, @admin_assistant)}
         }
         html = @controller.send(:render_to_string, options)
-        after_form_html_template = File.join(
-          RAILS_ROOT, 'app/views/', @controller.controller_path, 
-          '_after_form.html.erb'
-        )
-        if File.exist?(after_form_html_template)
-          html << @controller.send(
-            :render_to_string,
-            :file => after_form_html_template, :layout => false
-          )
-        end
+        html << render_after_form if after_form_html_template_exists?
         @controller.send :render, :text => html
       end
 
