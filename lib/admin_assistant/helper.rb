@@ -7,7 +7,7 @@ class AdminAssistant
     def after_html_for_form(column, record)
       after_html_template = File.join(
         RAILS_ROOT, 'app/views', controller.controller_path,
-        "_after_#{column.name}_html_for_form.html.erb"
+        "_after_#{column.name}_input.html.erb"
       )
       if File.exist?(after_html_template)
         render(
