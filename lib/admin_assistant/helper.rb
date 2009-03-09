@@ -19,6 +19,10 @@ class AdminAssistant
       end
     end
     
+    def controller_css_class
+      controller.controller_path.gsub(%r|/|, '_')
+    end
+    
     def field_value(record, column)
       value_method = "#{column.name}_value"
       fv = if respond_to?(value_method)

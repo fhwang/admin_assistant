@@ -539,6 +539,10 @@ describe Admin::BlogPostsController do
       end
       response.should_not have_tag("option[value='']")
     end
+    
+    it 'should set the controller path as a CSS class' do
+      response.should have_tag("div[class~=admin_blog_posts]")
+    end
   end
   
   describe '#update' do
