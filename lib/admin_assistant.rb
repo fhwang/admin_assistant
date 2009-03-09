@@ -114,6 +114,15 @@ class AdminAssistant
       super
       @inputs = {}
       @submit_buttons = []
+      @read_only = []
+    end
+    
+    def read_only(*args)
+      if args.empty?
+        @read_only
+      else
+        args.each do |arg| @read_only << arg.to_s; end
+      end
     end
   end
   

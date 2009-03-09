@@ -65,7 +65,9 @@ class AdminAssistant
       else
         html_method = "#{column.name}_html_for_form"
         hff = respond_to?(html_method) && self.send(html_method, record)
-        hff ||= if column.respond_to?(:add_to_form)
+        hff ||= if @admin_assistant.form_settings.read_only.include?(column.name)
+          field_value(record, column)
+        elsif column.respond_to?(:add_to_form)
           column.add_to_form(form)
         else
           html_for_form_column_and_record column, record
