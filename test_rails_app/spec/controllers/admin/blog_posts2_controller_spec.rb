@@ -145,7 +145,7 @@ describe Admin::BlogPosts2Controller do
       
       it 'should show a sort link for users' do
         assert_a_tag_with_get_args(
-          'User', '/admin/blog_posts2',
+          'Author', '/admin/blog_posts2',
           {:sort => 'user', :sort_order => 'asc'}, response.body
         )
       end
@@ -271,6 +271,10 @@ describe Admin::BlogPosts2Controller do
            type="checkbox"[^>]*name="blog_post\[textile\])
         !x
       )
+    end
+    
+    it "should say 'Author' instead of 'User'" do
+      response.body.should match(/Author/)
     end
   end
   

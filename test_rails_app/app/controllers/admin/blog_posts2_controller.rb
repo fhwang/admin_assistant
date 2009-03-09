@@ -2,6 +2,8 @@ class Admin::BlogPosts2Controller < ApplicationController
   layout 'admin'
 
   admin_assistant_for BlogPost do |a|
+    a.label :user, 'Author'
+    
     # For the index view:
     a.index do |index|
       # Only show these columns

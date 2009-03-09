@@ -6,7 +6,7 @@ class AdminAssistant
     
     def column_from_name(name)
       ar_column = @admin_assistant.model_class.columns_hash[name.to_s]
-      if ar_column
+      column = if ar_column
         ActiveRecordColumn.new(ar_column)
       else
         associations = model_class.reflect_on_all_associations
@@ -18,6 +18,10 @@ class AdminAssistant
           AdminAssistantColumn.new(name)
         end
       end
+      if column && (custom = @admin_assistant.custom_column_labels[name.to_s])
+        column.custom_label = custom
+      end
+      column
     end
     
     def column_name_or_assoc_name(name)
@@ -69,10 +73,12 @@ class AdminAssistant
   end
   
   class Column
-    attr_accessor :sort_order
+    attr_accessor :custom_label, :sort_order
     
     def label
-      if name.to_s == 'id'
+      if @custom_label
+        @custom_label
+      elsif name.to_s == 'id'
         'ID'
       else
         name.to_s.capitalize.gsub(/_/, ' ') 

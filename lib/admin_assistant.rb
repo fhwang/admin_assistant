@@ -5,7 +5,8 @@ require 'admin_assistant/request'
 require 'will_paginate'
 
 class AdminAssistant
-  attr_reader :form_settings, :index_settings, :model_class
+  attr_reader :custom_column_labels, :form_settings, :index_settings, 
+              :model_class
   attr_accessor :actions
   
   def initialize(controller_class, model_class)
@@ -13,6 +14,7 @@ class AdminAssistant
     @actions = [:index, :create, :update, :delete]
     @form_settings = FormSettings.new self
     @index_settings = IndexSettings.new self
+    @custom_column_labels = {}
   end
   
   def dispatch_to_request_method(request_method, controller)
@@ -55,6 +57,10 @@ class AdminAssistant
     
     def actions(*a)
       @admin_assistant.actions = a
+    end
+    
+    def label(column, label)
+      @admin_assistant.custom_column_labels[column.to_s] = label
     end
       
     def form
