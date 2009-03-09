@@ -8,9 +8,14 @@ class Admin::UsersController < ApplicationController
   
   # Run after a user is created
   def after_create(user)
-    letters = 'abcdefghijklmnopqrstuvwxyz'.split //
-    random_passwd = (1..10).to_a.map { letters[rand(letters.size)] }.join('')
-    user.password = random_passwd
+    user.reset_password
     user.save
+  end
+  
+  # If 'reset_password' is checked, reset the password
+  def before_update(user)
+    if params[:reset_password]
+      user.reset_password
+    end
   end
 end

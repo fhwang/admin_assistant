@@ -16,6 +16,9 @@ class AdminAssistant
             @admin_assistant.model_class.name.underscore.to_sym => record
           }
         )
+      else
+        helper_method = "after_#{column.name}_input"
+        self.send(helper_method, record) if respond_to?(helper_method)
       end
     end
     

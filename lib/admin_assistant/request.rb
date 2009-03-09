@@ -154,6 +154,13 @@ class AdminAssistant
           render_edit
         end
       end
+      
+      def save
+        if @controller.respond_to?(:before_update)
+          @controller.send(:before_update, @record)
+        end
+        super
+      end
     end
   end
 end
