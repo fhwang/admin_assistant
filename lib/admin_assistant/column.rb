@@ -4,6 +4,22 @@ class AdminAssistant
       columns.select { |c| c.is_a?(BelongsToColumn) }
     end
     
+    def column_from_name(name)
+      ar_column = @admin_assistant.model_class.columns_hash[name.to_s]
+      if ar_column
+        associations = model_class.reflect_on_all_associations
+        if belongs_to_assoc = associations.detect { |assoc|
+          assoc.macro == :belongs_to && assoc.association_foreign_key == name
+        }
+          BelongsToColumn.new(belongs_to_assoc)
+        else
+          ActiveRecordColumn.new(ar_column)
+        end
+      else
+        AdminAssistantColumn.new(name)
+      end
+    end
+    
     def columns
       column_names = @admin_assistant.send(
         "#{self.class.name.split(/::/).last.downcase}_settings"
@@ -14,21 +30,8 @@ class AdminAssistant
       }
       column_names.each do |column_name|
         if columns.all? { |column| !column.contains?(column_name) }
-          ar_column =
-              @admin_assistant.model_class.columns_hash[column_name.to_s]
-          if ar_column
-            associations = model_class.reflect_on_all_associations
-            if belongs_to_assoc = associations.detect { |assoc|
-              assoc.macro == :belongs_to &&
-                  assoc.association_foreign_key == column_name
-            }
-              columns << BelongsToColumn.new(belongs_to_assoc)
-            else
-              columns << ActiveRecordColumn.new(ar_column)
-            end
-          else
-            columns << AdminAssistantColumn.new(column_name)
-          end
+          column = column_from_name column_name
+          columns << column if column
         end
       end
       columns

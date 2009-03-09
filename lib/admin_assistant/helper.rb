@@ -32,6 +32,20 @@ class AdminAssistant
       fv
     end
     
+    def html_for_column_and_record(column, record)
+      input_name =
+          "#{@admin_assistant.model_class.name.underscore}[#{column.name}]"
+      input_type = @admin_assistant.form_settings.inputs[column.name.to_sym]
+      if input_type
+        if input_type == :check_box
+          check_box_tag(input_name, '1', field_value(record, column)) +
+              hidden_field_tag(input_name, '0')
+        end
+      else
+        text_field_tag(input_name, field_value(record, column))
+      end
+    end
+    
     def html_for_index(column, record)
       html_for_index_method = "#{column.name}_html_for_index"
       hfi = if respond_to?(html_for_index_method)
@@ -51,17 +65,7 @@ class AdminAssistant
       hff ||= if column.respond_to?(:add_to_form)
         column.add_to_form(form)
       else
-        input_name =
-            "#{@admin_assistant.model_class.name.underscore}[#{column.name}]"
-        input_type = @admin_assistant.form_settings.inputs[column.name.to_sym]
-        if input_type
-          if input_type == :check_box
-            check_box_tag(input_name, '1', field_value(record, column)) +
-                hidden_field_tag(input_name, '0')
-          end
-        else
-          text_field_tag(input_name, field_value(record, column))
-        end
+        html_for_column_and_record column, record
       end
       if ah = after_html_for_form(column, record)
         hff << ah

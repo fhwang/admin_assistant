@@ -9,6 +9,13 @@ class AdminAssistant
       @url_params = url_params
     end
     
+    def add_search_terms(ar_query)
+      searchable_columns.each do |column|
+        ar_query.condition_sqls << "#{column.name} like ?"
+        ar_query.bind_vars << "%#{search_terms}%"
+      end
+    end
+    
     def belongs_to_sort_column
       belongs_to_columns.detect { |btc|
         btc.name.to_s == @url_params[:sort]
@@ -25,6 +32,10 @@ class AdminAssistant
         end
       end
       c
+    end
+    
+    def conditions
+      @admin_assistant.index_settings.conditions
     end
     
     def default_column_names
@@ -71,16 +82,10 @@ class AdminAssistant
           :per_page => 25, :page => @url_params[:page]
         )
         ar_query.boolean_join = :or
-        if search_terms
-          searchable_columns.each do |column|
-            ar_query.condition_sqls << "#{column.name} like ?"
-            ar_query.bind_vars << "%#{search_terms}%"
-          end
-        end
-        if @admin_assistant.index_settings.conditions
-          conditions =
-              @admin_assistant.index_settings.conditions.call(@url_params)
-          ar_query.condition_sqls << conditions if conditions
+        add_search_terms(ar_query) if search_terms
+        if conditions
+          conditions_sql = conditions.call @url_params
+          ar_query.condition_sqls << conditions_sql if conditions_sql
         end
         @records = model_class.paginate :all, ar_query
       end
