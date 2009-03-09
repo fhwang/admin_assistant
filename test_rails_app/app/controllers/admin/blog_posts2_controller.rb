@@ -7,7 +7,7 @@ class Admin::BlogPosts2Controller < ApplicationController
     # For the index view:
     a.index do |index|
       # Only show these columns
-      index.columns :user, :title, :tags, :published_at
+      index.columns :user, :title, :tags, :published_at, :textile
       
       # Add the link 'All' to the top-right corner
       index.actions['All'] = {:all => '1'}
@@ -20,6 +20,10 @@ class Admin::BlogPosts2Controller < ApplicationController
       
       # Sort by published_at descending, then updated_at descending
       index.sort_by "published_at desc, updated_at desc"
+      
+      # When showing the textile field, say 'Yes' and 'No' instead of 'true'
+      # and 'false'
+      index.boolean_labels :textile => %w(Yes No)
     end
     
     # For any form page:

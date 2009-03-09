@@ -114,6 +114,10 @@ class AdminAssistant
       column_name.to_s == @ar_column.name
     end
     
+    def field_value(record)
+      record.send(name) if record.respond_to?(name)
+    end
+    
     def name
       @ar_column.name
     end
@@ -122,7 +126,7 @@ class AdminAssistant
       name
     end
     
-    def type
+    def sql_type
       @ar_column.type
     end
   end
@@ -134,11 +138,12 @@ class AdminAssistant
       @name = name.to_s
     end
     
-    def belongs_to_assoc
-    end
-    
     def contains?(column_name)
       column_name.to_s == @name
+    end
+    
+    def field_value(record)
+      nil
     end
   end
   

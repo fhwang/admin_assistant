@@ -124,6 +124,17 @@ class AdminAssistant
       super
       @actions = {}
       @sort_by = 'id desc'
+      @boolean_labels = {}
+    end
+    
+    def boolean_labels(*args)
+      if args.size == 1
+        args.first.each do |column_name, pairs|
+          @boolean_labels[column_name.to_s] = pairs
+        end
+      else
+        @boolean_labels
+      end
     end
     
     def conditions(&block)

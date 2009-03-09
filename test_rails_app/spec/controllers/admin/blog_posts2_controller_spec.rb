@@ -153,6 +153,10 @@ describe Admin::BlogPosts2Controller do
       it "should say username because that's one of our default name fields" do
         response.should have_tag('td', :text => 'soren')
       end
+      
+      it "should say 'Yes' or 'No' for the textile field" do
+        response.body.should match(/No/)
+      end
     end
     
     describe 'when there is one published post and one unpublished post' do
