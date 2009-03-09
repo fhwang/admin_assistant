@@ -1,10 +1,10 @@
 class AdminAssistant
   module ColumnsMethods
     def belongs_to_columns
-      columns_without_options.select { |c| c.is_a?(BelongsToColumn) }
+      columns.select { |c| c.is_a?(BelongsToColumn) }
     end
     
-    def columns_without_options
+    def columns
       column_names = @admin_assistant.send(
         "#{self.class.name.split(/::/).last.downcase}_settings"
       ).column_names
@@ -127,17 +127,19 @@ class AdminAssistant
     def add_to_form(form)
       form.select(
         @belongs_to_assoc.association_foreign_key,
-        @belongs_to_assoc.klass.find(:all).map { |model| 
+        associated_class.find(:all).map { |model| 
           [model.send(default_name_method), model.id]
         }
       )
     end
     
+    def associated_class
+      @belongs_to_assoc.klass
+    end
+    
     def default_name_method
       [:name, :title, :login, :username].detect { |m|
-        @belongs_to_assoc.klass.columns.any? { |column|
-          column.name.to_s == m.to_s
-        }
+        associated_class.columns.any? { |column| column.name.to_s == m.to_s }
       }
     end
     
@@ -148,10 +150,6 @@ class AdminAssistant
       elsif assoc_value && default_name_method
         assoc_value.send default_name_method
       end
-    end
-    
-    def label
-      @belongs_to_assoc.name.to_s.capitalize.gsub(/_/, ' ') 
     end
     
     def name

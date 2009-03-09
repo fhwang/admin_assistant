@@ -16,10 +16,10 @@ class AdminAssistant
     end
     
     def columns
-      c = columns_without_options
-      if sort_column
+      c = super
+      if @url_params[:sort]
         c.each do |column|
-          if column.name == sort_column.name.to_s
+          if column.name == @url_params[:sort]
             column.sort_order = sort_order
           end
         end
@@ -103,7 +103,7 @@ class AdminAssistant
     
     def sort_column
       if @url_params[:sort]
-        columns_without_options.detect { |c|
+        columns.detect { |c|
           c.name.to_s == @url_params[:sort]
         } || belongs_to_sort_column
       end
