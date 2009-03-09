@@ -48,12 +48,25 @@ class AdminAssistant
     end
     
     def html_for_form(column, record, form)
-      html_method = "#{column.name}_html_for_form"
-      hff = respond_to?(html_method) && self.send(html_method, record)
-      hff ||= if column.respond_to?(:add_to_form)
-        column.add_to_form(form)
+      template = File.join(
+        RAILS_ROOT, 'app/views', controller.controller_path,
+        "_#{column.name}_input.html.erb"
+      )
+      hff = if File.exist?(template)
+        render(
+          :file => template,
+          :locals => {
+            @admin_assistant.model_class.name.underscore.to_sym => record
+          }
+        )
       else
-        html_for_form_column_and_record column, record
+        html_method = "#{column.name}_html_for_form"
+        hff = respond_to?(html_method) && self.send(html_method, record)
+        hff ||= if column.respond_to?(:add_to_form)
+          column.add_to_form(form)
+        else
+          html_for_form_column_and_record column, record
+        end
       end
       if ah = after_html_for_form(column, record)
         hff << ah

@@ -1,0 +1,8 @@
+$
+<%= text_field_tag(
+  "product[price][dollars]", ((product.price / 100) if product.price)
+) %>
+.
+<%= text_field_tag(
+  "product[price][cents]", ((product.price % 100) if product.price)
+) %>
