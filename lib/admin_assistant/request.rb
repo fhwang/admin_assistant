@@ -51,10 +51,6 @@ class AdminAssistant
         @controller.send :redirect_to, url_params
       end
       
-      def render_edit
-        render_form 'update'
-      end
-      
       def render_after_form
         @controller.send(
           :render_to_string,
@@ -62,18 +58,12 @@ class AdminAssistant
         )
       end
       
-      def render_form(action)
-        options = {
-          :file => template_file('form'), :layout => true,
-          :locals => {:form => Form.new(@record, action, @admin_assistant)}
-        }
-        html = @controller.send(:render_to_string, options)
+      def render_form
+        html = @controller.send(
+          :render_to_string, :file => template_file('form'), :layout => true
+        )
         html << render_after_form if after_form_html_template_exists?
         @controller.send :render, :text => html
-      end
-
-      def render_new
-        render_form 'create'
       end
       
       def render_template_file(template_name = action, options_plus = {})
@@ -102,7 +92,7 @@ class AdminAssistant
           redirect_after_save
         else
           @controller.instance_variable_set :@record, @record
-          render_new
+          render_form
         end
       end
       
@@ -119,7 +109,7 @@ class AdminAssistant
       def call
         @record = model_class.find @controller.params[:id]
         @controller.instance_variable_set :@record, @record
-        render_edit
+        render_form
       end
     end
     
@@ -139,7 +129,7 @@ class AdminAssistant
       def call
         @record = model_class.new
         @controller.instance_variable_set :@record, @record
-        render_new
+        render_form
       end
     end
     
@@ -151,7 +141,7 @@ class AdminAssistant
           redirect_after_save
         else
           @controller.instance_variable_set :@record, @record
-          render_edit
+          render_form
         end
       end
       

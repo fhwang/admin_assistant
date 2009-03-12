@@ -40,7 +40,7 @@ class AdminAssistant
     
     def columns
       column_names = @admin_assistant.send(
-        "#{self.class.name.split(/::/).last.downcase}_settings"
+        "#{self.class.name.split(/::/).last.gsub(/View/,'').downcase}_settings"
       ).column_names
       column_names = default_column_names unless column_names
       columns = paperclip_attachments.map { |paperclip_attachment|
