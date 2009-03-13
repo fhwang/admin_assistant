@@ -118,8 +118,18 @@ class AdminAssistant
       @url_params[:sort_order] || 'asc'
     end
     
-    def sort_possible?(column)
-      column.is_a?(ActiveRecordColumn) || column.is_a?(BelongsToColumn)
+    def view
+      View.new self
+    end
+    
+    class View
+      def initialize(index)
+        @index = index
+      end
+      
+      def columns
+        @index.columns.map { |c| ColumnView.new(c) }
+      end
     end
   end
 end

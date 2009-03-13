@@ -22,7 +22,7 @@ class AdminAssistant
       html_for_index_method = "#{column.name}_html_for_index"
       hfi = if respond_to?(html_for_index_method)
         self.send html_for_index_method, record
-      elsif column.is_a?(PaperclipColumn)
+      elsif column.paperclip?
         image_tag(record.send(column.name).url)
       else
         value = field_value(record, column)

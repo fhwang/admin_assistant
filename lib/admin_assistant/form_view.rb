@@ -61,6 +61,10 @@ class AdminAssistant
       hff
     end
     
+    def columns
+      super.map { |c| ColumnView.new(c) }
+    end
+    
     def controller
       @view.controller
     end

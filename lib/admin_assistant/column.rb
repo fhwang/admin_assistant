@@ -72,17 +72,18 @@ class AdminAssistant
     end
   end
   
-  class Column
-    attr_accessor :custom_label, :sort_order
+  class ColumnView < Delegator
+    def initialize(column)
+      super
+      @column = column
+    end
     
-    def label
-      if @custom_label
-        @custom_label
-      elsif name.to_s == 'id'
-        'ID'
-      else
-        name.to_s.capitalize.gsub(/_/, ' ') 
-      end
+    def __getobj__
+      @column
+    end
+    
+    def __setobj__(column)
+      @column = column
     end
     
     def index_header_css_class
@@ -91,6 +92,28 @@ class AdminAssistant
     
     def index_td_css_class
       'sort' if sort_order
+    end
+    
+    def label
+      if @column.custom_label
+        @column.custom_label
+      elsif @column.name.to_s == 'id'
+        'ID'
+      else
+        @column.name.to_s.capitalize.gsub(/_/, ' ') 
+      end
+    end
+    
+    def sort_possible?
+      @column.is_a?(ActiveRecordColumn) || @column.is_a?(BelongsToColumn)
+    end
+  end
+  
+  class Column
+    attr_accessor :custom_label, :sort_order
+    
+    def paperclip?
+      false
     end
   end
   
@@ -220,6 +243,10 @@ class AdminAssistant
       column_name.to_s == @name ||
       column_name.to_s =~
           /^#{@name}_(file_name|content_type|file_size|updated_at)$/
+    end
+    
+    def paperclip?
+      true
     end
   end
 end
