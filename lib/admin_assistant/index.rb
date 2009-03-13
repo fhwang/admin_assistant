@@ -118,17 +118,17 @@ class AdminAssistant
       @url_params[:sort_order] || 'asc'
     end
     
-    def view
-      View.new self
+    def view(action_view)
+      View.new self, action_view
     end
     
     class View
-      def initialize(index)
-        @index = index
+      def initialize(index, action_view)
+        @index, @action_view = index, action_view
       end
       
       def columns
-        @index.columns.map { |c| c.view }
+        @index.columns.map { |c| c.view(@action_view) }
       end
     end
   end

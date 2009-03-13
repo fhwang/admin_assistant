@@ -75,15 +75,15 @@ class AdminAssistant
   class Column
     attr_accessor :custom_label, :sort_order
 
-    def view
+    def view(action_view)
       klass = self.class.const_get 'View'
-      klass.new self
+      klass.new self, action_view
     end
   
     class View < Delegator
-      def initialize(column)
-        super
-        @column = column
+      def initialize(column, action_view)
+        super(column)
+        @column, @action_view = column, action_view
       end
       
       def __getobj__
@@ -127,23 +127,8 @@ class AdminAssistant
       @ar_column = ar_column
     end
     
-    def add_to_form(form)
-      case @ar_column.type
-        when :text
-          form.text_area name
-        when :boolean
-          form.check_box name
-        else
-          form.text_field name
-        end
-    end
-    
     def contains?(column_name)
       column_name.to_s == @ar_column.name
-    end
-    
-    def field_value(record)
-      record.send(name) if record.respond_to?(name)
     end
     
     def name
@@ -159,6 +144,20 @@ class AdminAssistant
     end
     
     class View < AdminAssistant::Column::View
+      def add_to_form(form)
+        case @column.sql_type
+          when :text
+            form.text_area name
+          when :boolean
+            form.check_box name
+          else
+            form.text_field name
+          end
+      end
+
+      def field_value(record)
+        record.send(name) if record.respond_to?(name)
+      end
     end
   end
   
@@ -173,11 +172,10 @@ class AdminAssistant
       column_name.to_s == @name
     end
     
-    def field_value(record)
-      nil
-    end
-    
     class View < AdminAssistant::Column::View
+      def field_value(record)
+        nil
+      end
     end
   end
   
@@ -186,17 +184,12 @@ class AdminAssistant
       @belongs_to_assoc = belongs_to_assoc
     end
     
-    def add_to_form(form)
-      form.select(
-        @belongs_to_assoc.association_foreign_key,
-        associated_class.find(:all).map { |model| 
-          [model.send(default_name_method), model.id]
-        }
-      )
-    end
-    
     def associated_class
       @belongs_to_assoc.klass
+    end
+    
+    def association_foreign_key
+      @belongs_to_assoc.association_foreign_key
     end
     
     def contains?(column_name)
@@ -207,15 +200,6 @@ class AdminAssistant
       [:name, :title, :login, :username].detect { |m|
         associated_class.columns.any? { |column| column.name.to_s == m.to_s }
       }
-    end
-    
-    def field_value(record)
-      assoc_value = record.send name
-      if assoc_value.respond_to?(:name_for_admin_assistant)
-        assoc_value.name_for_admin_assistant
-      elsif assoc_value && default_name_method
-        assoc_value.send default_name_method
-      end
     end
     
     def name
@@ -236,6 +220,23 @@ class AdminAssistant
     end
     
     class View < AdminAssistant::Column::View
+      def add_to_form(form)
+        form.select(
+          association_foreign_key,
+          associated_class.find(:all).map { |model| 
+            [model.send(default_name_method), model.id]
+          }
+        )
+      end
+    
+      def field_value(record)
+        assoc_value = record.send name
+        if assoc_value.respond_to?(:name_for_admin_assistant)
+          assoc_value.name_for_admin_assistant
+        elsif assoc_value && default_name_method
+          assoc_value.send default_name_method
+        end
+      end
     end
   end
   
@@ -246,13 +247,6 @@ class AdminAssistant
       @name = name.to_s
     end
     
-    def add_to_form(form)
-      form.file_field name
-    end
-    
-    def belongs_to_assoc
-    end
-    
     def contains?(column_name)
       column_name.to_s == @name ||
       column_name.to_s =~
@@ -260,6 +254,13 @@ class AdminAssistant
     end
     
     class View < AdminAssistant::Column::View
+      def add_to_form(form)
+        form.file_field name
+      end
+      
+      def index_html(record)
+        @action_view.image_tag record.send(@column.name).url
+      end
     end
   end
 end

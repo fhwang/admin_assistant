@@ -22,8 +22,8 @@ class AdminAssistant
       html_for_index_method = "#{column.name}_html_for_index"
       hfi = if respond_to?(html_for_index_method)
         self.send html_for_index_method, record
-      elsif column.paperclip?
-        image_tag(record.send(column.name).url)
+      elsif column.respond_to?(:index_html)
+        column.index_html record
       else
         value = field_value(record, column)
         if column.respond_to?(:sql_type) && column.sql_type == :boolean

@@ -2,8 +2,9 @@ class AdminAssistant
   class FormView
     include ColumnsMethods
 
-    def initialize(record, admin_assistant, view)
-      @record, @admin_assistant, @view = record, admin_assistant, view
+    def initialize(record, admin_assistant, action_view)
+      @record, @admin_assistant, @action_view =
+          record, admin_assistant, action_view
     end
     
     def action
@@ -20,7 +21,7 @@ class AdminAssistant
         "_after_#{column.name}_input.html.erb"
       )
       if File.exist?(after_html_template)
-        @view.render(
+        @action_view.render(
           :file => after_html_template,
           :locals => {
             @admin_assistant.model_class.name.underscore.to_sym => @record
@@ -28,7 +29,9 @@ class AdminAssistant
         )
       else
         helper_method = "after_#{column.name}_input"
-        @view.send(helper_method, @record) if @view.respond_to?(helper_method)
+        if @action_view.respond_to?(helper_method)
+          @action_view.send(helper_method, @record)
+        end
       end
     end
     
@@ -38,7 +41,7 @@ class AdminAssistant
         "_#{column.name}_input.html.erb"
       )
       hff = if File.exist?(template)
-        @view.render(
+        @action_view.render(
           :file => template,
           :locals => {
             @admin_assistant.model_class.name.underscore.to_sym => @record
@@ -46,9 +49,11 @@ class AdminAssistant
         )
       else
         html_method = "#{column.name}_html_for_form"
-        hff = @view.respond_to?(html_method) && @view.send(html_method, @record)
+        hff = if @action_view.respond_to?(html_method)
+          @action_view.send(html_method, @record)
+        end
         hff ||= if @admin_assistant.form_settings.read_only.include?(column.name)
-          @view.send(:field_value, @record, column)
+          @action_view.send(:field_value, @record, column)
         elsif column.respond_to?(:add_to_form)
           column.add_to_form(rails_form)
         else
@@ -62,11 +67,11 @@ class AdminAssistant
     end
     
     def columns
-      super.map { |c| c.view }
+      super.map { |c| c.view(@action_view) }
     end
     
     def controller
-      @view.controller
+      @action_view.controller
     end
     
     def default_column_names
@@ -97,14 +102,14 @@ class AdminAssistant
       input_name =
           "#{@admin_assistant.model_class.name.underscore}[#{column.name}]"
       input_type = @admin_assistant.form_settings.inputs[column.name.to_sym]
-      fv = @view.send(:field_value, @record, column)
+      fv = @action_view.send(:field_value, @record, column)
       if input_type
         if input_type == :check_box
-          @view.send(:check_box_tag, input_name, '1', fv) +
-              @view.send(:hidden_field_tag, input_name, '0')
+          @action_view.send(:check_box_tag, input_name, '1', fv) +
+              @action_view.send(:hidden_field_tag, input_name, '0')
         end
       else
-        @view.send(:text_field_tag, input_name, fv)
+        @action_view.send(:text_field_tag, input_name, fv)
       end
     end
   end
