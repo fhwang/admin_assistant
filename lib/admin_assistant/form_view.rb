@@ -62,7 +62,7 @@ class AdminAssistant
     end
     
     def columns
-      super.map { |c| ColumnView.new(c) }
+      super.map { |c| c.view }
     end
     
     def controller

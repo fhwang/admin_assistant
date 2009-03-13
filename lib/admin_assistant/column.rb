@@ -72,48 +72,53 @@ class AdminAssistant
     end
   end
   
-  class ColumnView < Delegator
-    def initialize(column)
-      super
-      @column = column
-    end
-    
-    def __getobj__
-      @column
-    end
-    
-    def __setobj__(column)
-      @column = column
-    end
-    
-    def index_header_css_class
-      "sort #{sort_order}" if sort_order
-    end
-    
-    def index_td_css_class
-      'sort' if sort_order
-    end
-    
-    def label
-      if @column.custom_label
-        @column.custom_label
-      elsif @column.name.to_s == 'id'
-        'ID'
-      else
-        @column.name.to_s.capitalize.gsub(/_/, ' ') 
-      end
-    end
-    
-    def sort_possible?
-      @column.is_a?(ActiveRecordColumn) || @column.is_a?(BelongsToColumn)
-    end
-  end
-  
   class Column
     attr_accessor :custom_label, :sort_order
-    
-    def paperclip?
-      false
+
+    def view
+      klass = self.class.const_get 'View'
+      klass.new self
+    end
+  
+    class View < Delegator
+      def initialize(column)
+        super
+        @column = column
+      end
+      
+      def __getobj__
+        @column
+      end
+      
+      def __setobj__(column)
+        @column = column
+      end
+      
+      def index_header_css_class
+        "sort #{sort_order}" if sort_order
+      end
+      
+      def index_td_css_class
+        'sort' if sort_order
+      end
+      
+      def label
+        if @column.custom_label
+          @column.custom_label
+        elsif @column.name.to_s == 'id'
+          'ID'
+        else
+          @column.name.to_s.capitalize.gsub(/_/, ' ') 
+        end
+      end
+      
+      def paperclip?
+        @column.is_a?(PaperclipColumn)
+      end
+      
+      def sort_possible?
+        @column.is_a?(ActiveRecordColumn) || @column.is_a?(BelongsToColumn)
+      end
     end
   end
   
@@ -152,6 +157,9 @@ class AdminAssistant
     def sql_type
       @ar_column.type
     end
+    
+    class View < AdminAssistant::Column::View
+    end
   end
   
   class AdminAssistantColumn < Column
@@ -167,6 +175,9 @@ class AdminAssistant
     
     def field_value(record)
       nil
+    end
+    
+    class View < AdminAssistant::Column::View
     end
   end
   
@@ -223,6 +234,9 @@ class AdminAssistant
         @belongs_to_assoc.association_foreign_key
       end
     end
+    
+    class View < AdminAssistant::Column::View
+    end
   end
   
   class PaperclipColumn < Column
@@ -245,8 +259,7 @@ class AdminAssistant
           /^#{@name}_(file_name|content_type|file_size|updated_at)$/
     end
     
-    def paperclip?
-      true
+    class View < AdminAssistant::Column::View
     end
   end
 end

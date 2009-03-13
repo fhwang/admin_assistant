@@ -128,7 +128,7 @@ class AdminAssistant
       end
       
       def columns
-        @index.columns.map { |c| ColumnView.new(c) }
+        @index.columns.map { |c| c.view }
       end
     end
   end
