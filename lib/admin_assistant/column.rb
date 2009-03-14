@@ -1,31 +1,4 @@
 class AdminAssistant
-  module ColumnsMethods
-    def belongs_to_columns
-      columns.select { |c| c.is_a?(BelongsToColumn) }
-    end
-    
-    def columns
-      column_names = @admin_assistant.send(
-        "#{self.class.name.split(/::/).last.gsub(/View/,'').downcase}_settings"
-      ).column_names
-      column_names = default_column_names unless column_names
-      columns = @admin_assistant.paperclip_attachments.map { |pa|
-        PaperclipColumn.new pa
-      }
-      column_names.each do |column_name|
-        if columns.all? { |column| !column.contains?(column_name) }
-          column = @admin_assistant.column column_name
-          columns << column if column
-        end
-      end
-      columns
-    end
-    
-    def model_class
-      @admin_assistant.model_class
-    end
-  end
-  
   class Column
     attr_accessor :custom_label, :sort_order
 

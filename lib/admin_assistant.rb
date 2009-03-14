@@ -51,6 +51,19 @@ class AdminAssistant
     end
     result
   end
+    
+  def columns(names)
+    columns = paperclip_attachments.map { |paperclip_attachment|
+      PaperclipColumn.new paperclip_attachment
+    }
+    names.each do |column_name|
+      if columns.all? { |column| !column.contains?(column_name) }
+        column = column column_name
+        columns << column if column
+      end
+    end
+    columns
+  end
   
   def dispatch_to_request_method(request_method, controller)
     controller.instance_variable_set :@admin_assistant, self

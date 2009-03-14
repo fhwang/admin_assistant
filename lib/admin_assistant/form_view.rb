@@ -1,7 +1,5 @@
 class AdminAssistant
   class FormView
-    include ColumnsMethods
-
     def initialize(record, admin_assistant, action_view)
       @record, @admin_assistant, @action_view =
           record, admin_assistant, action_view
@@ -66,20 +64,21 @@ class AdminAssistant
       hff
     end
     
+    def column_names
+      @admin_assistant.form_settings.column_names ||
+        @admin_assistant.model_class.columns.reject { |ar_column|
+          %w(id created_at updated_at).include?(ar_column.name)
+        }.map { |ar_column|
+          @admin_assistant.column_name_or_assoc_name(ar_column.name)
+        }
+    end
+    
     def columns
-      super.map { |c| c.view(@action_view) }
+      @admin_assistant.columns(column_names).map { |c| c.view(@action_view) }
     end
     
     def controller
       @action_view.controller
-    end
-    
-    def default_column_names
-      @admin_assistant.model_class.columns.reject { |ar_column|
-        %w(id created_at updated_at).include?(ar_column.name)
-      }.map { |ar_column|
-        @admin_assistant.column_name_or_assoc_name(ar_column.name)
-      }
     end
     
     def extra_submit_buttons

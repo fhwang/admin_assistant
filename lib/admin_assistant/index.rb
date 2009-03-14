@@ -2,8 +2,6 @@ require 'ar_query'
 
 class AdminAssistant
   class Index
-    include ColumnsMethods
-    
     def initialize(admin_assistant, url_params = {})
       @admin_assistant = admin_assistant
       @url_params = url_params
@@ -17,13 +15,13 @@ class AdminAssistant
     end
     
     def belongs_to_sort_column
-      belongs_to_columns.detect { |btc|
-        btc.name.to_s == @url_params[:sort]
+      columns.detect { |column|
+        column.is_a?(BelongsToColumn) && column.name.to_s == @url_params[:sort]
       }
     end
     
     def columns
-      c = super
+      c = @admin_assistant.columns column_names
       if @url_params[:sort]
         c.each do |column|
           if column.name == @url_params[:sort]
@@ -34,20 +32,25 @@ class AdminAssistant
       c
     end
     
-    def conditions
-      @admin_assistant.index_settings.conditions
+    def column_names
+      @admin_assistant.index_settings.column_names ||
+          model_class.columns.map { |c|
+            @admin_assistant.column_name_or_assoc_name(c.name)
+          }
     end
     
-    def default_column_names
-      model_class.columns.map { |c|
-        @admin_assistant.column_name_or_assoc_name(c.name)
-      }
+    def conditions
+      @admin_assistant.index_settings.conditions
     end
     
     def find_include
       if by_assoc = belongs_to_sort_column
         by_assoc.name
       end
+    end
+    
+    def model_class
+      @admin_assistant.model_class
     end
     
     def next_sort_params(column)
