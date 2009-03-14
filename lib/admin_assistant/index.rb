@@ -102,6 +102,10 @@ class AdminAssistant
       @url_params['search']
     end
     
+    def settings
+      @admin_assistant.index_settings
+    end
+    
     def sort
       @url_params[:sort]
     end
@@ -128,7 +132,11 @@ class AdminAssistant
       end
       
       def columns
-        @index.columns.map { |c| c.view(@action_view) }
+        @index.columns.map { |c|
+          opts = {}
+          opts[:boolean_labels] = @index.settings.boolean_labels[c.name]
+          c.view(@action_view, opts)
+        }
       end
     end
   end

@@ -56,7 +56,7 @@ show_search_form();
       <% @index.view(self).columns.each do |column| %>
         <% td_class = column.index_td_css_class %>
         <td<%= " class=\"#{td_class}\"" if td_class %>><%=
-          html_for_index(column, record)
+          column.index_html(record)
         %></td>
       <% end %>
       <% if @admin_assistant.update? %>

@@ -75,15 +75,15 @@ class AdminAssistant
   class Column
     attr_accessor :custom_label, :sort_order
 
-    def view(action_view)
+    def view(action_view, opts = {})
       klass = self.class.const_get 'View'
-      klass.new self, action_view
+      klass.new self, action_view, opts
     end
   
     class View < Delegator
-      def initialize(column, action_view)
+      def initialize(column, action_view, opts)
         super(column)
-        @column, @action_view = column, action_view
+        @column, @action_view, @opts = column, action_view, opts
       end
       
       def __getobj__
@@ -109,6 +109,17 @@ class AdminAssistant
       
       def index_td_css_class
         'sort' if sort_order
+      end
+      
+      def index_html(record)
+        html_for_index_method = "#{name}_html_for_index"
+        html = if @action_view.respond_to?(html_for_index_method)
+          @action_view.send html_for_index_method, record
+        else
+          @action_view.send(:h, index_value(record))
+        end
+        html = '&nbsp;' if html.blank?
+        html
       end
       
       def index_value(record)
@@ -162,6 +173,11 @@ class AdminAssistant
     end
     
     class View < AdminAssistant::Column::View
+      def initialize(column, action_view, opts)
+        super
+        @boolean_labels = opts[:boolean_labels]
+      end
+      
       def add_to_form(form)
         case @column.sql_type
           when :text
@@ -175,6 +191,14 @@ class AdminAssistant
 
       def field_value(record)
         record.send(name) if record.respond_to?(name)
+      end
+      
+      def index_value(record)
+        value = super
+        if @boolean_labels
+          value = value ? @boolean_labels.first : @boolean_labels.last
+        end
+        value
       end
     end
   end
