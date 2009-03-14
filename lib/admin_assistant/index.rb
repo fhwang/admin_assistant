@@ -21,22 +21,11 @@ class AdminAssistant
     end
     
     def columns
-      c = @admin_assistant.columns column_names
-      if @url_params[:sort]
-        c.each do |column|
-          if column.name == @url_params[:sort]
-            column.sort_order = sort_order
-          end
-        end
-      end
-      c
-    end
-    
-    def column_names
-      @admin_assistant.index_settings.column_names ||
+      column_names =  @admin_assistant.index_settings.column_names ||
           model_class.columns.map { |c|
             @admin_assistant.column_name_or_assoc_name(c.name)
           }
+      @admin_assistant.columns column_names
     end
     
     def conditions
@@ -51,20 +40,6 @@ class AdminAssistant
     
     def model_class
       @admin_assistant.model_class
-    end
-    
-    def next_sort_params(column)
-      name_for_sort = column.name_for_sort
-      next_sort_order = 'asc'
-      if @url_params[:sort] == name_for_sort
-        if sort_order == 'asc'
-          next_sort_order = 'desc'
-        else
-          name_for_sort = nil
-          next_sort_order = nil
-        end
-      end
-      {:sort => name_for_sort, :sort_order => next_sort_order}
     end
     
     def order_sql
@@ -138,9 +113,11 @@ class AdminAssistant
       
       def columns
         @index.columns.map { |c|
-          opts = {}
-          opts[:boolean_labels] = @index.settings.boolean_labels[c.name]
-          c.view(@action_view, opts)
+          c.view(
+            @action_view,
+            :boolean_labels => @index.settings.boolean_labels[c.name],
+            :sort_order => (@index.sort_order if c.name == @index.sort)
+          )
         }
       end
     end

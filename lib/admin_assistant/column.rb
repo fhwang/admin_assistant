@@ -1,6 +1,6 @@
 class AdminAssistant
   class Column
-    attr_accessor :custom_label, :sort_order
+    attr_accessor :custom_label
 
     def view(action_view, opts = {})
       klass = self.class.const_get 'View'
@@ -8,9 +8,12 @@ class AdminAssistant
     end
   
     class View < Delegator
+      attr_reader :sort_order
+      
       def initialize(column, action_view, opts)
         super(column)
         @column, @action_view, @opts = column, action_view, opts
+        @sort_order = opts[:sort_order]
       end
       
       def __getobj__
@@ -67,6 +70,20 @@ class AdminAssistant
           @column.name.to_s.capitalize.gsub(/_/, ' ') 
         end
       end
+    
+      def next_sort_params
+        name_for_sort = name
+        next_sort_order = 'asc'
+        if sort_order
+          if sort_order == 'asc'
+            next_sort_order = 'desc'
+          else
+            name_for_sort = nil
+            next_sort_order = nil
+          end
+        end
+        {:sort => name_for_sort, :sort_order => next_sort_order}
+      end
       
       def paperclip?
         @column.is_a?(PaperclipColumn)
@@ -89,10 +106,6 @@ class AdminAssistant
     
     def name
       @ar_column.name
-    end
-    
-    def name_for_sort
-      name
     end
     
     def sql_type
@@ -173,10 +186,6 @@ class AdminAssistant
     
     def name
       @belongs_to_assoc.name.to_s
-    end
-    
-    def name_for_sort
-      name
     end
     
     def order_sql_field

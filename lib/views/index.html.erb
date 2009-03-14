@@ -41,9 +41,7 @@ show_search_form();
       <% th_class = column.index_header_css_class %>
       <th<%= " class=\"#{th_class}\"" if th_class %>><%=
         if column.sort_possible?
-          link_to(
-            h(column.label), @index.next_sort_params(column)
-          )
+          link_to(h(column.label), column.next_sort_params)
         else
           h(column.label)
         end
