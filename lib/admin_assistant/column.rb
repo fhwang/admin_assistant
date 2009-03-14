@@ -94,12 +94,30 @@ class AdminAssistant
         @column = column
       end
       
+      def form_value(record)
+        value_method = "#{@column.name}_value"
+        if @action_view.respond_to?(value_method)
+          @action_view.send value_method, record
+        else
+          field_value record
+        end
+      end
+      
       def index_header_css_class
         "sort #{sort_order}" if sort_order
       end
       
       def index_td_css_class
         'sort' if sort_order
+      end
+      
+      def index_value(record)
+        value_method = "#{@column.name}_value"
+        if @action_view.respond_to?(value_method)
+          @action_view.send value_method, record
+        else
+          field_value record
+        end
       end
       
       def label

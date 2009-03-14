@@ -53,7 +53,7 @@ class AdminAssistant
           @action_view.send(html_method, @record)
         end
         hff ||= if @admin_assistant.form_settings.read_only.include?(column.name)
-          @action_view.send(:field_value, @record, column)
+          column.form_value(@record)
         elsif column.respond_to?(:add_to_form)
           column.add_to_form(rails_form)
         else
@@ -102,7 +102,7 @@ class AdminAssistant
       input_name =
           "#{@admin_assistant.model_class.name.underscore}[#{column.name}]"
       input_type = @admin_assistant.form_settings.inputs[column.name.to_sym]
-      fv = @action_view.send(:field_value, @record, column)
+      fv = column.form_value @record
       if input_type
         if input_type == :check_box
           @action_view.send(:check_box_tag, input_name, '1', fv) +

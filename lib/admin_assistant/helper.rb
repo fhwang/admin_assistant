@@ -8,16 +8,6 @@ class AdminAssistant
       controller.controller_path.gsub(%r|/|, '_')
     end
     
-    def field_value(record, column)
-      value_method = "#{column.name}_value"
-      fv = if respond_to?(value_method)
-        self.send value_method, record
-      else
-        column.field_value record
-      end
-      fv
-    end
-    
     def html_for_index(column, record)
       html_for_index_method = "#{column.name}_html_for_index"
       hfi = if respond_to?(html_for_index_method)
@@ -25,7 +15,7 @@ class AdminAssistant
       elsif column.respond_to?(:index_html)
         column.index_html record
       else
-        value = field_value(record, column)
+        value = column.index_value record
         if column.respond_to?(:sql_type) && column.sql_type == :boolean
           custom = @admin_assistant.index_settings.boolean_labels[column.name]
           if custom
