@@ -1,3 +1,4 @@
+require 'admin_assistant/builder'
 require 'admin_assistant/column'
 require 'admin_assistant/form_view'
 require 'admin_assistant/helper'
@@ -18,15 +19,18 @@ class AdminAssistant
     @custom_column_labels = {}
   end
   
+  def belongs_to_assoc(name)
+    model_class.reflect_on_all_associations.detect { |assoc|
+      assoc.macro == :belongs_to && assoc.name.to_s == name.to_s
+    }
+  end
+  
   def column(name)
     ar_column = model_class.columns_hash[name.to_s]
     column = if ar_column
       ActiveRecordColumn.new(ar_column)
     else
-      associations = model_class.reflect_on_all_associations
-      if belongs_to_assoc = associations.detect { |assoc|
-        assoc.macro == :belongs_to && assoc.name.to_s == name.to_s
-      }
+      if belongs_to_assoc = belongs_to_assoc(name)
         BelongsToColumn.new(belongs_to_assoc)
       else
         AdminAssistantColumn.new(name)
@@ -57,7 +61,7 @@ class AdminAssistant
       PaperclipColumn.new paperclip_attachment
     }
     names.each do |column_name|
-      if columns.all? { |column| !column.contains?(column_name) }
+      unless columns.any? { |column| column.contains?(column_name) }
         column = column column_name
         columns << column if column
       end
@@ -108,30 +112,6 @@ class AdminAssistant
     {:controller => @controller_class.controller_path, :action => a}
   end
   
-  class Builder
-    attr_reader :admin_assistant
-    
-    def initialize(admin_assistant)
-      @admin_assistant = admin_assistant
-    end
-    
-    def actions(*a)
-      @admin_assistant.actions = a
-    end
-    
-    def label(column, label)
-      @admin_assistant.custom_column_labels[column.to_s] = label
-    end
-      
-    def form
-      yield @admin_assistant.form_settings
-    end
-      
-    def index
-      yield @admin_assistant.index_settings
-    end
-  end
-  
   module ControllerMethods
     def self.included(controller)
       controller.extend ControllerClassMethods
@@ -151,70 +131,6 @@ class AdminAssistant
         self.send(:define_method, action) do
           self.class.admin_assistant.send(action, self)
         end
-      end
-    end
-  end
-  
-  class Settings
-    attr_reader :column_names
-    
-    def initialize(admin_assistant)
-      @admin_assistant = admin_assistant
-    end
-    
-    def columns(*args)
-      @column_names = args
-    end
-  end
-  
-  class FormSettings < Settings
-    attr_reader :inputs, :submit_buttons
-    
-    def initialize(admin_assistant)
-      super
-      @inputs = {}
-      @submit_buttons = []
-      @read_only = []
-    end
-    
-    def read_only(*args)
-      if args.empty?
-        @read_only
-      else
-        args.each do |arg| @read_only << arg.to_s; end
-      end
-    end
-  end
-  
-  class IndexSettings < Settings
-    attr_reader :actions, :sort_by
-    
-    def initialize(admin_assistant)
-      super
-      @actions = {}
-      @sort_by = 'id desc'
-      @boolean_labels = {}
-    end
-    
-    def boolean_labels(*args)
-      if args.size == 1
-        args.first.each do |column_name, pairs|
-          @boolean_labels[column_name.to_s] = pairs
-        end
-      else
-        @boolean_labels
-      end
-    end
-    
-    def conditions(&block)
-      block ? (@conditions = block) : @conditions
-    end
-    
-    def sort_by(*sb)
-      if sb.empty?
-        @sort_by
-      else
-        @sort_by = sb
       end
     end
   end

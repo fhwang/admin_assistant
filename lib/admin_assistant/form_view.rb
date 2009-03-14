@@ -14,17 +14,8 @@ class AdminAssistant
     end
     
     def after_column_html(column)
-      after_html_template = File.join(
-        RAILS_ROOT, 'app/views', controller.controller_path,
-        "_after_#{column.name}_input.html.erb"
-      )
-      if File.exist?(after_html_template)
-        @action_view.render(
-          :file => after_html_template,
-          :locals => {
-            @admin_assistant.model_class.name.underscore.to_sym => @record
-          }
-        )
+      if after = render_from_custom_template("_after_#{column.name}_input")
+        after
       else
         helper_method = "after_#{column.name}_input"
         if @action_view.respond_to?(helper_method)
@@ -34,17 +25,8 @@ class AdminAssistant
     end
     
     def column_html(column, rails_form)
-      template = File.join(
-        RAILS_ROOT, 'app/views', controller.controller_path,
-        "_#{column.name}_input.html.erb"
-      )
-      hff = if File.exist?(template)
-        @action_view.render(
-          :file => template,
-          :locals => {
-            @admin_assistant.model_class.name.underscore.to_sym => @record
-          }
-        )
+      hff = if (html = render_from_custom_template("_#{column.name}_input"))
+        html
       else
         html_method = "#{column.name}_html_for_form"
         hff = if @action_view.respond_to?(html_method)
@@ -66,11 +48,11 @@ class AdminAssistant
     
     def column_names
       @admin_assistant.form_settings.column_names ||
-        @admin_assistant.model_class.columns.reject { |ar_column|
-          %w(id created_at updated_at).include?(ar_column.name)
-        }.map { |ar_column|
-          @admin_assistant.column_name_or_assoc_name(ar_column.name)
-        }
+          @admin_assistant.model_class.columns.reject { |ar_column|
+            %w(id created_at updated_at).include?(ar_column.name)
+          }.map { |ar_column|
+            @admin_assistant.column_name_or_assoc_name(ar_column.name)
+          }
     end
     
     def columns
@@ -91,6 +73,20 @@ class AdminAssistant
         args[:html] = {:multipart => true}
       end
       args
+    end
+    
+    def render_from_custom_template(slug)
+      template = File.join(
+        RAILS_ROOT, 'app/views', controller.controller_path, "#{slug}.html.erb"
+      )
+      if File.exist?(template)
+        @action_view.render(
+          :file => template,
+          :locals => {
+            @admin_assistant.model_class.name.underscore.to_sym => @record
+          }
+        )
+      end
     end
     
     def submit_value
