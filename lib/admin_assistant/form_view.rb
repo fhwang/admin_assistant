@@ -25,20 +25,14 @@ class AdminAssistant
     end
     
     def column_html(column, rails_form)
-      hff = if (html = render_from_custom_template("_#{column.name}_input"))
-        html
+      hff = render_from_custom_template "_#{column.name}_input"
+      hff ||= column_html_from_helper_method(column)
+      hff ||= if settings.read_only.include?(column.name)
+        column.form_value(@record)
+      elsif column.respond_to?(:add_to_form)
+        column.add_to_form(rails_form)
       else
-        html_method = "#{column.name}_html_for_form"
-        hff = if @action_view.respond_to?(html_method)
-          @action_view.send(html_method, @record)
-        end
-        hff ||= if @admin_assistant.form_settings.read_only.include?(column.name)
-          column.form_value(@record)
-        elsif column.respond_to?(:add_to_form)
-          column.add_to_form(rails_form)
-        else
-          virtual_column_html column
-        end
+        virtual_column_html column
       end
       if ah = after_column_html(column)
         hff << ah
@@ -46,9 +40,16 @@ class AdminAssistant
       hff
     end
     
+    def column_html_from_helper_method(column)
+      html_method = "#{column.name}_html_for_form"
+      if @action_view.respond_to?(html_method)
+        @action_view.send(html_method, @record)
+      end
+    end
+    
     def column_names
-      @admin_assistant.form_settings.column_names ||
-          @admin_assistant.model_class.columns.reject { |ar_column|
+      settings.column_names ||
+          model_class.columns.reject { |ar_column|
             %w(id created_at updated_at).include?(ar_column.name)
           }.map { |ar_column|
             @admin_assistant.column_name_or_assoc_name(ar_column.name)
@@ -64,7 +65,7 @@ class AdminAssistant
     end
     
     def extra_submit_buttons
-      @admin_assistant.form_settings.submit_buttons
+      settings.submit_buttons
     end
     
     def form_for_args
@@ -75,6 +76,10 @@ class AdminAssistant
       args
     end
     
+    def model_class
+      @admin_assistant.model_class
+    end
+    
     def render_from_custom_template(slug)
       template = File.join(
         RAILS_ROOT, 'app/views', controller.controller_path, "#{slug}.html.erb"
@@ -82,11 +87,13 @@ class AdminAssistant
       if File.exist?(template)
         @action_view.render(
           :file => template,
-          :locals => {
-            @admin_assistant.model_class.name.underscore.to_sym => @record
-          }
+          :locals => {model_class.name.underscore.to_sym => @record}
         )
       end
+    end
+    
+    def settings
+      @admin_assistant.form_settings
     end
     
     def submit_value
@@ -98,9 +105,8 @@ class AdminAssistant
     end
     
     def virtual_column_html(column)
-      input_name =
-          "#{@admin_assistant.model_class.name.underscore}[#{column.name}]"
-      input_type = @admin_assistant.form_settings.inputs[column.name.to_sym]
+      input_name = "#{model_class.name.underscore}[#{column.name}]"
+      input_type = settings.inputs[column.name.to_sym]
       fv = column.form_value @record
       if input_type
         if input_type == :check_box

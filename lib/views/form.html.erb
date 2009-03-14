@@ -1,7 +1,9 @@
 <%
 form_view = AdminAssistant::FormView.new(@record, @admin_assistant, self)
 %>
-<div id="admin_assistant" class="form <%= controller_css_class %>">
+<div id="admin_assistant" class="form <%=
+  @admin_assistant.controller_css_class(controller)
+%>">
   <% id = nil unless defined?(id) %>
   <div id="header">
     <h2><%= h(form_view.title) %></h2>

@@ -68,6 +68,10 @@ class AdminAssistant
     end
     columns
   end
+    
+  def controller_css_class(controller)
+    controller.controller_path.gsub(%r|/|, '_')
+  end
   
   def dispatch_to_request_method(request_method, controller)
     controller.instance_variable_set :@admin_assistant, self
