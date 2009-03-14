@@ -4,51 +4,17 @@ class AdminAssistant
       columns.select { |c| c.is_a?(BelongsToColumn) }
     end
     
-    def column_from_name(name)
-      ar_column = @admin_assistant.model_class.columns_hash[name.to_s]
-      column = if ar_column
-        ActiveRecordColumn.new(ar_column)
-      else
-        associations = model_class.reflect_on_all_associations
-        if belongs_to_assoc = associations.detect { |assoc|
-          assoc.macro == :belongs_to && assoc.name.to_s == name.to_s
-        }
-          BelongsToColumn.new(belongs_to_assoc)
-        else
-          AdminAssistantColumn.new(name)
-        end
-      end
-      if column && (custom = @admin_assistant.custom_column_labels[name.to_s])
-        column.custom_label = custom
-      end
-      column
-    end
-    
-    def column_name_or_assoc_name(name)
-      result = name
-      ar_column = model_class.columns_hash[name.to_s]
-      if ar_column
-        associations = model_class.reflect_on_all_associations
-        if belongs_to_assoc = associations.detect { |assoc|
-          assoc.macro == :belongs_to && assoc.association_foreign_key == name
-        }
-          result = belongs_to_assoc.name.to_s
-        end
-      end
-      result
-    end
-    
     def columns
       column_names = @admin_assistant.send(
         "#{self.class.name.split(/::/).last.gsub(/View/,'').downcase}_settings"
       ).column_names
       column_names = default_column_names unless column_names
-      columns = paperclip_attachments.map { |paperclip_attachment|
-        PaperclipColumn.new paperclip_attachment
+      columns = @admin_assistant.paperclip_attachments.map { |pa|
+        PaperclipColumn.new pa
       }
       column_names.each do |column_name|
         if columns.all? { |column| !column.contains?(column_name) }
-          column = column_from_name column_name
+          column = @admin_assistant.column column_name
           columns << column if column
         end
       end
@@ -57,18 +23,6 @@ class AdminAssistant
     
     def model_class
       @admin_assistant.model_class
-    end
-    
-    def paperclip_attachments
-      pa = []
-      if model_class.respond_to?(:attachment_definitions)
-        if model_class.attachment_definitions
-          pa = model_class.attachment_definitions.map { |name, definition|
-            name
-          }
-        end
-      end
-      pa
     end
   end
   

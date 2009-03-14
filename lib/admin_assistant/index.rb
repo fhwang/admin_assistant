@@ -39,7 +39,9 @@ class AdminAssistant
     end
     
     def default_column_names
-      model_class.columns.map { |c| column_name_or_assoc_name(c.name) }
+      model_class.columns.map { |c|
+        @admin_assistant.column_name_or_assoc_name(c.name)
+      }
     end
     
     def find_include
