@@ -7,13 +7,6 @@ class AdminAssistant
       @url_params = url_params
     end
     
-    def add_search_terms(ar_query)
-      searchable_columns.each do |column|
-        ar_query.condition_sqls << "#{column.name} like ?"
-        ar_query.bind_vars << "%#{search_terms}%"
-      end
-    end
-    
     def belongs_to_sort_column
       columns.detect { |column|
         column.is_a?(BelongsToColumn) && column.name.to_s == @url_params[:sort]
@@ -21,7 +14,7 @@ class AdminAssistant
     end
     
     def columns
-      column_names =  @admin_assistant.index_settings.column_names ||
+      column_names = @admin_assistant.index_settings.column_names ||
           model_class.columns.map { |c|
             @admin_assistant.column_name_or_assoc_name(c.name)
           }
@@ -61,8 +54,7 @@ class AdminAssistant
           :order => order_sql, :include => find_include,
           :per_page => 25, :page => @url_params[:page]
         )
-        ar_query.boolean_join = :or
-        add_search_terms(ar_query) if search_terms
+        search.add_to_query(ar_query)
         if conditions
           conditions_sql = conditions.call @url_params
           ar_query.condition_sqls << conditions_sql if conditions_sql
@@ -72,10 +64,8 @@ class AdminAssistant
       @records
     end
     
-    def searchable_columns
-      model_class.columns.select { |column|
-        [:string, :text].include?(column.type)
-      }
+    def search
+      @search ||= Search.new(@admin_assistant, @url_params['search'])
     end
     
     def search_terms
@@ -104,6 +94,66 @@ class AdminAssistant
     
     def view(action_view)
       View.new self, action_view
+    end
+    
+    class Search
+      def initialize(admin_assistant, search_params)
+        @admin_assistant, @search_params = admin_assistant, search_params
+        @search_params ||= {}
+      end
+      
+      def [](name)
+        @search_params[name]
+      end
+    
+      def add_to_query(ar_query)
+        columns.each do |column|
+          column.add_to_query ar_query
+        end
+      end
+      
+      def columns
+        search_field_names = @admin_assistant.index_settings.search_fields
+        if search_field_names.empty?
+          [DefaultSearchColumn.new(
+            default_terms, @admin_assistant.model_class
+          )]
+        else
+          columns = search_field_names.map { |column_name|
+            @admin_assistant.column column_name.to_s
+          }
+          columns.each do |c|
+            c.search_terms = @search_params[c.name]
+          end
+          columns
+        end
+      end
+      
+      def column_views(action_view)
+        columns.map { |c|
+          opts = {:search => self}
+          if c.respond_to?(:name)
+            opts[:boolean_labels] =
+                @admin_assistant.index_settings.boolean_labels[c.name]
+          end
+          c.view(action_view, opts)
+        }
+      end
+      
+      def default_terms
+        @search_params if @search_params.is_a?(String)
+      end
+      
+      def id
+      end
+      
+      def method_missing(meth, *args)
+        if column = columns.detect { |c| c.name == meth.to_s }
+          column.search_value
+        else
+          super
+        end
+      end
     end
     
     class View

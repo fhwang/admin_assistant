@@ -24,6 +24,9 @@ class Admin::BlogPosts2Controller < ApplicationController
       # When showing the textile field, say 'Yes' and 'No' instead of 'true'
       # and 'false'
       index.boolean_labels :textile => %w(Yes No)
+      
+      # Let's have specific fields for searching
+      index.search :id, :title, :body, :textile
     end
     
     # For any form page:

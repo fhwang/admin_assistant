@@ -157,6 +157,20 @@ describe Admin::BlogPosts2Controller do
       it "should say 'Yes' or 'No' for the textile field" do
         response.body.should match(/No/)
       end
+      
+      it 'should show a search form with specific fields' do
+        response.should have_tag(
+          'form[id=search_form][method=get]', :text => /Title/
+        ) do
+          with_tag('input[name=?]', 'search[title]')
+          with_tag('input[name=?]', 'search[body]')
+          with_tag('select[name=?]', 'search[textile]') do
+            with_tag("option[value='']", :text => '')
+            with_tag("option[value='true']", :text => 'Yes')
+            with_tag("option[value='false']", :text => 'No')
+          end
+        end
+      end
     end
     
     describe 'when there is one published post and one unpublished post' do
@@ -219,6 +233,83 @@ describe Admin::BlogPosts2Controller do
     
     it 'should order by published_at desc' do
       response.body.should match(/published later.*published earlier/m)
+    end
+  end
+  
+  describe '#index when searching' do
+    before :all do
+      BlogPost.destroy_all
+      BlogPost.create!(
+        :title => 'textile_false_foobar', :textile => false, :user => @user
+      )
+      BlogPost.create!(
+        :title => 'textile_true_foobar', :textile => true, :user => @user
+      )
+      BlogPost.create!(
+        :title => 'not_in_the_title', :textile => false,
+        :body => 'foobar here though', :user => @user
+      )
+    end
+    
+    describe "for title with 'foobar'" do
+      before :each do
+        get(
+          :index,
+          :search => {
+            :body => "", :title => "foobar", :textile => "", :id => ""
+          }
+        )
+        response.should be_success
+      end
+      
+      it 'should match records where textile=true' do
+        response.should have_tag('td', :text => 'textile_true_foobar')
+      end
+      
+      it 'should match records where textile=false' do
+        response.should have_tag('td', :text => 'textile_false_foobar')
+      end
+        
+      it "should show the textile and title search fields pre-set" do
+        response.should have_tag('form[id=search_form][method=get]') do
+          with_tag('input[name=?][value=foobar]', 'search[title]')
+          with_tag('select[name=?]', 'search[textile]') do
+            with_tag("option[value=''][selected=selected]", :text => '')
+            with_tag("option[value='true']", :text => 'Yes')
+            with_tag("option[value='false']", :text => 'No')
+          end
+        end
+      end
+    end
+    
+    describe "for title with 'foobar' and textile=false" do
+      before :each do
+        get :index, :search => {:textile => 'false', :title => 'foobar'}
+        response.should be_success
+      end
+      
+      it "should show blog posts with textile=false and the word 'foobar' in the title" do
+        response.should have_tag('td', :text => 'textile_false_foobar')
+      end
+      
+      it "should not show a blog post with textile=true" do
+        response.should_not have_tag('td', :text => 'textile_true_foobar')
+      end
+      
+      it "should not show a blog post just 'cause it has 'foobar' in the body" do
+        response.should_not have_tag('td', :text => 'not_in_the_title')
+      end
+        
+      it "should show the textile and title search fields pre-set" do
+        response.should have_tag('form[id=search_form][method=get]') do
+          with_tag('input[name=?][value=foobar]', 'search[title]')
+          with_tag('select[name=?]', 'search[textile]') do
+            with_tag("option[value='']", :text => '')
+            with_tag("option[value='true']", :text => 'Yes')
+            with_tag("option[value='false'][selected=selected]", :text => 'No')
+          end
+        end
+      end
     end
   end
   

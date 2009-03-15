@@ -20,13 +20,19 @@ function show_search_form() { $('search_form').show(); }
 ) %></h2>
 </div>
 
-<div id="search_form" style="display: none">
-  <% form_tag({:action => 'index'}, :method => 'get') do %>
-    <%= text_field_tag 'search[terms]', @index.search_terms %>
-    <%= submit_tag('Search') %>
+<% @search = @index.search %>
+<% form_for(
+  :search,
+  :url => {:action => 'index'},
+  :html => {:id => 'search_form', :style => 'display:none', :method => 'get'}
+) do |form| %>
+  <% @search.column_views(self).each do |column_view| %>
+    <%= column_view.search_html %>
   <% end %>
+  <%= submit_tag('Search') %>
   <%= link_to('Back to index', :action => 'index') if @index.search_terms %>
-</div>
+<% end %>
+
 <% if @index.search_terms %>
 <script type="text/javascript">
 show_search_form();

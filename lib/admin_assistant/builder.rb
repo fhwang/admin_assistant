@@ -55,13 +55,14 @@ class AdminAssistant
   end
   
   class IndexSettings < Settings
-    attr_reader :actions, :sort_by
+    attr_reader :actions, :search_fields, :sort_by
     
     def initialize(admin_assistant)
       super
       @actions = {}
       @sort_by = 'id desc'
       @boolean_labels = {}
+      @search_fields = []
     end
     
     def boolean_labels(*args)
@@ -76,6 +77,10 @@ class AdminAssistant
     
     def conditions(&block)
       block ? (@conditions = block) : @conditions
+    end
+    
+    def search(*fields)
+      @search_fields = fields
     end
     
     def sort_by(*sb)

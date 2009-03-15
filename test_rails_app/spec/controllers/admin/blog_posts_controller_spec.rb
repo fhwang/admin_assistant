@@ -358,7 +358,7 @@ describe Admin::BlogPostsController do
       
       it "should display the search with the terms" do
         response.body.should match(
-          %r|<div id="search_form".*show_search_form\(\)|m
+          %r|<form[^>]*id="search_form".*show_search_form\(\)|m
         )
         response.body.should match(%r|input.*value="foo"|)
       end

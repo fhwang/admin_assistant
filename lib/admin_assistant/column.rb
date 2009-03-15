@@ -14,6 +14,7 @@ class AdminAssistant
         super(column)
         @column, @action_view, @opts = column, action_view, opts
         @sort_order = opts[:sort_order]
+        @search = opts[:search]
       end
       
       def __getobj__
@@ -96,8 +97,24 @@ class AdminAssistant
   end
   
   class ActiveRecordColumn < Column
+    attr_accessor :search_terms
+    
     def initialize(ar_column)
       @ar_column = ar_column
+    end
+    
+    def add_to_query(ar_query)
+      unless @search_terms.blank?
+        ar_query.boolean_join = :and
+        case sql_type
+          when :boolean
+            ar_query.condition_sqls << "#{name} = ?"
+            ar_query.bind_vars << search_value
+          else
+            ar_query.condition_sqls << "#{name} like ?"
+            ar_query.bind_vars << "%#{@search_terms}%"
+        end
+      end
     end
     
     def contains?(column_name)
@@ -106,6 +123,15 @@ class AdminAssistant
     
     def name
       @ar_column.name
+    end
+    
+    def search_value
+      case sql_type
+        when :boolean
+          @search_terms.blank? ? nil : (@search_terms == 'true')
+        else
+          @search_terms
+      end
     end
     
     def sql_type
@@ -139,6 +165,24 @@ class AdminAssistant
           value = value ? @boolean_labels.first : @boolean_labels.last
         end
         value
+      end
+      
+      def search_html
+        input = case @column.sql_type
+          when :boolean
+            opts = [['', nil]]
+            if @boolean_labels
+              opts << [@boolean_labels.first, true]
+              opts << [@boolean_labels.last, false]
+            else
+              opts << ['true', true]
+              opts << ['false', false]
+            end
+            @action_view.select("search", name, opts)
+          else
+            @action_view.text_field_tag("search[#{name}]", @search[name])
+        end
+        "<p>#{label} #{input}</p>"
       end
     end
   end
@@ -214,6 +258,34 @@ class AdminAssistant
         elsif assoc_value && default_name_method
           assoc_value.send default_name_method
         end
+      end
+    end
+  end
+  
+  class DefaultSearchColumn < Column
+    attr_reader :terms
+    
+    def initialize(terms, model_class)
+      @terms, @model_class = terms, model_class
+    end
+    
+    def add_to_query(ar_query)
+      ar_query.boolean_join = :or
+      searchable_columns.each do |column|
+        ar_query.condition_sqls << "#{column.name} like ?"
+        ar_query.bind_vars << "%#{@terms}%"
+      end
+    end
+    
+    def searchable_columns
+      @model_class.columns.select { |column|
+        [:string, :text].include?(column.type)
+      }
+    end
+    
+    class View < AdminAssistant::Column::View
+      def search_html
+        @action_view.text_field_tag("search", @column.terms)
       end
     end
   end
