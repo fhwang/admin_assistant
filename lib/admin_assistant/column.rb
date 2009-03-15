@@ -182,7 +182,7 @@ class AdminAssistant
           else
             @action_view.text_field_tag("search[#{name}]", @search[name])
         end
-        "<p>#{label} #{input}</p>"
+        "<p><label>#{label}</label> <br/>#{input}</p>"
       end
     end
   end
