@@ -30,7 +30,23 @@ class AdminAssistant
       
       def params_for_save
         params = {}
+        split_params = {}
+        whole_params = {}
         @controller.params[model_class_symbol].each do |k, v|
+          k =~ /\([0-9]+i\)$/ ? (split_params[k] = v) : (whole_params[k] = v)
+        end
+        bases = split_params.map{ |k, v| k.gsub(/\([0-9]+i\)$/, '') }.uniq
+        bases.each do |b|
+          h = {}
+          split_params.each{ |k, v| h[k] = split_params.delete(k) if k =~ /#{b}\([0-9]+i\)$/ }
+          from_form_method = "#{b}_from_form".to_sym
+          if @controller.respond_to?(from_form_method)
+            params[b] = @controller.send(from_form_method, h)
+          elsif @record.respond_to?("#{b}=")
+            params.merge! h
+          end
+        end
+        whole_params.each do |k, v|  
           from_form_method = "#{k}_from_form".to_sym
           if @controller.respond_to?(from_form_method)
             params[k] = @controller.send(from_form_method, v)

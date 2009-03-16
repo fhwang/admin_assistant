@@ -10,17 +10,27 @@ describe Admin::BlogPostsController do
   
   describe '#create' do
     describe 'when there are no validation errors' do
-      it 'should create a new BlogPost' do
+      before :each do
         title = random_word
         post(
           :create,
           :blog_post => {
-            :title => title, :textile => '1', :user_id => @user.id
+            :title => title, :textile => '1', :user_id => @user.id,
+            'published_at(1i)' => '', 'published_at(2i)' => '',
+            'published_at(3i)' => '', 'published_at(4i)' => '',
+            'published_at(5i)' => ''
           }
         )
-        blog_post = BlogPost.find_by_title(title)
-        blog_post.should_not be_nil
-        blog_post.textile?.should be_true
+        @blog_post = BlogPost.find_by_title(title)
+      end
+      
+      it 'should create a new BlogPost' do
+        @blog_post.should_not be_nil
+        @blog_post.textile?.should be_true
+      end
+      
+      it 'should not set published_at' do
+        @blog_post.published_at.should be_nil
       end
     end
     
@@ -536,12 +546,27 @@ describe Admin::BlogPostsController do
     it 'should use a drop-down for the user field' do
       response.should have_tag("select[name=?]", "blog_post[user_id]") do
         with_tag "option[value=?]", @user.id, :text => 'soren'
+        without_tag "option[value='']"
       end
-      response.should_not have_tag("option[value='']")
     end
     
     it 'should set the controller path as a CSS class' do
       response.should have_tag("div[class~=admin_blog_posts]")
+    end
+    
+    it 'should use dropdowns with nil defaults for published_at' do
+      nums_and_dt_fields = {
+        1 => :year, 2 => :month, 3 => :day, 4 => :hour, 5 => :min
+      }
+      nums_and_dt_fields.each do |num, dt_field|
+        name = "blog_post[published_at(#{num}i)]"
+        response.should have_tag('select[name=?]', name) do
+          with_tag "option[value='']"
+          with_tag(
+            "option:not([selected])[value=?]", Time.now.send(dt_field).to_s
+          )
+        end
+      end
     end
   end
   
@@ -551,11 +576,27 @@ describe Admin::BlogPostsController do
     end
     
     describe 'when there are no validation errors' do
-      it 'should update a pre-existing BlogPost' do
+      before :each do
         title2 = random_word
-        post :update, :id => @blog_post.id, :blog_post => {:title => title2}
+        post(
+          :update,
+          :id => @blog_post.id,
+          :blog_post => {
+            :title => title2, 'published_at(1i)' => '2009',
+            'published_at(2i)' => '1', 'published_at(3i)' => '2',
+            'published_at(4i)' => '3', 'published_at(5i)' => '4'
+          }
+        )
         response.should redirect_to(:action => 'index')
-        BlogPost.find_by_title(title2).should_not be_nil
+        @blog_post_prime = BlogPost.find_by_title(title2)
+      end
+      
+      it 'should update a pre-existing BlogPost' do
+        @blog_post_prime.should_not be_nil
+      end
+      
+      it 'should set published_at' do
+        @blog_post_prime.published_at.should == Time.utc(2009, 1, 2, 3, 4)
       end
     end
     
