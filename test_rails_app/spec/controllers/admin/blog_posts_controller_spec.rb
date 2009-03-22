@@ -54,6 +54,14 @@ describe Admin::BlogPostsController do
     end
   end
   
+  describe '#destroy' do
+    it 'should be an unknown action' do
+      lambda { post :destroy, :id => 123 }.should raise_error(
+        ActionController::UnknownAction
+      )
+    end
+  end
+  
   describe '#edit' do
     before :all do
       @blog_post = BlogPost.create! :title => random_word, :user => @user

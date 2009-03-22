@@ -13,7 +13,7 @@ class AdminAssistant
   
   def initialize(controller_class, model_class)
     @controller_class, @model_class = controller_class, model_class
-    @actions = [:index, :create, :update, :delete]
+    @actions = [:index, :create, :update]
     @form_settings = FormSettings.new self
     @index_settings = IndexSettings.new self
     @custom_column_labels = {}
@@ -68,6 +68,13 @@ class AdminAssistant
     end
     columns
   end
+  
+  def controller_actions
+    c_actions = actions.clone
+    c_actions << :new if c_actions.include?(:create)
+    c_actions << :edit if c_actions.include?(:update)
+    c_actions
+  end
     
   def controller_css_class(controller)
     controller.controller_path.gsub(%r|/|, '_')
@@ -82,7 +89,7 @@ class AdminAssistant
   end
   
   def method_missing(meth, *args)
-    request_methods = [:create, :edit, :index, :new, :update]
+    request_methods = [:create, :destroy, :edit, :index, :new, :update]
     if request_methods.include?(meth) and args.size == 1
       dispatch_to_request_method meth, args.first
     else
@@ -131,7 +138,7 @@ class AdminAssistant
         block.call builder
       end
       self.helper AdminAssistant::Helper
-      [:create, :edit, :index, :new, :update].each do |action|
+      self.admin_assistant.controller_actions.each do |action|
         self.send(:define_method, action) do
           self.class.admin_assistant.send(action, self)
         end

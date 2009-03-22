@@ -53,20 +53,34 @@ show_search_form();
         end
       %></th>
     <% end %>
-    <% if @admin_assistant.update? %><th></th><% end %>
+    <% if @admin_assistant.update? || @admin_assistant.destroy? %>
+      <th></th>
+    <% end %>
     </tr>
   </thead>
   <tbody>
   <% @index.records.each do |record| %>
-    <tr class="<%= cycle('odd', 'even') %>">
+    <tr class="<%= cycle('odd', 'even') %>" id="record_<%= record.id %>">
       <% @index.view(self).columns.each do |column| %>
         <% td_class = column.index_td_css_class %>
         <td<%= " class=\"#{td_class}\"" if td_class %>><%=
           column.index_html(record)
         %></td>
       <% end %>
-      <% if @admin_assistant.update? %>
-      <td><%= link_to 'Edit', :action => 'edit', :id => record.id %></td>
+      <% if @admin_assistant.update? || @admin_assistant.destroy? %>
+      <td>
+        <% if @admin_assistant.update? %>
+          <%= link_to 'Edit', :action => 'edit', :id => record.id %>
+        <% end %>
+        <% if @admin_assistant.destroy? %>
+          <%= link_to_remote(
+            'Delete',
+            :url => {:action => 'destroy', :id => record.id},
+            :confirm => 'Are you sure?',
+            :success => "Effect.Fade('record_#{record.id}')"
+          ) %>
+        <% end %>
+      </td>
       <% end %>
     </tr>
   <% end %>

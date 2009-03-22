@@ -2,6 +2,7 @@ class Admin::UsersController < ApplicationController
   layout 'admin'
 
   admin_assistant_for User do |a|
+    a.actions << :destroy
   end
   
   protected

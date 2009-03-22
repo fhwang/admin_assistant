@@ -121,6 +121,14 @@ class AdminAssistant
       end
     end
     
+    class Destroy < Base
+      def call
+        @record = model_class.find @controller.params[:id]
+        @record.destroy
+        @controller.send :render, :text => ''
+      end
+    end
+    
     class Edit < Base
       def call
         @record = model_class.find @controller.params[:id]

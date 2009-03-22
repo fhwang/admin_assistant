@@ -7,7 +7,11 @@ class AdminAssistant
     end
     
     def actions(*a)
-      @admin_assistant.actions = a
+      if a.empty?
+        @admin_assistant.actions
+      else
+        @admin_assistant.actions = a
+      end
     end
     
     def label(column, label)
