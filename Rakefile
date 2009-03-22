@@ -3,20 +3,19 @@ require 'rake/testtask'
 require 'rake/rdoctask'
 require 'spec/rake/spectask'
 
-desc 'Default: run specs.'
+desc 'Default: run all specs across all supported Rails gem versions.'
 task :default => :spec
 
-desc 'Test the admin_assistant plugin.'
-Rake::TestTask.new(:test) do |t|
-  t.libs << 'lib'
-  t.libs << 'test'
-  t.pattern = 'test/**/*_test.rb'
-  t.verbose = true
-end
-
-desc 'Run RSpec specifications.'
-Spec::Rake::SpecTask.new("spec") do |t|
-  t.spec_files = FileList['spec/*_spec.rb']
+desc 'Run all specs across all supported Rails gem versions.'
+task :spec do
+  ['2.2.2', '2.3.2'].each do |rails_gem_version|
+    puts "*** GEM VERSION #{rails_gem_version} ***"
+    cmd = "cd test_rails_app && RAILS_GEM_VERSION=#{rails_gem_version} rake"
+    puts cmd
+    puts `#{cmd}`
+    puts
+    puts
+  end
 end
 
 desc 'Generate documentation for the admin_assistant plugin.'
