@@ -292,6 +292,31 @@ class AdminAssistant
     end
   end
   
+  class FileColumnColumn < Column
+    attr_reader :name
+    
+    def initialize(name)
+      @name = name.to_s
+    end
+    
+    def contains?(column_name)
+      column_name.to_s == @name
+    end
+    
+    class View < AdminAssistant::Column::View
+      def add_to_form(form)
+        form.file_field name
+      end
+      
+      def index_html(record)
+        @action_view.instance_variable_set :@record, record
+        @action_view.image_tag(
+          @action_view.url_for_file_column('record', @column.name)
+        )
+      end
+    end
+  end
+  
   class PaperclipColumn < Column
     attr_reader :name
     

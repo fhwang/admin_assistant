@@ -26,15 +26,14 @@ class AdminAssistant
   end
   
   def column(name)
-    ar_column = model_class.columns_hash[name.to_s]
-    column = if ar_column
+    column = if file_columns.include?(name)
+      FileColumnColumn.new name
+    elsif (ar_column = model_class.columns_hash[name.to_s])
       ActiveRecordColumn.new(ar_column)
+    elsif belongs_to_assoc = belongs_to_assoc(name)
+      BelongsToColumn.new(belongs_to_assoc)
     else
-      if belongs_to_assoc = belongs_to_assoc(name)
-        BelongsToColumn.new(belongs_to_assoc)
-      else
-        AdminAssistantColumn.new(name)
-      end
+      AdminAssistantColumn.new(name)
     end
     if column && (custom = custom_column_labels[name.to_s])
       column.custom_label = custom
@@ -86,6 +85,21 @@ class AdminAssistant
     @request = klass.new(self, controller)
     @request.call
     @request = nil
+  end
+  
+  def file_columns
+    fc = []
+    if model_class.respond_to?(:file_column)
+      model_class.columns.each do |column|
+        suffixes = %w( relative_path dir relative_dir temp )
+        if suffixes.all? { |suffix|
+          model_class.method_defined? "#{column.name}_#{suffix}".to_sym
+        }
+          fc << column.name
+        end
+      end
+    end
+    fc
   end
   
   def method_missing(meth, *args)

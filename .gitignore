@@ -3,3 +3,4 @@ test_rails_app/log/*.log
 test_rails_app/db/schema.rb
 test_rails_app/public/images/*
 test_rails_app/public/stylesheets/*
+test_rails_app/public/file_column_image/*

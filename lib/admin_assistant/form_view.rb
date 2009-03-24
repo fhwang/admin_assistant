@@ -70,7 +70,8 @@ class AdminAssistant
     
     def form_for_args
       args = {:url => {:action => action, :id => @record.id}}
-      unless @admin_assistant.paperclip_attachments.empty?
+      unless @admin_assistant.paperclip_attachments.empty? &&
+             @admin_assistant.file_columns.empty?
         args[:html] = {:multipart => true}
       end
       args
