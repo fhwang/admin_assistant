@@ -568,11 +568,13 @@ describe Admin::BlogPostsController do
       }
       nums_and_dt_fields.each do |num, dt_field|
         name = "blog_post[published_at(#{num}i)]"
+        value_for_now_option = Time.now.send(dt_field).to_s
+        if [:hour, :min].include?(dt_field) && value_for_now_option.size == 1
+          value_for_now_option = "0#{value_for_now_option}"
+        end
         response.should have_tag('select[name=?]', name) do
           with_tag "option[value='']"
-          with_tag(
-            "option:not([selected])[value=?]", Time.now.send(dt_field).to_s
-          )
+          with_tag "option:not([selected])[value=?]", value_for_now_option
         end
       end
     end
