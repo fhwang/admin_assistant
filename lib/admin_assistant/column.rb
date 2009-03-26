@@ -152,6 +152,8 @@ class AdminAssistant
             form.check_box name
           when :datetime
             form.datetime_select name, :include_blank => true
+          when :date
+            form.date_select name, :include_blank => true
           else
             form.text_field name
           end

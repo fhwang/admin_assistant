@@ -68,6 +68,27 @@ describe Admin::UsersController do
     it 'should not show a reset password checkbox' do
       response.should_not have_tag("input[type=checkbox][name=reset_password]")
     end
+    
+    it 'should use date dropdowns with nil defaults for birthday' do
+      nums_and_dt_fields = {1 => :year, 2 => :month, 3 => :day}
+      nums_and_dt_fields.each do |num, dt_field|
+        name = "user[birthday(#{num}i)]"
+        response.should have_tag('select[name=?]', name) do
+          with_tag "option[value='']"
+          with_tag(
+            "option:not([selected])[value=?]", Time.now.send(dt_field).to_s
+          )
+        end
+      end
+    end
+    
+    it 'should not try to set an hour or minute for birthday' do
+      nums_and_dt_fields = {4 => :hour, 5 => :min}
+      nums_and_dt_fields.each do |num, dt_field|
+        name = "blog_post[published_at(#{num}i)]"
+        response.should_not have_tag('select[name=?]', name)
+      end
+    end
   end
   
   describe '#update' do
