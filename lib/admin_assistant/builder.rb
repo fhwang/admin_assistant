@@ -60,6 +60,7 @@ class AdminAssistant
   
   class IndexSettings < Settings
     attr_reader :actions, :search_fields, :sort_by
+    attr_accessor :total_entries
     
     def initialize(admin_assistant)
       super

@@ -14,15 +14,14 @@ class AdminAssistant
     end
     
     def columns
-      column_names = @admin_assistant.index_settings.column_names ||
-          model_class.columns.map { |c|
-            @admin_assistant.column_name_or_assoc_name(c.name)
-          }
+      column_names = settings.column_names || model_class.columns.map { |c|
+        @admin_assistant.column_name_or_assoc_name(c.name)
+      }
       @admin_assistant.columns column_names
     end
     
     def conditions
-      @admin_assistant.index_settings.conditions
+      settings.conditions
     end
     
     def find_include
@@ -44,7 +43,7 @@ class AdminAssistant
         end
         "#{first_part} #{sort_order}"
       else
-        @admin_assistant.index_settings.sort_by
+        settings.sort_by
       end
     end
     
@@ -58,6 +57,9 @@ class AdminAssistant
         if conditions
           conditions_sql = conditions.call @url_params
           ar_query.condition_sqls << conditions_sql if conditions_sql
+        end
+        if settings.total_entries
+          ar_query[:total_entries] = settings.total_entries.call
         end
         @records = model_class.paginate :all, ar_query
       end
@@ -113,7 +115,7 @@ class AdminAssistant
       end
       
       def columns
-        search_field_names = @admin_assistant.index_settings.search_fields
+        search_field_names = settings.search_fields
         if search_field_names.empty?
           [DefaultSearchColumn.new(
             default_terms, @admin_assistant.model_class
@@ -133,8 +135,7 @@ class AdminAssistant
         columns.map { |c|
           opts = {:search => self}
           if c.respond_to?(:name)
-            opts[:boolean_labels] =
-                @admin_assistant.index_settings.boolean_labels[c.name]
+            opts[:boolean_labels] = settings.boolean_labels[c.name]
           end
           c.view(action_view, opts)
         }
@@ -153,6 +154,10 @@ class AdminAssistant
         else
           super
         end
+      end
+    
+      def settings
+        @admin_assistant.index_settings
       end
     end
     
