@@ -171,7 +171,8 @@ class AdminAssistant
           c.view(
             @action_view,
             :boolean_labels => @index.settings.boolean_labels[c.name],
-            :sort_order => (@index.sort_order if c.name == @index.sort)
+            :sort_order => (@index.sort_order if c.name == @index.sort),
+            :link_to_args => @index.settings.link_to_args[c.name.to_sym]
           )
         }
       end

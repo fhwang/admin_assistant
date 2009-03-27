@@ -27,6 +27,12 @@ class Admin::BlogPosts2Controller < ApplicationController
       
       # Let's have specific fields for searching
       index.search :id, :title, :body, :textile
+      
+      # Make the author field a link
+      index.link_to_args[:user] = lambda { |blog_post|
+        { :controller => 'admin/users', :action => 'edit',
+          :id => blog_post.user_id }
+      }
     end
     
     # For any form page:

@@ -13,9 +13,10 @@ class AdminAssistant
       def initialize(column, action_view, opts)
         super(column)
         @column, @action_view, @opts = column, action_view, opts
-        @sort_order = opts[:sort_order]
-        @search = opts[:search]
         @input = opts[:input]
+        @link_to_args = opts[:link_to_args]
+        @search = opts[:search]
+        @sort_order = opts[:sort_order]
       end
       
       def __getobj__
@@ -47,6 +48,11 @@ class AdminAssistant
         html_for_index_method = "#{name}_html_for_index"
         html = if @action_view.respond_to?(html_for_index_method)
           @action_view.send html_for_index_method, record
+        elsif @link_to_args
+          @action_view.link_to(
+            @action_view.send(:h, index_value(record)),
+            @link_to_args.call(record)
+          )
         else
           @action_view.send(:h, index_value(record))
         end

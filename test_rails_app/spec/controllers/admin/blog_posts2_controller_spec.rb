@@ -150,8 +150,12 @@ describe Admin::BlogPosts2Controller do
         )
       end
       
-      it "should say username because that's one of our default name fields" do
-        response.should have_tag('td', :text => 'soren')
+      it 'should render the author as a username with a link' do
+        response.should have_tag('td') do
+          with_tag(
+            "a[href=?]", "/admin/users/edit/#{@user.id}", :text => 'soren'
+          )
+        end
       end
       
       it "should say 'Yes' or 'No' for the textile field" do
