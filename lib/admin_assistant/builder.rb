@@ -14,6 +14,10 @@ class AdminAssistant
       end
     end
     
+    def inputs
+      @admin_assistant.form_settings.inputs
+    end
+    
     def label(column, label)
       @admin_assistant.custom_column_labels[column.to_s] = label
     end

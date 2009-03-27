@@ -89,6 +89,16 @@ describe Admin::UsersController do
         response.should_not have_tag('select[name=?]', name)
       end
     end
+    
+    it 'should show a drop-down for US states' do
+      response.should have_tag('select[name=?]', 'user[state]') do
+        with_tag "option[value='']"
+        with_tag "option:not([selected])[value=AK]", :text => 'Alaska'
+        with_tag "option:not([selected])[value=NY]", :text => 'New York'
+        # blank option, 50 states, DC, Puerto Rico == 53 options
+        with_tag "option", :count => 53
+      end
+    end
   end
   
   describe '#update' do

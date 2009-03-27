@@ -57,7 +57,9 @@ class AdminAssistant
     end
     
     def columns
-      @admin_assistant.columns(column_names).map { |c| c.view(@action_view) }
+      @admin_assistant.columns(column_names).map { |c|
+        c.view(@action_view, :input => settings.inputs[c.name.to_sym])
+      }
     end
     
     def controller

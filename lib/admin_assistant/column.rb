@@ -15,6 +15,7 @@ class AdminAssistant
         @column, @action_view, @opts = column, action_view, opts
         @sort_order = opts[:sort_order]
         @search = opts[:search]
+        @input = opts[:input]
       end
       
       def __getobj__
@@ -145,7 +146,7 @@ class AdminAssistant
       end
       
       def add_to_form(form)
-        case @column.sql_type
+        case @input || @column.sql_type
           when :text
             form.text_area name
           when :boolean
@@ -154,6 +155,10 @@ class AdminAssistant
             form.datetime_select name, :include_blank => true
           when :date
             form.date_select name, :include_blank => true
+          when :us_state
+            form.select(
+              name, ordered_us_state_names_and_codes, :include_blank => true
+            )
           else
             form.text_field name
           end
@@ -169,6 +174,30 @@ class AdminAssistant
           value = value ? @boolean_labels.first : @boolean_labels.last
         end
         value
+      end
+      
+      def ordered_us_state_names_and_codes
+        {
+          'Alabama' => 'AL', 'Alaska' => 'AK', 'Arizona' => 'AZ',
+          'Arkansas' => 'AR', 'California' => 'CA', 'Colorado' => 'CO', 
+          'Connecticut' => 'CT', 'Delaware' => 'DE',
+          'District of Columbia' => 'DC', 'Florida' => 'FL', 'Georgia' => 'GA',
+          'Hawaii' => 'HI', 'Idaho' => 'ID', 'Illinois' => 'IL',
+          'Indiana' => 'IN', 'Iowa' => 'IA', 'Kansas' => 'KS',
+          'Kentucky' => 'KY', 'Louisiana' => 'LA', 'Maine' => 'ME',
+          'Maryland' => 'MD', 'Massachusetts' => 'MA', 'Michigan' => 'MI', 
+          'Minnesota' => 'MN', 'Mississippi' => 'MS', 'Missouri' => 'MO', 
+          'Montana' => 'MT', 'Nebraska' => 'NE', 'Nevada' => 'NV',
+          'New Hampshire' => 'NH', 'New Jersey' => 'NJ', 'New Mexico' => 'NM', 
+          'New York' => 'NY', 'North Carolina' => 'NC', 'North Dakota' => 'ND',
+          'Ohio' => 'OH', 'Oklahoma' => 'OK', 'Oregon' => 'OR',
+          'Pennsylvania' => 'PA', 'Puerto Rico' => 'PR',
+          'Rhode Island' => 'RI', 'South Carolina' => 'SC',
+          'South Dakota' => 'SD', 'Tennessee' => 'TN', 'Texas' => 'TX',
+          'Utah' => 'UT', 'Vermont' => 'VT', 'Virginia' => 'VA',
+          'Washington' => 'WA', 'West Virginia' => 'WV', 'Wisconsin' => 'WI', 
+          'Wyoming' => 'WY'
+        }.sort_by { |name, code| name }
       end
       
       def search_html
