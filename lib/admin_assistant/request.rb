@@ -113,6 +113,9 @@ class AdminAssistant
       end
       
       def save
+        if @controller.respond_to?(:before_create)
+          @controller.send(:before_create, @record)
+        end
         result = super
         if @controller.respond_to?(:after_create)
           @controller.send(:after_create, @record)

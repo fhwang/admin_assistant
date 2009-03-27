@@ -11,10 +11,9 @@ class Admin::UsersController < ApplicationController
   
   protected
   
-  # Run after a user is created
-  def after_create(user)
+  # Run before a user is created
+  def before_create(user)
     user.reset_password
-    user.save
   end
   
   # If 'reset_password' is checked, reset the password
