@@ -278,9 +278,10 @@ class AdminAssistant
       def add_to_form(form)
         form.select(
           association_foreign_key,
-          associated_class.find(:all).map { |model| 
-            [model.send(default_name_method), model.id]
-          }
+          associated_class.
+              find(:all).
+              sort_by { |model| model.send(default_name_method) }.
+              map { |model| [model.send(default_name_method), model.id] }
         )
       end
     

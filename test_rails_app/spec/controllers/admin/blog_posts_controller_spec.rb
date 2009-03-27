@@ -515,6 +515,7 @@ describe Admin::BlogPostsController do
   
   describe '#new' do
     before :each do
+      @alfie = User.create! :username => 'alfie'
       get :new
     end
     
@@ -553,7 +554,8 @@ describe Admin::BlogPostsController do
     
     it 'should use a drop-down for the user field' do
       response.should have_tag("select[name=?]", "blog_post[user_id]") do
-        with_tag "option[value=?]", @user.id, :text => 'soren'
+        with_tag "option:nth-child(1)[value=?]", @alfie.id, :text => 'alfie'
+        with_tag "option:nth-child(2)[value=?]", @user.id, :text => 'soren'
         without_tag "option[value='']"
       end
     end
