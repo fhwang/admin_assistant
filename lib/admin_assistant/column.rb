@@ -310,10 +310,12 @@ class AdminAssistant
     end
     
     def add_to_query(ar_query)
-      ar_query.boolean_join = :or
-      searchable_columns.each do |column|
-        ar_query.condition_sqls << "#{column.name} like ?"
-        ar_query.bind_vars << "%#{@terms}%"
+      unless @terms.blank?
+        ar_query.boolean_join = :or
+        searchable_columns.each do |column|
+          ar_query.condition_sqls << "#{column.name} like ?"
+          ar_query.bind_vars << "%#{@terms}%"
+        end
       end
     end
     
