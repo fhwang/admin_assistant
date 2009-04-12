@@ -51,9 +51,25 @@ Don't edit this file: It gets re-copied every time the server starts.
 #admin_assistant.form .column {
   margin-bottom: 10px;
 }
+
+#admin_assistant.form label {
+/*  font-size: small;*/
+}
+
+#admin_assistant.form input {
+  font-size: large
+}
+
 #admin_assistant.form input[type=text] {
   width: 100%
 }
-#admin_assistant.form textarea {
-  width: 100%
+
+#admin_assistant.form select {
+  font-size: large
 }
+
+#admin_assistant.form textarea {
+  width: 100%;
+  font-size: large
+}
+
