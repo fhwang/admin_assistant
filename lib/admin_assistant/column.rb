@@ -36,6 +36,10 @@ class AdminAssistant
         end
       end
       
+      def index_ajax_toggle?
+        false
+      end
+
       def index_header_css_class
         "sort #{sort_order}" if sort_order
       end
@@ -53,6 +57,8 @@ class AdminAssistant
             @action_view.send(:h, index_value(record)),
             @link_to_args.call(record)
           )
+        elsif index_ajax_toggle?
+          index_ajax_toggle_html(record)
         else
           @action_view.send(:h, index_value(record))
         end
@@ -173,7 +179,38 @@ class AdminAssistant
       def field_value(record)
         record.send(name) if record.respond_to?(name)
       end
+
+      def index_ajax_toggle?
+        @column.sql_type == :boolean
+      end
       
+      def index_ajax_toggle_div_id(record)
+        "#{record.class.name.underscore}_#{record.id}_#{name}"
+      end
+      
+      def index_ajax_toggle_html(record)
+        <<-HTML
+        <div id="#{ index_ajax_toggle_div_id(record) }">
+        #{index_ajax_toggle_inner_html(record)}
+        </div>
+        HTML
+      end
+      
+      def index_ajax_toggle_inner_html(record)
+        div_id = index_ajax_toggle_div_id record
+        @action_view.link_to_remote(
+          index_value(record),
+          :update => div_id,
+          :url => {
+            :action => 'update', :id => record.id, :from => div_id,
+            record.class.name.underscore.to_sym => {
+              name => (!index_value(record) ? '1' : '0')
+            }
+          },
+          :success => "$(#{div_id}).hide(); $(#{div_id}).appear()"
+        )
+      end
+
       def index_value(record)
         value = super
         if @boolean_labels

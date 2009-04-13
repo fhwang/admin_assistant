@@ -165,7 +165,24 @@ class AdminAssistant
         @record = model_class.find @controller.params[:id]
         @record.attributes = params_for_save
         if save
-          redirect_after_save
+          if from = @controller.params[:from]
+            from =~ /#{model_class.name.underscore}_\d+_(.*)/
+            field_name = $1
+            index = AdminAssistant::Index.new @admin_assistant
+            erb = <<-ERB
+              <%= index.view(self).columns.detect { |c| c.name == field_name }.
+                        index_ajax_toggle_inner_html(record) %>
+            ERB
+            @controller.send(
+              :render,
+              :inline => erb,
+              :locals => {
+                :index => index, :field_name => field_name, :record => @record
+              }
+            )
+          else
+            redirect_after_save
+          end
         else
           @controller.instance_variable_set :@record, @record
           render_form

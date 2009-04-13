@@ -125,7 +125,9 @@ describe Admin::BlogPostsController do
     describe 'when there is one record' do
       before :all do
         BlogPost.destroy_all
-        @blog_post = BlogPost.create! :title => "hi there", :user => @user
+        @blog_post = BlogPost.create!(
+          :title => "hi there", :user => @user, :textile => false
+        )
       end
       
       before :each do
@@ -184,6 +186,18 @@ describe Admin::BlogPostsController do
       it "should say username because that's one of our default name fields" do
         response.should have_tag('td', :text => 'soren')
       end
+      
+      it 'should make the textile field an Ajax toggle' do
+        toggle_div_id = "blog_post_#{@blog_post.id}_textile"
+        post_url =
+            "/admin/blog_posts/update/#{@blog_post.id}?" +
+            CGI.escape('blog_post[textile]') + "=1&amp;from=#{toggle_div_id}"
+        response.should have_tag("div[id=?]", toggle_div_id) do
+          ajax_substr = "new Ajax.Updater('#{toggle_div_id}', '#{post_url}'"
+          with_tag("a[href=#][onclick*=?]", ajax_substr, :text => 'false')
+        end
+      end
+
     end
     
     describe 'when there is one record that somehow has a nil User' do
@@ -629,6 +643,43 @@ describe Admin::BlogPostsController do
       it 'should show a link back to the index page' do
         response.should have_tag("a[href=/admin/blog_posts]", 'Back to index')
       end
+    end
+  end
+  
+  describe '#update as Ajax toggle' do
+    before :all do
+      @blog_post = BlogPost.create!(
+        :title => random_word, :user => @user, :textile => false
+      )
+    end
+    
+    before :each do
+      post(
+        :update,
+        :id => @blog_post.id, :from => "blog_post_#{@blog_post.id}_textile",
+        :blog_post => {:textile => '1'}
+      )
+    end
+    
+    it 'should return success' do
+      response.should be_success
+    end
+    
+    it 'should update the textile field' do
+      @blog_post.reload.textile.should be_true
+    end
+    
+    it 'should only render a small snippet of HTML with Ajax in it' do
+      toggle_div_id = "blog_post_#{@blog_post.id}_textile"
+      post_url =
+          "/admin/blog_posts/update/#{@blog_post.id}?" +
+          CGI.escape('blog_post[textile]') + "=0&amp;from=#{toggle_div_id}"
+      response.should_not have_tag('div[id=?]', toggle_div_id)
+      ajax_substr = "new Ajax.Updater('#{toggle_div_id}', '#{post_url}'"
+      response.should have_tag(
+        "a[href=#][onclick*=?]", ajax_substr, :text => 'true'
+      )
+      response.should_not have_tag('title', :text => 'Admin')
     end
   end
 end
