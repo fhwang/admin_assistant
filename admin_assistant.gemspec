@@ -14,6 +14,5 @@ Gem::Specification.new do |s|
     'lib/*.rb', 'lib/admin_assistant/*.rb', 'lib/images/*.png',
     'lib/stylesheets/*.css', 'lib/views/*.erb', 'tasks/*.rake'
   ].to_a
-  s.add_dependency 'ar_query'
   s.add_dependency 'mislav-will_paginate'
 end
