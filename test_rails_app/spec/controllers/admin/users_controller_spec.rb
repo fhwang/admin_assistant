@@ -4,7 +4,8 @@ describe Admin::UsersController do
   integrate_views
   
   before :all do
-    @user = User.create!(:username => 'betty', :password => 'crocker')
+    @user = User.find_or_create_by_username 'betty'
+    @user.update_attribute :password, 'crocker'
   end
 
   describe '#create' do

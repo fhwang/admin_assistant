@@ -214,6 +214,23 @@ describe Admin::BlogPostsController do
         response.should be_success
       end
     end
+    
+    describe 'with at least 25 blog posts' do
+      before :all do
+        25.times do
+          @blog_post = BlogPost.create!(
+            :title => "hi there", :user => @user, :textile => false
+          )
+        end
+      end
+      
+      it 'should render in at most 250 milliseconds' do
+        start_time = Time.now
+        get :index
+        end_time = Time.now
+        (end_time.to_f - start_time.to_f).should be_close(0.0, 0.250)
+      end
+    end
   end
   
   describe '#index sorting' do

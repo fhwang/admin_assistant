@@ -66,9 +66,9 @@ describe Admin::BlogPosts2Controller do
       @blog_post = BlogPost.create!(
         :title => "blog post title", :body => 'blog post body', :user => @user
       )
-      tag1 = Tag.create! :tag => 'tag1'
+      tag1 = Tag.find_or_create_by_tag 'tag1'
       BlogPostTag.create! :blog_post => @blog_post, :tag => tag1
-      tag2 = Tag.create! :tag => 'tag2'
+      tag2 = Tag.find_or_create_by_tag 'tag2'
       BlogPostTag.create! :blog_post => @blog_post, :tag => tag2
     end
       

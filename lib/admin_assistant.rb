@@ -134,6 +134,12 @@ class AdminAssistant
     pa
   end
   
+  def profile(msg)
+    if @request_start_time
+      puts "#{msg}: #{Time.now - @request_start_time}"
+    end
+  end
+  
   def url_params(a = action)
     {:controller => @controller_class.controller_path, :action => a}
   end

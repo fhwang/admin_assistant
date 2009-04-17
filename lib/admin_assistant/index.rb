@@ -95,7 +95,7 @@ class AdminAssistant
     end
     
     def view(action_view)
-      View.new self, action_view
+      @view ||= View.new(self, action_view)
     end
     
     class Search
@@ -167,14 +167,17 @@ class AdminAssistant
       end
       
       def columns
-        @index.columns.map { |c|
-          c.view(
-            @action_view,
-            :boolean_labels => @index.settings.boolean_labels[c.name],
-            :sort_order => (@index.sort_order if c.name == @index.sort),
-            :link_to_args => @index.settings.link_to_args[c.name.to_sym]
-          )
-        }
+        unless @columns
+          @columns = @index.columns.map { |c|
+            c.view(
+              @action_view,
+              :boolean_labels => @index.settings.boolean_labels[c.name],
+              :sort_order => (@index.sort_order if c.name == @index.sort),
+              :link_to_args => @index.settings.link_to_args[c.name.to_sym]
+            )
+          }
+        end
+        @columns
       end
     end
   end
