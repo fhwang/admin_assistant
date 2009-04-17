@@ -30,6 +30,20 @@ describe Admin::BlogPosts3Controller do
       it 'should only say 25 blog posts found' do
         response.body.should match(/25 blog posts found/)
       end
+      
+      it 'should show a search form with specific fields' do
+        response.should have_tag(
+          'form[id=search_form][method=get]', :text => /Title/
+        ) do
+          with_tag('input[name=?]', 'search[title]')
+          with_tag('input[name=?]', 'search[body]')
+          with_tag('select[name=?]', 'search[textile]') do
+            with_tag("option[value='']", :text => '')
+            with_tag("option[value='true']", :text => 'true')
+            with_tag("option[value='false']", :text => 'false')
+          end
+        end
+      end
     end
     
     describe 'with a published blog post' do

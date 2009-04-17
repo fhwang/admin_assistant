@@ -115,7 +115,7 @@ class AdminAssistant
       end
       
       def columns
-        search_field_names = settings.search_fields
+        search_field_names = settings.columns
         if search_field_names.empty?
           [DefaultSearchColumn.new(
             default_terms, @admin_assistant.model_class
@@ -135,7 +135,8 @@ class AdminAssistant
         columns.map { |c|
           opts = {:search => self}
           if c.respond_to?(:name)
-            opts[:boolean_labels] = settings.boolean_labels[c.name]
+            opts[:boolean_labels] =
+                @admin_assistant.index_settings.boolean_labels[c.name]
           end
           c.view(action_view, opts)
         }
@@ -157,7 +158,7 @@ class AdminAssistant
       end
     
       def settings
-        @admin_assistant.index_settings
+        @admin_assistant.search_settings
       end
     end
     

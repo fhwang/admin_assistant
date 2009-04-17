@@ -140,6 +140,10 @@ class AdminAssistant
     end
   end
   
+  def search_settings
+    index_settings.search_settings
+  end
+  
   def url_params(a = action)
     {:controller => @controller_class.controller_path, :action => a}
   end

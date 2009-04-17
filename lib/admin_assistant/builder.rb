@@ -63,7 +63,7 @@ class AdminAssistant
   end
   
   class IndexSettings < Settings
-    attr_reader :actions, :link_to_args, :search_fields, :sort_by
+    attr_reader :actions, :link_to_args, :search_settings, :sort_by
     attr_accessor :total_entries
     
     def initialize(admin_assistant)
@@ -73,6 +73,7 @@ class AdminAssistant
       @boolean_labels = {}
       @link_to_args = {}
       @search_fields = []
+      @search_settings = SearchSettings.new @admin_assistant
     end
     
     def boolean_labels(*args)
@@ -89,8 +90,12 @@ class AdminAssistant
       block ? (@conditions = block) : @conditions
     end
     
-    def search(*fields)
-      @search_fields = fields
+    def search(*columns)
+      if block_given?
+        yield @search_settings
+      else
+        @search_settings.columns *columns
+      end
     end
     
     def sort_by(*sb)
@@ -98,6 +103,19 @@ class AdminAssistant
         @sort_by
       else
         @sort_by = sb
+      end
+    end
+    
+    class SearchSettings < Settings
+      attr_reader :columns
+      
+      def initialize(admin_assistant)
+        super
+        @columns = []
+      end
+      
+      def columns(*c)
+        c.empty? ? @columns : (@columns = c)
       end
     end
   end

@@ -11,6 +11,11 @@ class Admin::BlogPosts3Controller < ApplicationController
       index.conditions do |params|
         "published_at is null" unless params[:all]
       end
+      
+      # Extended search configuration
+      index.search do |search|
+        search.columns :id, :title, :body, :textile
+      end
     end
   end
 end
