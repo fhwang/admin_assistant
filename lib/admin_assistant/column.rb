@@ -353,7 +353,10 @@ class AdminAssistant
       end
       
       def search_html
-        @action_view.text_field_tag("search[#{name}]", @column.search_terms)
+        input = @action_view.text_field_tag(
+          "search[#{name}]", @column.search_terms
+        )
+        "<p><label>#{label}</label> <br/>#{input}</p>"
       end
     end
   end

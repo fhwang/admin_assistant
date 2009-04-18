@@ -42,6 +42,8 @@ describe Admin::BlogPosts3Controller do
             with_tag("option[value='true']", :text => 'true')
             with_tag("option[value='false']", :text => 'false')
           end
+          with_tag('label', :text => 'User')
+          with_tag('input[name=?]', 'search[user]')
         end
       end
     end
