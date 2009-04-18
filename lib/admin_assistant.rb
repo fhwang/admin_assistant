@@ -140,6 +140,12 @@ class AdminAssistant
     end
   end
   
+  def self.searchable_columns(model_class)
+    model_class.columns.select { |column|
+      [:string, :text].include?(column.type)
+    }
+  end
+  
   def search_settings
     index_settings.search_settings
   end

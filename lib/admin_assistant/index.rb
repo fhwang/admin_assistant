@@ -59,9 +59,9 @@ class AdminAssistant
           ar_query.condition_sqls << conditions_sql if conditions_sql
         end
         if settings.total_entries
-          ar_query[:total_entries] = settings.total_entries.call
+          ar_query.total_entries = settings.total_entries.call
         end
-        @records = model_class.paginate :all, ar_query
+        @records = model_class.paginate :all, ar_query.to_hash
       end
       @records
     end
@@ -109,8 +109,12 @@ class AdminAssistant
       end
     
       def add_to_query(ar_query)
-        columns.each do |column|
-          column.add_to_query ar_query
+        unless @search_params.empty?
+          ar_query.add_condition do |cond|
+            columns.each do |column|
+              column.add_to_query_condition cond
+            end
+          end
         end
       end
       

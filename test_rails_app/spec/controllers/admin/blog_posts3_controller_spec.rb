@@ -64,5 +64,54 @@ describe Admin::BlogPosts3Controller do
         response.body.should match(/No blog posts found/)
       end
     end
+    
+    describe 'when searching by user' do
+      before :all do
+        User.destroy_all
+        tiffany = User.create!(:username => 'tiffany')
+        BlogPost.create! :title => "By Tiffany", :user => tiffany
+        BlogPost.create!(
+          :title => "Already published", :user => tiffany,
+          :published_at => Time.now
+        )
+        bill = User.create! :username => 'bill', :password => 'parsimony'
+        BlogPost.create! :title => "By Bill", :user => bill
+        brooklyn_steve = User.create!(
+          :username => 'brooklyn_steve', :state => 'NY'
+        )
+        BlogPost.create! :title => "By Brooklyn Steve", :user => brooklyn_steve
+        sadie = User.create!(
+          :username => 'Sadie', :password => 'sadie', :state => 'KY'
+        )
+        BlogPost.create! :title => "By Sadie", :user => sadie
+      end
+      
+      before :each do
+        get :index, :search => {
+          :body => "", :textile => "", :id => "", :user => 'ny'
+        }
+        response.should be_success
+      end
+      
+      it 'should match the string to the username' do
+        response.body.should match(/By Tiffany/)
+      end
+      
+      it 'should match the string to the password' do
+        response.body.should match(/By Bill/)
+      end
+      
+      it 'should match the string to the state' do
+        response.body.should match(/By Brooklyn Steve/)
+      end
+      
+      it "should skip blog posts that don't match anything on the user" do
+        response.body.should_not match(/By Sadie/)
+      end
+      
+      it 'should skip blog posts that have already been published' do
+        response.body.should_not match(/Already published/)
+      end
+    end
   end
 end

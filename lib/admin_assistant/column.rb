@@ -116,16 +116,15 @@ class AdminAssistant
       @ar_column = ar_column
     end
     
-    def add_to_query(ar_query)
+    def add_to_query_condition(ar_query_condition)
       unless @search_terms.blank?
-        ar_query.boolean_join = :and
         case sql_type
           when :boolean
-            ar_query.condition_sqls << "#{name} = ?"
-            ar_query.bind_vars << search_value
+            ar_query_condition.sqls << "#{name} = ?"
+            ar_query_condition.bind_vars << search_value
           else
-            ar_query.condition_sqls << "#{name} like ?"
-            ar_query.bind_vars << "%#{@search_terms}%"
+            ar_query_condition.sqls << "#{name} like ?"
+            ar_query_condition.bind_vars << "%#{@search_terms}%"
         end
       end
     end
@@ -282,8 +281,24 @@ class AdminAssistant
   end
   
   class BelongsToColumn < Column
+    attr_accessor :search_terms
+    
     def initialize(belongs_to_assoc)
       @belongs_to_assoc = belongs_to_assoc
+    end
+    
+    def add_to_query_condition(ar_query_condition)
+      unless @search_terms.blank?
+        ar_query_condition.ar_query.joins << name.to_sym
+        ar_query_condition.add_condition do |sub_cond|
+          sub_cond.boolean_join = :or
+          AdminAssistant.searchable_columns(associated_class).each do |column|
+            sub_cond.sqls <<
+                "#{associated_class.table_name}.#{column.name} like ?"
+            sub_cond.bind_vars << "%#{@search_terms}%"
+          end
+        end
+      end
     end
     
     def associated_class
@@ -336,6 +351,10 @@ class AdminAssistant
           assoc_value.send default_name_method
         end
       end
+      
+      def search_html
+        @action_view.text_field_tag("search[#{name}]", @column.search_terms)
+      end
     end
   end
   
@@ -346,20 +365,14 @@ class AdminAssistant
       @terms, @model_class = terms, model_class
     end
     
-    def add_to_query(ar_query)
+    def add_to_query_condition(ar_query_condition)
       unless @terms.blank?
-        ar_query.boolean_join = :or
-        searchable_columns.each do |column|
-          ar_query.condition_sqls << "#{column.name} like ?"
-          ar_query.bind_vars << "%#{@terms}%"
+        ar_query_condition.ar_query.boolean_join = :or
+        AdminAssistant.searchable_columns(@model_class).each do |column|
+          ar_query_condition.sqls << "#{column.name} like ?"
+          ar_query_condition.bind_vars << "%#{@terms}%"
         end
       end
-    end
-    
-    def searchable_columns
-      @model_class.columns.select { |column|
-        [:string, :text].include?(column.type)
-      }
     end
     
     class View < AdminAssistant::Column::View

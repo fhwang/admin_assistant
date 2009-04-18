@@ -14,7 +14,7 @@ class Admin::BlogPosts3Controller < ApplicationController
       
       # Extended search configuration
       index.search do |search|
-        search.columns :id, :title, :body, :textile
+        search.columns :id, :title, :body, :textile, :user
       end
     end
   end
