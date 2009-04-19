@@ -66,6 +66,12 @@ class AdminAssistant
       @records
     end
     
+    def right_column_links(record)
+      settings.right_column_links.map { |link_lambda|
+        link_lambda.call record
+      }
+    end
+    
     def search
       @search ||= Search.new(@admin_assistant, @url_params['search'])
     end

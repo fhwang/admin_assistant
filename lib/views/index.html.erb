@@ -80,6 +80,9 @@ show_search_form();
             :success => "Effect.Fade('record_#{record.id}')"
           ) %>
         <% end %>
+        <% @index.right_column_links(record).each do |link_args| %>
+          <%= link_to *link_args %>
+        <% end %>
       </td>
       <% end %>
     </tr>

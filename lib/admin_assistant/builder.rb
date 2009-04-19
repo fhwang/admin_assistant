@@ -72,7 +72,8 @@ class AdminAssistant
   end
   
   class IndexSettings < Settings
-    attr_reader :actions, :link_to_args, :search_settings, :sort_by
+    attr_reader :actions, :link_to_args, :right_column_links, :search_settings,
+                :sort_by
     attr_accessor :total_entries
     
     def initialize(admin_assistant)
@@ -83,6 +84,7 @@ class AdminAssistant
       @link_to_args = {}
       @search_fields = []
       @search_settings = SearchSettings.new @admin_assistant
+      @right_column_links = []
     end
     
     def boolean_labels(*args)

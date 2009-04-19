@@ -49,10 +49,14 @@ describe Admin::UsersController do
       get :index
     end
     
-    it 'should show a Delete link' do
-      response.should have_tag(
-        "a[href=#][onclick*='new Ajax.Request']", :text => 'Delete'
-      )
+    it 'should show a Delete link and a link to the profile page' do
+      response.should have_tag('td') do
+        with_tag("a[href=#][onclick*='new Ajax.Request']", :text => 'Delete')
+        with_tag(
+          "a[href=?]", "/users/show/#{@user.id}",
+          :text => "Show betty's profile page"
+        )
+      end
     end
   end
   
