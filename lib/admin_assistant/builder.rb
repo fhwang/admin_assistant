@@ -102,7 +102,7 @@ class AdminAssistant
       if sb.empty?
         @sort_by
       else
-        @sort_by = sb
+        @sort_by = sb.first
       end
     end
     

@@ -39,14 +39,20 @@ class ARQuery
     @base_condition.sqls
   end
   
-  def has_joins?
-    !@joins.empty?
-  end
-  
   def to_hash
     hash = @simple_values.dup
     hash[:conditions] = @base_condition.to_conditions if has_conditions?
-    hash[:joins] = @joins if has_joins?
+    joins = @joins
+    if includes = @simple_values[:include]
+      if includes.is_a?(Array)
+        joins = joins.reject { |join|
+          includes.any? { |inc| inc.to_sym == join.to_sym }
+        }
+      else
+        joins = joins.reject { |join| includes.to_sym == join.to_sym }
+      end
+    end
+    hash[:joins] = joins unless joins.empty?
     hash
   end
   

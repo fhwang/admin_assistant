@@ -197,6 +197,17 @@ describe ARQuery do
         @ar_query.to_hash[:joins].should == [:user, :tags]
       end
     end
+    
+    describe 'when the same association has already been :included' do
+      before :all do
+        @ar_query = ARQuery.new :include => 'user'
+        @ar_query.joins << :user
+      end
+      
+      it 'should not include the association in the join' do
+        @ar_query.to_hash[:joins].should be_nil
+      end
+    end
   end
   
   describe '#total_entries =' do

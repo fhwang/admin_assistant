@@ -9,7 +9,7 @@ class AdminAssistant
     
     def belongs_to_sort_column
       columns.detect { |column|
-        column.is_a?(BelongsToColumn) && column.name.to_s == @url_params[:sort]
+        column.is_a?(BelongsToColumn) && column.name.to_s == sort
       }
     end
     
@@ -79,14 +79,17 @@ class AdminAssistant
     end
     
     def sort
-      @url_params[:sort]
+      @url_params[:sort] ||
+          (settings.sort_by.to_s if settings.sort_by.is_a?(Symbol))
     end
     
     def sort_column
-      if @url_params[:sort]
+      if sort
         columns.detect { |c|
-          c.name.to_s == @url_params[:sort]
+          c.name.to_s == sort
         } || belongs_to_sort_column
+      elsif settings.sort_by.is_a?(Symbol)
+        columns.detect { |c| c.name == settings.sort_by.to_s }
       end
     end
     

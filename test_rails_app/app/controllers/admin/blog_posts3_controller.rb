@@ -16,6 +16,9 @@ class Admin::BlogPosts3Controller < ApplicationController
       index.search do |search|
         search.columns :id, :title, :body, :textile, :user
       end
+      
+      # sort by user by default
+      index.sort_by :user
     end
   end
 end

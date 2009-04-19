@@ -115,5 +115,23 @@ describe Admin::BlogPosts3Controller do
         response.body.should_not match(/Already published/)
       end
     end
+    
+    describe 'with blog posts from two different users' do
+      before :all do
+        aardvark_man = User.create!(:username => 'aardvark_man')
+        BlogPost.create! :title => 'AARDVARKS!!!!!1', :user => aardvark_man
+        ziggurat = User.create!(:username => 'zigguratz')
+        BlogPost.create! :title => "Wanna go climbing?", :user => ziggurat
+      end
+      
+      before :each do
+        get :index
+        response.should be_success
+      end
+      
+      it 'should by username' do
+        response.body.should match(%r|AARDVARKS!!!!!1.*Wanna go climbing|m)
+      end
+    end
   end
 end
