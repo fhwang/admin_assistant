@@ -100,7 +100,9 @@ describe Admin::BlogPosts2Controller do
     end
 
     it 'should render the preview HTML' do
-      response.should have_tag('h4', 'Preview')
+      response.should have_tag('html') do
+        with_tag 'h4', 'Preview'
+      end
     end
   end
 

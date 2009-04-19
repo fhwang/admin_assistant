@@ -76,10 +76,10 @@ class AdminAssistant
       
       def render_form
         html = @controller.send(
-          :render_to_string, :file => template_file('form'), :layout => true
+          :render_to_string, :file => template_file('form'), :layout => false
         )
         html << render_after_form if after_form_html_template_exists?
-        @controller.send :render, :text => html
+        @controller.send :render, :text => html, :layout => true
       end
       
       def render_template_file(template_name = action, options_plus = {})
