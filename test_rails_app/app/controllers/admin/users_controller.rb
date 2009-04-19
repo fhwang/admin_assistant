@@ -11,8 +11,9 @@ class Admin::UsersController < ApplicationController
     a.index do |index|
       # Add a right column link
       index.right_column_links << lambda { |user|
-        [ "Show #{user.username}'s profile page",
-          {:controller => '/users', :action => 'show', :id => user.id} ]
+        [ "New blog post",
+          { :controller => '/admin/blog_posts', :action => 'new',
+            :blog_post => {:user_id => user.id} } ]
       }
     end
   end

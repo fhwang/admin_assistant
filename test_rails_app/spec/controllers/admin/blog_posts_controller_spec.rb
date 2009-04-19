@@ -613,6 +613,20 @@ describe Admin::BlogPostsController do
     end
   end
   
+  describe '#new with a preset value in the GET arguments' do
+    before :each do
+      get :new, :blog_post => {:user_id => @user.id}
+    end
+    
+    it 'should set that preselected value' do
+      response.should have_tag("select[name=?]", "blog_post[user_id]") do
+        with_tag "option[value=?][selected=selected]",
+                 @user.id, :text => 'soren'
+        without_tag "option[value='']"
+      end
+    end
+  end
+  
   describe '#update' do
     before :all do
       @blog_post = BlogPost.create! :title => random_word, :user => @user

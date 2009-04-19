@@ -155,6 +155,9 @@ class AdminAssistant
     class New < Base
       def call
         @record = model_class.new
+        if @controller.params[model_class_symbol]
+          @record.attributes = params_for_save
+        end
         @controller.instance_variable_set :@record, @record
         render_form
       end

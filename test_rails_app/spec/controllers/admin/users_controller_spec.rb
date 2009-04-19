@@ -53,8 +53,9 @@ describe Admin::UsersController do
       response.should have_tag('td') do
         with_tag("a[href=#][onclick*='new Ajax.Request']", :text => 'Delete')
         with_tag(
-          "a[href=?]", "/users/show/#{@user.id}",
-          :text => "Show betty's profile page"
+          "a[href=?]",
+          "/admin/blog_posts/new?blog_post%5Buser_id%5D=#{@user.id}",
+          :text => "New blog post"
         )
       end
     end
