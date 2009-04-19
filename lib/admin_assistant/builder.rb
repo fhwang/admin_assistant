@@ -51,6 +51,7 @@ class AdminAssistant
       @inputs = {}
       @submit_buttons = []
       @read_only = []
+      @write_once = []
     end
     
     def read_only(*args)
@@ -58,6 +59,14 @@ class AdminAssistant
         @read_only
       else
         args.each do |arg| @read_only << arg.to_s; end
+      end
+    end
+    
+    def write_once(*args)
+      if args.empty?
+        @write_once
+      else
+        args.each do |arg| @write_once << arg.to_s; end
       end
     end
   end

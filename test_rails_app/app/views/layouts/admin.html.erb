@@ -8,33 +8,16 @@
   <body>
     <h1>admin_assistant sample Rails app</h1>
     <p>
-      <%= link_to_unless_current(
-        'blog_posts', :controller => 'admin/blog_posts'
-      ) %>
-      | <%= link_to_unless_current(
-        'blog_posts2', :controller => 'admin/blog_posts2'
-      ) %>
-      | <%= link_to_unless_current(
-        'blog_posts3', :controller => 'admin/blog_posts3'
-      ) %>
-      | <%= link_to_unless_current(
-        'comments', :controller => 'admin/comments'
-      ) %>
-      | <%= link_to_unless_current(
-        'file_column_images', :controller => 'admin/file_column_images'
-      ) %>
-      | <%= link_to_unless_current(
-        'images', :controller => 'admin/images'
-      ) %>
-      | <%= link_to_unless_current(
-        'images2', :controller => 'admin/images2'
-      ) %>
-      | <%= link_to_unless_current(
-        'products', :controller => 'admin/products'
-      ) %>
-      | <%= link_to_unless_current(
-        'users', :controller => 'admin/users'
-      ) %>
+      <%
+      controller_names = %w(
+        blog_posts blog_posts2 blog_posts3 comments comments2
+        file_column_images images images2 products users
+      )
+      %>
+      <% controller_names.each_with_index do |c_name, i| %>
+        <%= "|" unless i == 0 %>
+        <%= link_to_unless_current(c_name, :controller => "admin/#{c_name}") %>
+      <% end %>
     </p>
     <%= @content_for_layout %>
   </body>

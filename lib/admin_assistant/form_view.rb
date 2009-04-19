@@ -29,6 +29,9 @@ class AdminAssistant
       hff ||= column_html_from_helper_method(column)
       hff ||= if settings.read_only.include?(column.name)
         column.form_value(@record)
+      elsif settings.write_once.include?(column.name) &&
+            @action_view.action_name == 'edit'
+        column.form_value(@record)
       elsif column.respond_to?(:add_to_form)
         column.add_to_form(rails_form)
       else
