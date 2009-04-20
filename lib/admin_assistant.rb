@@ -26,18 +26,16 @@ class AdminAssistant
     }
   end
   
-  def column(name)
+  def column(name, opts = {})
+    opts[:custom_label] = custom_column_labels[name.to_s]
     column = if file_columns.include?(name)
-      FileColumnColumn.new name
+      FileColumnColumn.new name, opts
     elsif (ar_column = model_class.columns_hash[name.to_s])
-      ActiveRecordColumn.new(ar_column)
+      ActiveRecordColumn.new(ar_column, opts)
     elsif belongs_to_assoc = belongs_to_assoc(name)
-      BelongsToColumn.new(belongs_to_assoc)
+      BelongsToColumn.new(belongs_to_assoc, opts)
     else
-      AdminAssistantColumn.new(name)
-    end
-    if column && (custom = custom_column_labels[name.to_s])
-      column.custom_label = custom
+      AdminAssistantColumn.new(name, opts)
     end
     column
   end

@@ -128,20 +128,7 @@ class AdminAssistant
       end
       
       def columns
-        search_field_names = settings.columns
-        if search_field_names.empty?
-          [DefaultSearchColumn.new(
-            default_terms, @admin_assistant.model_class
-          )]
-        else
-          columns = search_field_names.map { |column_name|
-            @admin_assistant.column column_name.to_s
-          }
-          columns.each do |c|
-            c.search_terms = @search_params[c.name]
-          end
-          columns
-        end
+        settings.columns @search_params
       end
       
       def column_views(action_view)
@@ -153,10 +140,6 @@ class AdminAssistant
           end
           c.view(action_view, opts)
         }
-      end
-      
-      def default_terms
-        @search_params if @search_params.is_a?(String)
       end
       
       def id

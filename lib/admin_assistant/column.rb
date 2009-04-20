@@ -1,6 +1,11 @@
 class AdminAssistant
   class Column
-    attr_accessor :custom_label
+    attr_reader :custom_label, :search_terms
+    
+    def initialize(opts)
+      @custom_label = opts[:custom_label]
+      @search_terms = opts[:search_terms]
+    end
 
     def view(action_view, opts = {})
       klass = self.class.const_get 'View'
@@ -110,9 +115,8 @@ class AdminAssistant
   end
   
   class ActiveRecordColumn < Column
-    attr_accessor :search_terms
-    
-    def initialize(ar_column)
+    def initialize(ar_column, opts)
+      super opts
       @ar_column = ar_column
     end
     
@@ -265,7 +269,8 @@ class AdminAssistant
   class AdminAssistantColumn < Column
     attr_reader :name
     
-    def initialize(name)
+    def initialize(name, opts)
+      super opts
       @name = name.to_s
     end
     
@@ -281,9 +286,10 @@ class AdminAssistant
   end
   
   class BelongsToColumn < Column
-    attr_accessor :search_terms
+    attr_reader :search_terms
     
-    def initialize(belongs_to_assoc)
+    def initialize(belongs_to_assoc, opts)
+      super opts
       @belongs_to_assoc = belongs_to_assoc
     end
     
@@ -362,25 +368,25 @@ class AdminAssistant
   end
   
   class DefaultSearchColumn < Column
-    attr_reader :terms
     
     def initialize(terms, model_class)
-      @terms, @model_class = terms, model_class
+      super({:search_terms => terms})
+      @model_class = model_class
     end
     
     def add_to_query_condition(ar_query_condition)
-      unless @terms.blank?
+      unless @search_terms.blank?
         ar_query_condition.ar_query.boolean_join = :or
         AdminAssistant.searchable_columns(@model_class).each do |column|
           ar_query_condition.sqls << "#{column.name} like ?"
-          ar_query_condition.bind_vars << "%#{@terms}%"
+          ar_query_condition.bind_vars << "%#{@search_terms}%"
         end
       end
     end
     
     class View < AdminAssistant::Column::View
       def search_html
-        @action_view.text_field_tag("search", @column.terms)
+        @action_view.text_field_tag("search", @column.search_terms)
       end
     end
   end
@@ -388,7 +394,8 @@ class AdminAssistant
   class FileColumnColumn < Column
     attr_reader :name
     
-    def initialize(name)
+    def initialize(name, opts)
+      super opts
       @name = name.to_s
     end
     
@@ -413,7 +420,8 @@ class AdminAssistant
   class PaperclipColumn < Column
     attr_reader :name
     
-    def initialize(name)
+    def initialize(name, opts = {})
+      super opts
       @name = name.to_s
     end
     

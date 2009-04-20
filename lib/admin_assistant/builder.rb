@@ -122,11 +122,29 @@ class AdminAssistant
       
       def initialize(admin_assistant)
         super
-        @columns = []
+        @column_names = []
       end
       
       def columns(*c)
-        c.empty? ? @columns : (@columns = c)
+        if c.size == 1 && !c.first.is_a?(Array)
+          search_params = c.first
+          if @column_names.empty?
+            [DefaultSearchColumn.new(
+              (search_params if search_params.is_a?(String)),
+              @admin_assistant.model_class
+            )]
+          else
+            columns = @column_names.map { |column_name|
+              @admin_assistant.column(
+                column_name.to_s,
+                :search_terms => search_params[column_name]
+              )
+            }
+            columns
+          end
+        else
+          @column_names = c
+        end
       end
     end
   end
