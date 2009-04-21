@@ -27,20 +27,6 @@ class AdminAssistant
           @column.name.to_s.capitalize.gsub(/_/, ' ') 
         end
       end
-    
-      def next_sort_params
-        name_for_sort = name
-        next_sort_order = 'asc'
-        if sort_order
-          if sort_order == 'asc'
-            next_sort_order = 'desc'
-          else
-            name_for_sort = nil
-            next_sort_order = nil
-          end
-        end
-        {:sort => name_for_sort, :sort_order => next_sort_order}
-      end
       
       def paperclip?
         @column.is_a?(PaperclipColumn)
@@ -95,6 +81,20 @@ class AdminAssistant
         end
         html = '&nbsp;' if html.blank?
         html
+      end
+    
+      def next_sort_params
+        name_for_sort = name
+        next_sort_order = 'asc'
+        if sort_order
+          if sort_order == 'asc'
+            next_sort_order = 'desc'
+          else
+            name_for_sort = nil
+            next_sort_order = nil
+          end
+        end
+        {:sort => name_for_sort, :sort_order => next_sort_order}
       end
       
       def value(record)
