@@ -22,16 +22,15 @@ class AdminAssistant
   end
   
   def belongs_to_assoc(name)
-    model_class.reflect_on_all_associations.detect { |assoc|
+    @model_class.reflect_on_all_associations.detect { |assoc|
       assoc.macro == :belongs_to && assoc.name.to_s == name.to_s
     }
   end
   
   def column(name, opts = {})
-    opts[:custom_label] = custom_column_labels[name.to_s]
     column = if file_columns.include?(name)
       FileColumnColumn.new name, opts
-    elsif (ar_column = model_class.columns_hash[name.to_s])
+    elsif (ar_column = @model_class.columns_hash[name.to_s])
       ActiveRecordColumn.new(ar_column, opts)
     elsif belongs_to_assoc = belongs_to_assoc(name)
       BelongsToColumn.new(belongs_to_assoc, opts)
@@ -43,9 +42,9 @@ class AdminAssistant
   
   def column_name_or_assoc_name(name)
     result = name
-    ar_column = model_class.columns_hash[name.to_s]
+    ar_column = @model_class.columns_hash[name.to_s]
     if ar_column
-      associations = model_class.reflect_on_all_associations
+      associations = @model_class.reflect_on_all_associations
       if belongs_to_assoc = associations.detect { |assoc|
         assoc.macro == :belongs_to && assoc.association_foreign_key == name
       }
@@ -89,11 +88,11 @@ class AdminAssistant
   
   def file_columns
     fc = []
-    if model_class.respond_to?(:file_column)
-      model_class.columns.each do |column|
+    if @model_class.respond_to?(:file_column)
+      @model_class.columns.each do |column|
         suffixes = %w( relative_path dir relative_dir temp )
         if suffixes.all? { |suffix|
-          model_class.method_defined? "#{column.name}_#{suffix}".to_sym
+          @model_class.method_defined? "#{column.name}_#{suffix}".to_sym
         }
           fc << column.name
         end
@@ -118,14 +117,14 @@ class AdminAssistant
   end
     
   def model_class_name
-    model_class.name.gsub(/([A-Z])/, ' \1')[1..-1].downcase
+    @model_class.name.gsub(/([A-Z])/, ' \1')[1..-1].downcase
   end
     
   def paperclip_attachments
     pa = []
-    if model_class.respond_to?(:attachment_definitions)
-      if model_class.attachment_definitions
-        pa = model_class.attachment_definitions.map { |name, definition|
+    if @model_class.respond_to?(:attachment_definitions)
+      if @model_class.attachment_definitions
+        pa = @model_class.attachment_definitions.map { |name, definition|
           name
         }
       end
@@ -146,7 +145,7 @@ class AdminAssistant
   end
   
   def search_settings
-    index_settings.search_settings
+    @index_settings.search_settings
   end
   
   def url_params(a = action)

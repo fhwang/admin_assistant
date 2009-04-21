@@ -61,7 +61,11 @@ class AdminAssistant
     
     def columns
       @admin_assistant.columns(column_names).map { |c|
-        c.form_view(@action_view, :input => settings.inputs[c.name.to_sym])
+        c.form_view(
+          @action_view,
+          :input => settings.inputs[c.name.to_sym],
+          :label => @admin_assistant.custom_column_labels[c.name]
+        )
       }
     end
     

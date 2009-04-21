@@ -146,6 +146,8 @@ class AdminAssistant
         end
       end
     end
+    
+    def name; end
   end
   
   class FileColumnColumn < Column

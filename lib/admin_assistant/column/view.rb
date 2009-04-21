@@ -7,6 +7,7 @@ class AdminAssistant
         super(column)
         @column, @action_view, @opts = column, action_view, opts
         @boolean_labels = opts[:boolean_labels]
+        @label = opts[:label]
         set_instance_variables_from_options opts
       end
       
@@ -19,8 +20,8 @@ class AdminAssistant
       end
       
       def label
-        if @column.custom_label
-          @column.custom_label
+        if @label
+          @label
         elsif @column.name.to_s == 'id'
           'ID'
         else

@@ -104,7 +104,9 @@ class AdminAssistant
     end
     
     def view(action_view)
-      @view ||= View.new(self, action_view)
+      @view ||= View.new(
+        self, action_view, @admin_assistant.custom_column_labels
+      )
     end
     
     class Search
@@ -133,7 +135,10 @@ class AdminAssistant
       
       def column_views(action_view)
         columns.map { |c|
-          opts = {:search => self}
+          opts = {
+            :search => self,
+            :label => @admin_assistant.custom_column_labels[c.name]
+          }
           if c.respond_to?(:name)
             opts[:boolean_labels] =
                 @admin_assistant.index_settings.boolean_labels[c.name]
@@ -159,8 +164,9 @@ class AdminAssistant
     end
     
     class View
-      def initialize(index, action_view)
-        @index, @action_view = index, action_view
+      def initialize(index, action_view, custom_column_labels)
+        @index, @action_view, @custom_column_labels =
+            index, action_view, custom_column_labels
       end
       
       def columns
@@ -170,7 +176,8 @@ class AdminAssistant
               @action_view,
               :boolean_labels => @index.settings.boolean_labels[c.name],
               :sort_order => (@index.sort_order if c.name == @index.sort),
-              :link_to_args => @index.settings.link_to_args[c.name.to_sym]
+              :link_to_args => @index.settings.link_to_args[c.name.to_sym],
+              :label => @custom_column_labels[c.name]
             )
           }
         end
