@@ -27,7 +27,8 @@ class AdminAssistant
     end
       
     def index
-      yield @admin_assistant.index_settings
+      i = @admin_assistant.index_settings
+      block_given? ? yield(i) : i
     end
   end
   
@@ -118,33 +119,16 @@ class AdminAssistant
     end
     
     class SearchSettings < Settings
-      attr_reader :columns
+      attr_reader :column_names, :comparators
       
       def initialize(admin_assistant)
         super
         @column_names = []
+        @comparators = {}
       end
       
       def columns(*c)
-        if c.size == 1 && !c.first.is_a?(Array)
-          search_params = c.first
-          if @column_names.empty?
-            [DefaultSearchColumn.new(
-              (search_params if search_params.is_a?(String)),
-              @admin_assistant.model_class
-            )]
-          else
-            columns = @column_names.map { |column_name|
-              @admin_assistant.column(
-                column_name.to_s,
-                :search_terms => search_params[column_name]
-              )
-            }
-            columns
-          end
-        else
-          @column_names = c
-        end
+        @column_names = c
       end
     end
   end

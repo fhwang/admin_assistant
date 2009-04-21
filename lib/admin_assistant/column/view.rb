@@ -115,6 +115,7 @@ class AdminAssistant
     
     module SearchViewMethods
       def set_instance_variables_from_options(opts)
+        @comparators = opts[:comparators]
         @search = opts[:search]
       end
     end
@@ -221,7 +222,8 @@ class AdminAssistant
       include AdminAssistant::Column::SearchViewMethods
       
       def html
-        input = case @column.sql_type
+        input = ''
+        case @column.sql_type
           when :boolean
             opts = [['', nil]]
             if @boolean_labels
@@ -231,9 +233,28 @@ class AdminAssistant
               opts << ['true', true]
               opts << ['false', false]
             end
-            @action_view.select("search", name, opts)
+            input = @action_view.select("search", name, opts)
           else
-            @action_view.text_field_tag("search[#{name}]", @search[name])
+            if @comparators == :all
+              comparator_opts = [
+                ['greater than', '>'], ['greater than or equal to', '>='],
+                ['equal to', '='], ['less than or equal to', '<='],
+                ['less than', '<']
+              ]
+              option_tags = comparator_opts.map { |text, value|
+                opt = "<option value=\"#{value}\""
+                if @column.search_comparator == value
+                  opt << " selected=\"selected\""
+                end
+                opt << ">#{text}</option>"
+              }.join("\n")
+              input << @action_view.select_tag(
+                "search[#{name}(comparator)]", option_tags
+              ) << ' '
+            end
+            input << @action_view.text_field_tag(
+              "search[#{name}]", @search[name]
+            )
         end
         "<p><label>#{label}</label> <br/>#{input}</p>"
       end

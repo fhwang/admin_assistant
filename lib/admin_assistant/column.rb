@@ -1,9 +1,10 @@
 class AdminAssistant
   class Column
-    attr_reader :custom_label, :search_terms
+    attr_reader :custom_label, :search_comparator, :search_terms
     
     def initialize(opts)
       @custom_label = opts[:custom_label]
+      @search_comparator = opts[:search_comparator]
       @search_terms = opts[:search_terms]
     end
     
@@ -31,13 +32,21 @@ class AdminAssistant
     
     def add_to_query_condition(ar_query_condition)
       unless @search_terms.blank?
-        case sql_type
-          when :boolean
-            ar_query_condition.sqls << "#{name} = ?"
-            ar_query_condition.bind_vars << search_value
-          else
-            ar_query_condition.sqls << "#{name} like ?"
-            ar_query_condition.bind_vars << "%#{@search_terms}%"
+        unless %w(< <= = >= >).include?(@search_comparator)
+          @search_comparator = nil
+        end
+        if @search_comparator
+          ar_query_condition.sqls << "#{name} #{@search_comparator} ?"
+          ar_query_condition.bind_vars << search_value
+        else
+          case sql_type
+            when :boolean
+              ar_query_condition.sqls << "#{name} = ?"
+              ar_query_condition.bind_vars << search_value
+            else
+              ar_query_condition.sqls << "#{name} like ?"
+              ar_query_condition.bind_vars << "%#{@search_terms}%"
+          end
         end
       end
     end

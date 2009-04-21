@@ -128,7 +128,23 @@ class AdminAssistant
       end
       
       def columns
-        settings.columns @search_params
+        column_names = settings.column_names
+        if column_names.empty?
+          [DefaultSearchColumn.new(
+            (@search_params if @search_params.is_a?(String)),
+            @admin_assistant.model_class
+          )]
+        else
+          columns = column_names.map { |column_name|
+            @admin_assistant.column(
+              column_name.to_s,
+              :search_terms => @search_params[column_name],
+              :search_comparator =>
+                  @search_params["#{column_name}(comparator)"]
+            )
+          }
+          columns
+        end
       end
       
       def column_views(action_view)
@@ -137,9 +153,10 @@ class AdminAssistant
             :search => self,
             :label => @admin_assistant.custom_column_labels[c.name]
           }
-          if c.respond_to?(:name)
+          if c.respond_to?(:name) && c.name
             opts[:boolean_labels] =
                 @admin_assistant.index_settings.boolean_labels[c.name]
+            opts[:comparators] = settings.comparators[c.name.to_sym]
           end
           c.search_view(action_view, opts)
         }
