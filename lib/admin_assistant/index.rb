@@ -166,7 +166,7 @@ class AdminAssistant
       def columns
         unless @columns
           @columns = @index.columns.map { |c|
-            c.view(
+            c.index_view(
               @action_view,
               :boolean_labels => @index.settings.boolean_labels[c.name],
               :sort_order => (@index.sort_order if c.name == @index.sort),

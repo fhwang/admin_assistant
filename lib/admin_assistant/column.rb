@@ -6,14 +6,19 @@ class AdminAssistant
       @custom_label = opts[:custom_label]
       @search_terms = opts[:search_terms]
     end
-
-    def view(action_view, opts = {})
-      klass = self.class.const_get 'View'
-      klass.new self, action_view, opts
-    end
     
     def form_view(action_view, opts = {})
       klass = self.class.const_get 'FormView'
+      klass.new self, action_view, opts
+    end
+    
+    def index_view(action_view, opts = {})
+      klass = self.class.const_get 'IndexView'
+      klass.new self, action_view, opts
+    end
+
+    def view(action_view, opts = {})
+      klass = self.class.const_get 'View'
       klass.new self, action_view, opts
     end
   end

@@ -44,7 +44,7 @@ show_search_form();
   <thead>
     <tr>
     <% @index.view(self).columns.each do |column| %>
-      <% th_class = column.index_header_css_class %>
+      <% th_class = column.header_css_class %>
       <th<%= " class=\"#{th_class}\"" if th_class %>><%=
         if column.sort_possible?
           link_to(h(column.label), column.next_sort_params)
@@ -62,9 +62,9 @@ show_search_form();
   <% @index.records.each do |record| %>
     <tr class="<%= cycle('odd', 'even') %>" id="record_<%= record.id %>">
       <% @index.view(self).columns.each do |column| %>
-        <% td_class = column.index_td_css_class %>
+        <% td_class = column.td_css_class %>
         <td<%= " class=\"#{td_class}\"" if td_class %>><%=
-          column.index_html(record)
+          column.html(record)
         %></td>
       <% end %>
       <% if @admin_assistant.update? || @admin_assistant.destroy? %>

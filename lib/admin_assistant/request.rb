@@ -174,7 +174,7 @@ class AdminAssistant
             index = AdminAssistant::Index.new @admin_assistant
             erb = <<-ERB
               <%= index.view(self).columns.detect { |c| c.name == field_name }.
-                        index_ajax_toggle_inner_html(record) %>
+                        ajax_toggle_inner_html(record) %>
             ERB
             @controller.send(
               :render,
