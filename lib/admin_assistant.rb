@@ -20,41 +20,8 @@ class AdminAssistant
     @index_settings = IndexSettings.new self
     @custom_column_labels = {}
   end
-  
-  def belongs_to_assoc(name)
-    @model_class.reflect_on_all_associations.detect { |assoc|
-      assoc.macro == :belongs_to && assoc.name.to_s == name.to_s
-    }
-  end
-  
-  def column(name, opts = {})
-    column = if file_columns.include?(name)
-      FileColumnColumn.new name, opts
-    elsif (ar_column = @model_class.columns_hash[name.to_s])
-      ActiveRecordColumn.new(ar_column, opts)
-    elsif belongs_to_assoc = belongs_to_assoc(name)
-      BelongsToColumn.new(belongs_to_assoc, opts)
-    else
-      AdminAssistantColumn.new(name, opts)
-    end
-    column
-  end
-  
-  def column_name_or_assoc_name(name)
-    result = name
-    ar_column = @model_class.columns_hash[name.to_s]
-    if ar_column
-      associations = @model_class.reflect_on_all_associations
-      if belongs_to_assoc = associations.detect { |assoc|
-        assoc.macro == :belongs_to && assoc.association_foreign_key == name
-      }
-        result = belongs_to_assoc.name.to_s
-      end
-    end
-    result
-  end
     
-  def columns(names)
+  def accumulate_columns(names)
     columns = paperclip_attachments.map { |paperclip_attachment|
       PaperclipColumn.new paperclip_attachment
     }
@@ -65,6 +32,36 @@ class AdminAssistant
       end
     end
     columns
+  end
+  
+  def belongs_to_assoc(association_name)
+    @model_class.reflect_on_all_associations.detect { |assoc|
+      assoc.macro == :belongs_to && assoc.name.to_s == association_name.to_s
+    }
+  end
+  
+  def belongs_to_assoc_by_foreign_key(foreign_key)
+    @model_class.reflect_on_all_associations.detect { |assoc|
+      assoc.macro == :belongs_to &&
+          assoc.association_foreign_key == foreign_key
+    }
+  end
+  
+  def column(name, opts = {})
+    column = if file_columns.include?(name)
+      FileColumnColumn.new name, opts
+    elsif paperclip_attachments.include?(name)
+      PaperclipColumn.new name, opts
+    elsif belongs_to_assoc = belongs_to_assoc(name)
+      BelongsToColumn.new(belongs_to_assoc, opts)
+    elsif belongs_to_assoc = belongs_to_assoc_by_foreign_key(name)
+      BelongsToColumn.new(belongs_to_assoc, opts)
+    elsif (ar_column = @model_class.columns_hash[name.to_s])
+      ActiveRecordColumn.new(ar_column, opts)
+    else
+      AdminAssistantColumn.new(name, opts)
+    end
+    column
   end
   
   def controller_actions

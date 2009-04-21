@@ -54,13 +54,11 @@ class AdminAssistant
       settings.column_names ||
           model_class.columns.reject { |ar_column|
             %w(id created_at updated_at).include?(ar_column.name)
-          }.map { |ar_column|
-            @admin_assistant.column_name_or_assoc_name(ar_column.name)
-          }
+          }.map { |ar_column| ar_column.name }
     end
     
     def columns
-      @admin_assistant.columns(column_names).map { |c|
+      @admin_assistant.accumulate_columns(column_names).map { |c|
         c.form_view(
           @action_view,
           :input => settings.inputs[c.name.to_sym],

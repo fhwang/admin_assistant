@@ -14,10 +14,8 @@ class AdminAssistant
     end
     
     def columns
-      column_names = settings.column_names || model_class.columns.map { |c|
-        @admin_assistant.column_name_or_assoc_name(c.name)
-      }
-      @admin_assistant.columns column_names
+      column_names = settings.column_names || model_class.columns.map(&:name)
+      @admin_assistant.accumulate_columns column_names
     end
     
     def conditions
