@@ -17,8 +17,8 @@ class AdminAssistant
       klass.new self, action_view, opts
     end
 
-    def view(action_view, opts = {})
-      klass = self.class.const_get 'View'
+    def search_view(action_view, opts = {})
+      klass = self.class.const_get 'SearchView'
       klass.new self, action_view, opts
     end
   end

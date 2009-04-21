@@ -138,7 +138,7 @@ class AdminAssistant
             opts[:boolean_labels] =
                 @admin_assistant.index_settings.boolean_labels[c.name]
           end
-          c.view(action_view, opts)
+          c.search_view(action_view, opts)
         }
       end
       

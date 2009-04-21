@@ -7,10 +7,7 @@ class AdminAssistant
         super(column)
         @column, @action_view, @opts = column, action_view, opts
         @boolean_labels = opts[:boolean_labels]
-        @search = opts[:search] # search only
-        if respond_to?(:set_instance_variables_from_options)
-          set_instance_variables_from_options opts
-        end
+        set_instance_variables_from_options opts
       end
       
       def __getobj__
@@ -114,30 +111,18 @@ class AdminAssistant
         @sort_order = opts[:sort_order]
       end
     end
+    
+    module SearchViewMethods
+      def set_instance_variables_from_options(opts)
+        @search = opts[:search]
+      end
+    end
   end
   
   class ActiveRecordColumn < Column
     class View < AdminAssistant::Column::View
       def field_value(record)
         record.send(name) if record.respond_to?(name)
-      end
-      
-      def search_html
-        input = case @column.sql_type
-          when :boolean
-            opts = [['', nil]]
-            if @boolean_labels
-              opts << [@boolean_labels.first, true]
-              opts << [@boolean_labels.last, false]
-            else
-              opts << ['true', true]
-              opts << ['false', false]
-            end
-            @action_view.select("search", name, opts)
-          else
-            @action_view.text_field_tag("search[#{name}]", @search[name])
-        end
-        "<p><label>#{label}</label> <br/>#{input}</p>"
       end
     end
     
@@ -230,6 +215,28 @@ class AdminAssistant
         value
       end
     end
+    
+    class SearchView < View
+      include AdminAssistant::Column::SearchViewMethods
+      
+      def html
+        input = case @column.sql_type
+          when :boolean
+            opts = [['', nil]]
+            if @boolean_labels
+              opts << [@boolean_labels.first, true]
+              opts << [@boolean_labels.last, false]
+            else
+              opts << ['true', true]
+              opts << ['false', false]
+            end
+            @action_view.select("search", name, opts)
+          else
+            @action_view.text_field_tag("search[#{name}]", @search[name])
+        end
+        "<p><label>#{label}</label> <br/>#{input}</p>"
+      end
+    end
   end
 
   class AdminAssistantColumn < Column
@@ -246,6 +253,10 @@ class AdminAssistant
     class IndexView < View
       include AdminAssistant::Column::IndexViewMethods
     end
+    
+    class SearchView < View
+      include AdminAssistant::Column::SearchViewMethods
+    end
   end
   
   class BelongsToColumn < Column
@@ -257,13 +268,6 @@ class AdminAssistant
         elsif assoc_value && default_name_method
           assoc_value.send default_name_method
         end
-      end
-      
-      def search_html
-        input = @action_view.text_field_tag(
-          "search[#{name}]", @column.search_terms
-        )
-        "<p><label>#{label}</label> <br/>#{input}</p>"
       end
     end
     
@@ -284,13 +288,21 @@ class AdminAssistant
     class IndexView < View
       include AdminAssistant::Column::IndexViewMethods
     end
+    
+    class SearchView < View
+      include AdminAssistant::Column::SearchViewMethods
+      
+      def html
+        input = @action_view.text_field_tag(
+          "search[#{name}]", @column.search_terms
+        )
+        "<p><label>#{label}</label> <br/>#{input}</p>"
+      end
+    end
   end
   
   class DefaultSearchColumn < Column
     class View < AdminAssistant::Column::View
-      def search_html
-        @action_view.text_field_tag("search", @column.search_terms)
-      end
     end
     
     class FormView < View
@@ -299,6 +311,14 @@ class AdminAssistant
 
     class IndexView < View
       include AdminAssistant::Column::IndexViewMethods
+    end
+    
+    class SearchView < View
+      include AdminAssistant::Column::SearchViewMethods
+      
+      def html
+        @action_view.text_field_tag("search", @column.search_terms)
+      end
     end
   end
   
@@ -324,6 +344,10 @@ class AdminAssistant
         )
       end
     end
+    
+    class SearchView < View
+      include AdminAssistant::Column::SearchViewMethods
+    end
   end
   
   class PaperclipColumn < Column
@@ -344,6 +368,10 @@ class AdminAssistant
       def html(record)
         @action_view.image_tag record.send(@column.name).url
       end
+    end
+    
+    class SearchView < View
+      include AdminAssistant::Column::SearchViewMethods
     end
   end
 end
