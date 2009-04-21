@@ -1,6 +1,7 @@
 $: << File.join(File.dirname(__FILE__), '../vendor/ar_query/lib')
 require 'admin_assistant/builder'
 require 'admin_assistant/column'
+require 'admin_assistant/column/view'
 require 'admin_assistant/form_view'
 require 'admin_assistant/helper'
 require 'admin_assistant/index'

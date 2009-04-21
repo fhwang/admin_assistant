@@ -11,8 +11,9 @@ Gem::Specification.new do |s|
   s.homepage = 'http://github.com/fhwang/admin_assistant/tree/master'
   s.files = FileList[
     'MIT-LICENSE', 'README', '*.rb', 'Rakefile',
-    'lib/*.rb', 'lib/admin_assistant/*.rb', 'lib/images/*.png',
-    'lib/stylesheets/*.css', 'lib/views/*.erb', 'tasks/*.rake'
+    'lib/*.rb', 'lib/admin_assistant/*.rb', 'lib/admin_assistant/*/*.rb',
+    'lib/images/*.png', 'lib/stylesheets/*.css', 'lib/views/*.erb', 
+    'tasks/*.rake'
   ].to_a
   s.add_dependency 'mislav-will_paginate'
 end
