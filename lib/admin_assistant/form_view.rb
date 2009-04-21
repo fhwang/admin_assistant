@@ -28,10 +28,10 @@ class AdminAssistant
       hff = render_from_custom_template "_#{column.name}_input"
       hff ||= column_html_from_helper_method(column)
       hff ||= if settings.read_only.include?(column.name)
-        column.form_value(@record)
+        column.value(@record)
       elsif settings.write_once.include?(column.name) &&
             @action_view.action_name == 'edit'
-        column.form_value(@record)
+        column.value(@record)
       elsif column.respond_to?(:add_to_form)
         column.add_to_form(rails_form)
       else
@@ -61,7 +61,7 @@ class AdminAssistant
     
     def columns
       @admin_assistant.columns(column_names).map { |c|
-        c.view(@action_view, :input => settings.inputs[c.name.to_sym])
+        c.form_view(@action_view, :input => settings.inputs[c.name.to_sym])
       }
     end
     
@@ -113,7 +113,7 @@ class AdminAssistant
     def virtual_column_html(column)
       input_name = "#{model_class.name.underscore}[#{column.name}]"
       input_type = settings.inputs[column.name.to_sym]
-      fv = column.form_value @record
+      fv = column.value @record
       if input_type
         if input_type == :check_box
           @action_view.send(:check_box_tag, input_name, '1', fv) +
