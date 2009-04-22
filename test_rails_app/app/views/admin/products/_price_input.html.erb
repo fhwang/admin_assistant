@@ -1,8 +1,10 @@
 $
 <%= text_field_tag(
-  "product[price][dollars]", ((product.price / 100) if product.price)
+  "product[price][dollars]", ((product.price / 100) if product.price),
+  :style => 'width: 50px'
 ) %>
 .
 <%= text_field_tag(
-  "product[price][cents]", ((product.price % 100) if product.price)
+  "product[price][cents]", ((product.price % 100) if product.price),
+  :style => 'width: 50px'
 ) %>

@@ -5,6 +5,9 @@ class Admin::BlogPosts3Controller < ApplicationController
     a.index do |index|
       index.total_entries = lambda { 25 }
       
+      # Add the link 'All' to the top-right corner
+      index.actions['All'] = {:all => '1'}
+      
       # By default, only show unpublished blog posts unless params[:all] is
       # passed in. This needs to work with or without use of the field search
       # feature

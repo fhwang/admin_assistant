@@ -7,4 +7,10 @@ class Admin::ProductsController < ApplicationController
       search.comparators[:price] = :all
     end
   end
+  
+  protected
+  
+  def price_from_form(price)
+    (price[:dollars].to_i * 100) + price[:cents].to_i
+  end
 end
