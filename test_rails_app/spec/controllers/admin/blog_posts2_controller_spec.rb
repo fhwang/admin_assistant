@@ -321,7 +321,7 @@ describe Admin::BlogPosts2Controller do
   
   describe '#new' do
     before :all do
-      Tag.create! :tag => 'tag_from_yesterday'
+      Tag.find_or_create_by_tag 'tag_from_yesterday'
     end
     
     before :each do
@@ -340,16 +340,12 @@ describe Admin::BlogPosts2Controller do
       response.body.should match(
         %r!
           <input[^>]*
-          (name="blog_post\[publish\][^>]*type="checkbox"[^>]value="1"|
-           type="checkbox"[^>]*name="blog_post\[publish\][^>]value="1")
-        !x
-      )
-      # needs hidden field, like form.check_box
-      response.body.should match(
-        %r!
-          <input[^>]*
           (name="blog_post\[publish\][^>]*type="hidden"[^>]value="0"|
           type="hidden"[^>]*name="blog_post\[publish\][^>]value="0")
+          .*
+          <input[^>]*
+          (name="blog_post\[publish\][^>]*type="checkbox"[^>]value="1"|
+           type="checkbox"[^>]*name="blog_post\[publish\][^>]value="1")
         !x
       )
     end

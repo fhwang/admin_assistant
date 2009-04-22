@@ -118,8 +118,8 @@ class AdminAssistant
       fv = column.value @record
       if input_type
         if input_type == :check_box
-          @action_view.send(:check_box_tag, input_name, '1', fv) +
-              @action_view.send(:hidden_field_tag, input_name, '0')
+          @action_view.send(:hidden_field_tag, input_name, '0') +
+              @action_view.send(:check_box_tag, input_name, '1', fv)
         end
       else
         @action_view.send(:text_field_tag, input_name, fv)
