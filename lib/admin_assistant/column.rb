@@ -1,9 +1,11 @@
 class AdminAssistant
   class Column
-    attr_reader :custom_label, :search_comparator, :search_terms
+    attr_reader :custom_label, :match_text_fields, :search_comparator,
+                :search_terms
     
     def initialize(opts)
       @custom_label = opts[:custom_label]
+      @match_text_fields = opts[:match_text_fields]
       @search_comparator = opts[:search_comparator]
       @search_terms = opts[:search_terms]
     end
@@ -92,18 +94,29 @@ class AdminAssistant
     def initialize(belongs_to_assoc, opts)
       super opts
       @belongs_to_assoc = belongs_to_assoc
+      if !@match_text_fields && @search_terms
+        @search_terms = @search_terms.to_i
+      end
     end
     
     def add_to_query_condition(ar_query_condition)
       unless @search_terms.blank?
-        ar_query_condition.ar_query.joins << name.to_sym
-        ar_query_condition.add_condition do |sub_cond|
-          sub_cond.boolean_join = :or
-          AdminAssistant.searchable_columns(associated_class).each do |column|
-            sub_cond.sqls <<
-                "#{associated_class.table_name}.#{column.name} like ?"
-            sub_cond.bind_vars << "%#{@search_terms}%"
+        if @match_text_fields
+          ar_query_condition.ar_query.joins << name.to_sym
+          searchable_columns = AdminAssistant.searchable_columns(
+            associated_class
+          )
+          ar_query_condition.add_condition do |sub_cond|
+            sub_cond.boolean_join = :or
+            searchable_columns.each do |column|
+              sub_cond.sqls <<
+                  "#{associated_class.table_name}.#{column.name} like ?"
+              sub_cond.bind_vars << "%#{@search_terms}%"
+            end
           end
+        elsif
+          ar_query_condition.sqls << "#{association_foreign_key} = ?"
+          ar_query_condition.bind_vars << @search_terms
         end
       end
     end
@@ -137,6 +150,10 @@ class AdminAssistant
       else
         @belongs_to_assoc.association_foreign_key
       end
+    end
+    
+    def search_value
+      @search_terms
     end
   end
   

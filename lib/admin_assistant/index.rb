@@ -140,7 +140,11 @@ class AdminAssistant
               column_name.to_s,
               :search_terms => @search_params[column_name],
               :search_comparator =>
-                  @search_params["#{column_name}(comparator)"]
+                  @search_params["#{column_name}(comparator)"],
+              :match_text_fields =>
+                  settings.match_text_fields_for_association.include?(
+                    column_name.to_sym
+                  )
             )
           }
           columns

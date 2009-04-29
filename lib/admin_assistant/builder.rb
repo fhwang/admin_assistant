@@ -119,16 +119,26 @@ class AdminAssistant
     end
     
     class SearchSettings < Settings
-      attr_reader :column_names, :comparators
+      attr_reader :column_names, :comparators,
+                  :match_text_fields_for_association
       
       def initialize(admin_assistant)
         super
         @column_names = []
         @comparators = {}
+        @match_text_fields_for_association = []
       end
       
       def columns(*c)
         @column_names = c
+      end
+      
+      def match_text_fields_for_association(*c)
+        if c.empty?
+          @match_text_fields_for_association
+        else
+          @match_text_fields_for_association = c
+        end
       end
     end
   end

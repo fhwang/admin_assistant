@@ -615,7 +615,7 @@ describe Admin::BlogPostsController do
   
   describe '#new with a preset value in the GET arguments' do
     before :each do
-      get :new, :blog_post => {:user_id => @user.id}
+      get :new, :blog_post => {:user_id => @user.id.to_s}
     end
     
     it 'should set that preselected value' do

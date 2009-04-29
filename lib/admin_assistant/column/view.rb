@@ -291,19 +291,20 @@ class AdminAssistant
           assoc_value.send default_name_method
         end
       end
+      
+      def options_for_select
+        associated_class.
+            find(:all).
+            sort_by { |model| model.send(default_name_method) }.
+            map { |model| [model.send(default_name_method), model.id] }
+      end
     end
     
     class FormView < View
       include AdminAssistant::Column::FormViewMethods
       
       def add_to_form(form)
-        form.select(
-          association_foreign_key,
-          associated_class.
-              find(:all).
-              sort_by { |model| model.send(default_name_method) }.
-              map { |model| [model.send(default_name_method), model.id] }
-        )
+        form.select association_foreign_key, options_for_select
       end
     end
 
@@ -315,9 +316,15 @@ class AdminAssistant
       include AdminAssistant::Column::SearchViewMethods
       
       def html
-        input = @action_view.text_field_tag(
-          "search[#{name}]", @column.search_terms
-        )
+        input = if @column.match_text_fields
+          @action_view.text_field_tag(
+            "search[#{name}]", @column.search_terms
+          )
+        else
+          @action_view.select(
+            'search', name, options_for_select, :include_blank => true
+          )
+        end
         "<p><label>#{label}</label> <br/>#{input}</p>"
       end
     end

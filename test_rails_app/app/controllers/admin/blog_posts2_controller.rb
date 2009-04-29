@@ -26,7 +26,7 @@ class Admin::BlogPosts2Controller < ApplicationController
       index.boolean_labels :textile => %w(Yes No)
       
       # Let's have specific fields for searching
-      index.search :id, :title, :body, :textile
+      index.search :id, :title, :body, :textile, :user
       
       # Make the author field a link
       index.link_to_args[:user] = lambda { |blog_post|

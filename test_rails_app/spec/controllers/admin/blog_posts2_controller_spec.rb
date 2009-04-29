@@ -114,9 +114,9 @@ describe Admin::BlogPosts2Controller do
           :title => "blog post title", :body => 'blog post body',
           :user => @user
         )
-        tag1 = Tag.create! :tag => 'tag1'
+        tag1 = Tag.find_or_create_by_tag 'tag1'
         BlogPostTag.create! :blog_post => @blog_post, :tag => tag1
-        tag2 = Tag.create! :tag => 'tag2'
+        tag2 = Tag.find_or_create_by_tag 'tag2'
         BlogPostTag.create! :blog_post => @blog_post, :tag => tag2
       end
       
@@ -174,6 +174,10 @@ describe Admin::BlogPosts2Controller do
             with_tag("option[value='']", :text => '')
             with_tag("option[value='true']", :text => 'Yes')
             with_tag("option[value='false']", :text => 'No')
+          end
+          with_tag('select[name=?]', 'search[user]') do
+            with_tag("option[value='']", :text => '')
+            with_tag("option[value=?]", @user.id)
           end
         end
       end
@@ -242,7 +246,7 @@ describe Admin::BlogPosts2Controller do
     end
   end
   
-  describe '#index when searching' do
+  describe '#index when searching for foobar' do
     before :all do
       BlogPost.destroy_all
       BlogPost.create!(
@@ -314,6 +318,44 @@ describe Admin::BlogPosts2Controller do
             with_tag("option[value='true']", :text => 'Yes')
             with_tag("option[value='false'][selected=selected]", :text => 'No')
           end
+        end
+      end
+    end
+  end
+  
+  describe '#index when searching by user' do
+    before :all do
+      @user2 = User.create! :username => 'Jean-Paul'
+      BlogPost.destroy_all
+      BlogPost.create! :title => "Soren's first post", :user => @user
+      BlogPost.create! :title => "Soren's second post", :user => @user
+      BlogPost.create! :title => "Jean-Paul's post", :user => @user2
+    end
+    
+    before :each do
+      get(
+        :index,
+        :search => {:textile => '', :title => '', :user => @user2.id.to_s}
+      )
+      response.should be_success
+    end
+    
+    it 'should show blog posts by Jean-Paul' do
+      response.should have_tag('td', :text => "Jean-Paul's post")
+    end
+    
+    it 'should not show blog posts by Soren' do
+      response.should_not have_tag('td', :text => "Soren's first post")
+      response.should_not have_tag('td', :text => "Soren's second post")
+    end
+    
+    it 'should show the user field pre-set' do
+      response.should have_tag(
+        'form[id=search_form][method=get]', :text => /Title/
+      ) do
+        with_tag('select[name=?]', 'search[user]') do
+          with_tag("option[value='']", :text => '')
+          with_tag("option[value=?][selected=selected]", @user2.id)
         end
       end
     end
