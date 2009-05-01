@@ -114,7 +114,7 @@ class AdminAssistant
               sub_cond.bind_vars << "%#{@search_terms}%"
             end
           end
-        elsif
+        elsif @search_terms.to_i != 0
           ar_query_condition.sqls << "#{association_foreign_key} = ?"
           ar_query_condition.bind_vars << @search_terms
         end

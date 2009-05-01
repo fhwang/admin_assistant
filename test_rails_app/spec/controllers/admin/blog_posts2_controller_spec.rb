@@ -289,7 +289,8 @@ describe Admin::BlogPosts2Controller do
         get(
           :index,
           :search => {
-            :body => "", :title => "foobar", :textile => "", :id => ""
+            :body => "", :title => "foobar", :textile => "", :id => "",
+            :user => ''
           }
         )
         response.should be_success
@@ -320,7 +321,8 @@ describe Admin::BlogPosts2Controller do
         get(
           :index,
           :search => {
-            :textile => 'false', :title => 'foobar', '(all_or_any)' => 'all'
+            :textile => 'false', :title => 'foobar', '(all_or_any)' => 'all',
+            :user => ''
           }
         )
         response.should be_success
@@ -359,7 +361,8 @@ describe Admin::BlogPosts2Controller do
         get(
           :index,
           :search => {
-            :textile => 'false', :title => 'foobar', '(all_or_any)' => 'any'
+            :textile => 'false', :title => 'foobar', '(all_or_any)' => 'any',
+            :user => ''
           }
         )
         response.should be_success
