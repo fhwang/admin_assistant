@@ -51,11 +51,11 @@ class AdminAssistant
           :order => order_sql, :include => find_include,
           :per_page => 25, :page => @url_params[:page]
         )
-        search.add_to_query(ar_query)
         if conditions
           conditions_sql = conditions.call @url_params
           ar_query.condition_sqls << conditions_sql if conditions_sql
         end
+        search.add_to_query(ar_query)
         if settings.total_entries
           ar_query.total_entries = settings.total_entries.call
         end
@@ -120,6 +120,9 @@ class AdminAssistant
       def add_to_query(ar_query)
         unless @search_params.empty?
           ar_query.add_condition do |cond|
+            if match_any_conditions?
+              cond.boolean_join = :or
+            end
             columns.each do |column|
               column.add_to_query_condition cond
             end
@@ -167,6 +170,14 @@ class AdminAssistant
       end
       
       def id
+      end
+      
+      def match_all_conditions?
+        !match_any_conditions?
+      end
+      
+      def match_any_conditions?
+        @search_params["(all_or_any)"] == 'any'
       end
       
       def method_missing(meth, *args)

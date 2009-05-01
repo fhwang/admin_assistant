@@ -168,6 +168,13 @@ describe Admin::BlogPosts2Controller do
         response.should have_tag(
           'form[id=search_form][method=get]', :text => /Title/
         ) do
+          with_tag(
+            'input[type=radio][name=?][value=all][checked=checked]',
+            'search[(all_or_any)]'
+          )
+          with_tag(
+            'input[type=radio][name=?][value=any]', 'search[(all_or_any)]'
+          )
           with_tag('input[name=?]', 'search[title]')
           with_tag('input[name=?]', 'search[body]')
           with_tag('select[name=?]', 'search[textile]') do
@@ -266,6 +273,15 @@ describe Admin::BlogPosts2Controller do
         :title => 'not_in_the_title', :textile => false,
         :body => 'foobar here though', :user => @user
       )
+      BlogPost.create!(
+        :title => 'textile is false', :textile => false,
+        :body => "body doesn't say f**bar", :user => @user
+      )
+      BlogPost.create!(
+        :title => 'already published', :textile => false,
+        :body => "body doesn't say f**bar", :user => @user,
+        :published_at => Time.now.utc
+      )
     end
     
     describe "for title with 'foobar'" do
@@ -301,7 +317,12 @@ describe Admin::BlogPosts2Controller do
     
     describe "for title with 'foobar' and textile=false" do
       before :each do
-        get :index, :search => {:textile => 'false', :title => 'foobar'}
+        get(
+          :index,
+          :search => {
+            :textile => 'false', :title => 'foobar', '(all_or_any)' => 'all'
+          }
+        )
         response.should be_success
       end
       
@@ -317,8 +338,51 @@ describe Admin::BlogPosts2Controller do
         response.should_not have_tag('td', :text => 'not_in_the_title')
       end
         
-      it "should show the textile and title search fields pre-set" do
+      it "should show the textile, title, and all-or-any search fields pre-set" do
         response.should have_tag('form[id=search_form][method=get]') do
+          with_tag(
+            'input[type=radio][name=?][value=all][checked=checked]',
+            'search[(all_or_any)]'
+          )
+          with_tag('input[name=?][value=foobar]', 'search[title]')
+          with_tag('select[name=?]', 'search[textile]') do
+            with_tag("option[value='']", :text => '')
+            with_tag("option[value='true']", :text => 'Yes')
+            with_tag("option[value='false'][selected=selected]", :text => 'No')
+          end
+        end
+      end
+    end
+    
+    describe "for title with 'foobar' or textile=false" do
+      before :each do
+        get(
+          :index,
+          :search => {
+            :textile => 'false', :title => 'foobar', '(all_or_any)' => 'any'
+          }
+        )
+        response.should be_success
+      end
+      
+      it "should show a blog post with 'foobar' in the title" do
+        response.should have_tag('td', :text => 'textile_true_foobar')
+      end
+      
+      it "should show a blog post with textile=false" do
+        response.should have_tag('td', :text => 'textile is false')
+      end
+      
+      it "should not show a blog post that's already published, because of the conditions set in controller" do
+        response.should_not have_tag('td', :text => 'already published')
+      end
+      
+      it "should show the textile, title, and all-or-any search fields pre-set" do
+        response.should have_tag('form[id=search_form][method=get]') do
+          with_tag(
+            'input[type=radio][name=?][value=any][checked=checked]',
+            'search[(all_or_any)]'
+          )
           with_tag('input[name=?][value=foobar]', 'search[title]')
           with_tag('select[name=?]', 'search[textile]') do
             with_tag("option[value='']", :text => '')
