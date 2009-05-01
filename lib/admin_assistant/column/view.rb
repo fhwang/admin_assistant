@@ -221,6 +221,24 @@ class AdminAssistant
     class SearchView < View
       include AdminAssistant::Column::SearchViewMethods
       
+      def comparator_html
+        comparator_opts = [
+          ['greater than', '>'], ['greater than or equal to', '>='],
+          ['equal to', '='], ['less than or equal to', '<='],
+          ['less than', '<']
+        ]
+        option_tags = comparator_opts.map { |text, value|
+          opt = "<option value=\"#{value}\""
+          if @column.search_comparator == value
+            opt << " selected=\"selected\""
+          end
+          opt << ">#{text}</option>"
+        }.join("\n")
+        @action_view.select_tag(
+          "search[#{name}(comparator)]", option_tags
+        )
+      end
+      
       def html
         input = ''
         case @column.sql_type
@@ -236,21 +254,7 @@ class AdminAssistant
             input = @action_view.select("search", name, opts)
           else
             if @comparators == :all
-              comparator_opts = [
-                ['greater than', '>'], ['greater than or equal to', '>='],
-                ['equal to', '='], ['less than or equal to', '<='],
-                ['less than', '<']
-              ]
-              option_tags = comparator_opts.map { |text, value|
-                opt = "<option value=\"#{value}\""
-                if @column.search_comparator == value
-                  opt << " selected=\"selected\""
-                end
-                opt << ">#{text}</option>"
-              }.join("\n")
-              input << @action_view.select_tag(
-                "search[#{name}(comparator)]", option_tags
-              ) << ' '
+              input << comparator_html << ' '
             end
             input << @action_view.text_field_tag(
               "search[#{name}]", @search[name]
