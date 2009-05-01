@@ -223,6 +223,13 @@ describe Admin::BlogPosts2Controller do
     it 'should show published posts' do
       response.body.should match(/--published--/)
     end
+    
+    it 'should show a sort link for titles that includes all=1' do
+      assert_a_tag_with_get_args(
+        'Title', '/admin/blog_posts2',
+        {:sort => 'title', :sort_order => 'asc', :all => '1'}, response.body
+      )
+    end
   end
   
   describe '#index?all=1 with two published posts' do

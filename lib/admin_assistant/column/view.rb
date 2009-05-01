@@ -95,7 +95,9 @@ class AdminAssistant
             next_sort_order = nil
           end
         end
-        {:sort => name_for_sort, :sort_order => next_sort_order}
+        @action_view.params.merge(
+          :sort => name_for_sort, :sort_order => next_sort_order
+        )
       end
       
       def value(record)
