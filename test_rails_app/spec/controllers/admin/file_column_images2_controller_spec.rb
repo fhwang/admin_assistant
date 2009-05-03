@@ -17,7 +17,7 @@ describe Admin::FileColumnImages2Controller do
 
     it 'should show the image in-line as an <img> tag' do
       response.should have_tag(
-        "img[src^=?]",
+        "img[src^=?][width=300][height=500]",
         "/file_column_image/image/#{@file_column_image.id}/ruby_throated.jpg"
       )
     end

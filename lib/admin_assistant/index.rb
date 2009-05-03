@@ -207,7 +207,8 @@ class AdminAssistant
               :boolean_labels => @index.settings.boolean_labels[c.name],
               :sort_order => (@index.sort_order if c.name == @index.sort),
               :link_to_args => @index.settings.link_to_args[c.name.to_sym],
-              :label => @custom_column_labels[c.name]
+              :label => @custom_column_labels[c.name],
+              :image_size => @index.settings.image_sizes[c.name.to_sym]
             )
           }
         end

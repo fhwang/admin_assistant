@@ -73,19 +73,20 @@ class AdminAssistant
   end
   
   class IndexSettings < Settings
-    attr_reader :actions, :link_to_args, :right_column_links, :search_settings,
-                :sort_by
+    attr_reader :actions, :image_sizes, :link_to_args, :right_column_links,
+                :search_settings, :sort_by
     attr_accessor :total_entries
     
     def initialize(admin_assistant)
       super
       @actions = {}
-      @sort_by = 'id desc'
       @boolean_labels = {}
+      @image_sizes = {}
       @link_to_args = {}
+      @right_column_links = []
       @search_fields = []
       @search_settings = SearchSettings.new @admin_assistant
-      @right_column_links = []
+      @sort_by = 'id desc'
     end
     
     def boolean_labels(*args)

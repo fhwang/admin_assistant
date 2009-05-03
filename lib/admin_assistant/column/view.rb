@@ -112,6 +112,7 @@ class AdminAssistant
       def set_instance_variables_from_options(opts)
         @link_to_args = opts[:link_to_args]
         @sort_order = opts[:sort_order]
+        @image_size = opts[:image_size]
       end
     end
     
@@ -375,7 +376,8 @@ class AdminAssistant
       def html(record)
         @action_view.instance_variable_set :@record, record
         @action_view.image_tag(
-          @action_view.url_for_file_column('record', @column.name)
+          @action_view.url_for_file_column('record', @column.name),
+          :size => @image_size
         )
       end
     end
