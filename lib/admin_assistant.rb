@@ -48,7 +48,7 @@ class AdminAssistant
   end
   
   def column(name, opts = {})
-    column = if file_columns.include?(name)
+    column = if file_columns.include?(name.to_s)
       FileColumnColumn.new name, opts
     elsif paperclip_attachments.include?(name)
       PaperclipColumn.new name, opts
