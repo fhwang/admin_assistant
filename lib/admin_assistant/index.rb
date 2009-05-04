@@ -64,12 +64,6 @@ class AdminAssistant
       @records
     end
     
-    def right_column_links(record)
-      settings.right_column_links.map { |link_lambda|
-        link_lambda.call record
-      }
-    end
-    
     def search
       @search ||= Search.new(@admin_assistant, @url_params['search'])
     end
@@ -103,7 +97,7 @@ class AdminAssistant
     
     def view(action_view)
       @view ||= View.new(
-        self, action_view, @admin_assistant.custom_column_labels
+        self, action_view, @admin_assistant
       )
     end
     
@@ -194,9 +188,13 @@ class AdminAssistant
     end
     
     class View
-      def initialize(index, action_view, custom_column_labels)
-        @index, @action_view, @custom_column_labels =
-            index, action_view, custom_column_labels
+      def initialize(index, action_view, admin_assistant)
+        @index, @action_view = index, action_view
+        @custom_column_labels = admin_assistant.custom_column_labels
+        @right_column_update = admin_assistant.update?
+        @right_column_destroy = admin_assistant.destroy?
+        @right_column_lambdas =
+            admin_assistant.index_settings.right_column_links
       end
       
       def columns
@@ -213,6 +211,34 @@ class AdminAssistant
           }
         end
         @columns
+      end
+      
+      def right_column?
+        @right_column_update or
+            @right_column_destroy or
+            !@right_column_lambdas.empty?
+      end
+      
+      def right_column_links(record)
+        links = ""
+        if @right_column_update
+          links << @action_view.link_to(
+            'Edit', :action => 'edit', :id => record.id
+          ) << " "
+        end
+        if @right_column_destroy
+          links << @action_view.link_to_remote(
+            'Delete',
+            :url => {:action => 'destroy', :id => record.id},
+            :confirm => 'Are you sure?',
+            :success => "Effect.Fade('record_#{record.id}')"
+          ) << ' '
+        end
+        @right_column_lambdas.each do |lambda|
+          link_args = lambda.call record
+          links << @action_view.link_to(*link_args)
+        end
+        links
       end
     end
   end

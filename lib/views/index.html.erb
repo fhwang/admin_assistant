@@ -50,10 +50,11 @@ show_search_form();
 <% end %>
 
 <% if !@index.records.empty? %>
+<% index_view = @index.view(self) %>
 <table cellspacing="0" cellpadding="0">
   <thead>
     <tr>
-    <% @index.view(self).columns.each do |column| %>
+    <% index_view.columns.each do |column| %>
       <% th_class = column.header_css_class %>
       <th<%= " class=\"#{th_class}\"" if th_class %>><%=
         if column.sort_possible?
@@ -63,9 +64,7 @@ show_search_form();
         end
       %></th>
     <% end %>
-    <% if @admin_assistant.update? || @admin_assistant.destroy? %>
-      <th></th>
-    <% end %>
+    <% if index_view.right_column? %><th></th><% end %>
     </tr>
   </thead>
   <tbody>
@@ -77,23 +76,8 @@ show_search_form();
           column.html(record)
         %></td>
       <% end %>
-      <% if @admin_assistant.update? || @admin_assistant.destroy? %>
-      <td>
-        <% if @admin_assistant.update? %>
-          <%= link_to 'Edit', :action => 'edit', :id => record.id %>
-        <% end %>
-        <% if @admin_assistant.destroy? %>
-          <%= link_to_remote(
-            'Delete',
-            :url => {:action => 'destroy', :id => record.id},
-            :confirm => 'Are you sure?',
-            :success => "Effect.Fade('record_#{record.id}')"
-          ) %>
-        <% end %>
-        <% @index.right_column_links(record).each do |link_args| %>
-          <%= link_to *link_args %>
-        <% end %>
-      </td>
+      <% if index_view.right_column? %>
+      <td><%= index_view.right_column_links(record) %></td>
       <% end %>
     </tr>
   <% end %>
