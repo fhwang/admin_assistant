@@ -51,10 +51,14 @@ class AdminAssistant
     end
     
     def column_names
-      settings.column_names ||
-          model_class.columns.reject { |ar_column|
-            %w(id created_at updated_at).include?(ar_column.name)
-          }.map { |ar_column| ar_column.name }
+      if @action_view.action_name == 'new' && settings.columns_for_new
+        settings.columns_for_new
+      else
+        settings.column_names ||
+            model_class.columns.reject { |ar_column|
+              %w(id created_at updated_at).include?(ar_column.name)
+            }.map { |ar_column| ar_column.name }
+      end
     end
     
     def columns

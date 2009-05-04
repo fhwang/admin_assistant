@@ -55,6 +55,14 @@ class AdminAssistant
       @write_once = []
     end
     
+    def columns_for_new(*args)
+      if args.empty?
+        @columns_for_new
+      else
+        @columns_for_new = args
+      end
+    end
+    
     def read_only(*args)
       if args.empty?
         @read_only

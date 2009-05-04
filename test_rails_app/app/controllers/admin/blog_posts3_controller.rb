@@ -24,5 +24,9 @@ class Admin::BlogPosts3Controller < ApplicationController
       # sort by user by default
       index.sort_by :user
     end
+    
+    a.form do |form|
+      form.columns_for_new :title, :user
+    end
   end
 end

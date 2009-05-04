@@ -8,6 +8,20 @@ describe Admin::BlogPosts3Controller do
     @user = User.create! :username => 'soren'
   end
   
+  describe '#edit' do
+    before :all do
+      @blog_post = BlogPost.create! :title => random_word, :user => @user
+    end
+    
+    before :each do
+      get :edit, :id => @blog_post.id
+    end
+    
+    it 'should have a body field' do
+      response.should have_tag('textarea[name=?]', 'blog_post[body]')
+    end
+  end
+  
   describe '#index' do
     describe 'with 26 unpublished blog posts' do
       before :all do
@@ -132,6 +146,16 @@ describe Admin::BlogPosts3Controller do
       it 'should by username' do
         response.body.should match(%r|AARDVARKS!!!!!1.*Wanna go climbing|m)
       end
+    end
+  end
+  
+  describe '#new' do
+    before :each do
+      get :new
+    end
+    
+    it 'should not have a body field' do
+      response.should_not have_tag('textarea[name=?]', 'blog_post[body]')
     end
   end
 end
