@@ -32,8 +32,8 @@ class AdminAssistant
       elsif settings.write_once.include?(column.name) &&
             @action_view.action_name == 'edit'
         column.value(@record)
-      elsif column.respond_to?(:add_to_form)
-        column.add_to_form(rails_form)
+      elsif column.respond_to?(:html)
+        column.html(rails_form)
       else
         virtual_column_html column
       end

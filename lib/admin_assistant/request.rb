@@ -46,12 +46,16 @@ class AdminAssistant
             params.merge! h
           end
         end
-        whole_params.each do |k, v|  
-          from_form_method = "#{k}_from_form".to_sym
-          if @controller.respond_to?(from_form_method)
-            params[k] = @controller.send(from_form_method, v)
-          elsif @record.respond_to?("#{k}=")
-            params[k] = v
+        whole_params.each do |k, v|
+          if k =~ %r|(.*)\(destroy\)|
+            params[$1] = nil
+          else
+            from_form_method = "#{k}_from_form".to_sym
+            if @controller.respond_to?(from_form_method)
+              params[k] = @controller.send(from_form_method, v)
+            elsif @record.respond_to?("#{k}=")
+              params[k] = v
+            end
           end
         end
         params

@@ -68,4 +68,107 @@ describe Admin::ProductsController do
       response.should have_tag("input[name=?]", 'product[price][dollars]')
     end
   end
+  
+  describe '#edit' do
+    before :all do
+      @product = Product.find_or_create_by_name 'a bird'
+      @product.update_attributes(
+        :name => 'a bird', :price => 100_00,
+        :file_column_image => File.open("./spec/data/ruby_throated.jpg")
+      )
+    end
+    
+    before :each do
+      get :edit, :id => @product.id
+      response.should be_success
+    end
+    
+    it "should have a multipart form" do
+      response.should have_tag('form[enctype=multipart/form-data]')
+    end
+    
+    it 'should have a file input for image' do
+      response.should have_tag(
+        'input[name=?][type=file]', 'product[file_column_image]'
+      )
+    end
+    
+    it 'should show the current image' do
+      response.should have_tag(
+        "img[src^=?]",
+        "/product/file_column_image/#{@product.id}/ruby_throated.jpg"
+      )
+    end
+    
+    it 'should have a remove-image option' do
+      response.should have_tag(
+        "input[type=checkbox][name=?]", 'product[file_column_image(destroy)]'
+      )
+    end
+  end
+  
+  describe '#update' do
+    before :all do
+      @product = Product.find_or_create_by_name 'a bird'
+      @product.update_attributes(
+        :name => 'a bird', :price => 100_00,
+        :file_column_image => File.open("./spec/data/ruby_throated.jpg")
+      )
+    end
+    
+    describe 'while updating a current image' do
+      before :each do
+        file = File.new './spec/data/tweenbot.jpg'
+        post(
+          :update, :id => @product.id, :product => {:file_column_image => file}
+        )
+      end
+      
+      it 'should update the image' do
+        product_prime = Product.find_by_id @product.id
+        product_prime.file_column_image.should match(/tweenbot/)
+      end
+    
+      it 'should save the image locally' do
+        assert(
+          File.exist?(
+            "./public/product/file_column_image/#{@product.id}/tweenbot.jpg"
+          )
+        )
+      end
+    end
+    
+    describe 'while removing the current image' do
+      before :each do
+        post(
+          :update,
+          :id => @product.id,
+          :product => {'file_column_image(destroy)' => '1' }
+        )
+      end
+      
+      it 'should remove the existing image' do
+        product_prime = Product.find_by_id @product.id
+        product_prime.file_column_image.should be_nil
+      end
+    end
+    
+    describe 'while trying to update and remove at the same time' do
+      before :each do
+        file = File.new './spec/data/tweenbot.jpg'
+        post(
+          :update,
+          :id => @product.id,
+          :product => {
+            :file_column_image => file, 'file_column_image(destroy)' => '1'
+          }
+        )
+      end
+
+      it 'should assume you meant to update' do
+        product_prime = Product.find_by_id @product.id
+        product_prime.file_column_image.should match(/tweenbot/)
+      end
+    end
+  end
 end

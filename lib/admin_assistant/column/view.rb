@@ -134,7 +134,7 @@ class AdminAssistant
     class FormView < View
       include AdminAssistant::Column::FormViewMethods
       
-      def add_to_form(form)
+      def html(form)
         case @input || @column.sql_type
           when :text
             form.text_area name
@@ -310,7 +310,7 @@ class AdminAssistant
     class FormView < View
       include AdminAssistant::Column::FormViewMethods
       
-      def add_to_form(form)
+      def html(form)
         form.select association_foreign_key, options_for_select
       end
     end
@@ -360,13 +360,38 @@ class AdminAssistant
   
   class FileColumnColumn < Column
     class View < AdminAssistant::Column::View
+      def file_exists?(record)
+        !source_for_image_tag(record).nil?
+      end
+      
+      def image_html(record)
+        @action_view.image_tag(
+          source_for_image_tag(record), :size => @image_size
+        )
+      end
+      
+      def source_for_image_tag(record)
+        @action_view.instance_variable_set :@record, record
+        @action_view.url_for_file_column 'record', @column.name
+      end
     end
     
     class FormView < View
       include AdminAssistant::Column::FormViewMethods
       
-      def add_to_form(form)
-        form.file_field name
+      def html(form)
+        if file_exists?(form.object)
+          check_box_tag = @action_view.check_box_tag(
+            "#{form.object.class.name.underscore}[#{name}(destroy)]"
+          )
+          <<-HTML
+          <p>Current image:<br />#{image_html(form.object)}</p>
+          <p>Remove: #{check_box_tag}</p>
+          <p>Update: #{form.file_field(name)}</p>
+          HTML
+        else
+          "<p>Add: #{form.file_field(name)}</p>"
+        end
       end
     end
 
@@ -374,11 +399,7 @@ class AdminAssistant
       include AdminAssistant::Column::IndexViewMethods
       
       def html(record)
-        @action_view.instance_variable_set :@record, record
-        @action_view.image_tag(
-          @action_view.url_for_file_column('record', @column.name),
-          :size => @image_size
-        )
+        image_html(record) if file_exists?(record)
       end
     end
     
@@ -394,7 +415,7 @@ class AdminAssistant
     class FormView < View
       include AdminAssistant::Column::FormViewMethods
       
-      def add_to_form(form)
+      def html(form)
         form.file_field name
       end
     end
