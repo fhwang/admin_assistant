@@ -26,7 +26,8 @@ class Admin::BlogPosts3Controller < ApplicationController
     end
     
     a.form do |form|
-      form.columns_for_new :title, :user
+      form.columns_for_new  :title, :user
+      form.columns_for_edit :title, :user, :body
     end
   end
 end

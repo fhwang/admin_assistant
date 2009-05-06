@@ -20,6 +20,10 @@ describe Admin::BlogPosts3Controller do
     it 'should have a body field' do
       response.should have_tag('textarea[name=?]', 'blog_post[body]')
     end
+    
+    it 'should not include published at' do
+      response.body.should_not match(/Published at/)
+    end
   end
   
   describe '#index' do
