@@ -10,7 +10,8 @@ class AdminAssistant
     end
     
     def columns
-      column_names = @admin_assistant.model_class.columns.map(&:name)
+      column_names = @admin_assistant.show_settings.column_names || 
+                     @admin_assistant.model_class.columns.map(&:name)
       @admin_assistant.accumulate_columns(column_names).map { |c|
         c.show_view @action_view
       }

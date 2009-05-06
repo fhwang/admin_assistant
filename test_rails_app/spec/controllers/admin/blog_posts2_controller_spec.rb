@@ -491,6 +491,25 @@ describe Admin::BlogPosts2Controller do
     end
   end
   
+  describe '#show' do
+    before :all do
+      @blog_post = BlogPost.create! :title => random_word, :user => @user
+    end
+    
+    before :each do
+      get :show, :id => @blog_post.id
+      response.should be_success
+    end
+    
+    it 'should show user' do
+      response.body.should match(/soren/)
+    end
+    
+    it 'should not show created at' do
+      response.body.should_not match(/Created at/)
+    end
+  end
+  
   describe '#update' do
     before :all do
       @blog_post = BlogPost.create! :title => random_word, :user => @user

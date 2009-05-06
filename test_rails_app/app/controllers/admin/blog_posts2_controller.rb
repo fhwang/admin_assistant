@@ -48,6 +48,9 @@ class Admin::BlogPosts2Controller < ApplicationController
       # a 'Preview' button
       form.submit_buttons << 'Preview'
     end
+    
+    # Only show some columns on the show page
+    a.show.columns :user, :title, :body, :tags, :textile, :published_at
   end
   
   protected

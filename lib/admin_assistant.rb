@@ -10,7 +10,7 @@ require 'will_paginate'
 
 class AdminAssistant
   attr_reader :custom_column_labels, :form_settings, :index_settings, 
-              :model_class
+              :model_class, :show_settings
   attr_accessor :actions
   
   def initialize(controller_class, model_class)
@@ -18,6 +18,7 @@ class AdminAssistant
     @actions = [:index, :create, :update, :show]
     @form_settings = FormSettings.new self
     @index_settings = IndexSettings.new self
+    @show_settings = ShowSettings.new self
     @custom_column_labels = {}
   end
     

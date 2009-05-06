@@ -13,14 +13,6 @@ class AdminAssistant
         @admin_assistant.actions = a
       end
     end
-    
-    def inputs
-      @admin_assistant.form_settings.inputs
-    end
-    
-    def label(column, label)
-      @admin_assistant.custom_column_labels[column.to_s] = label
-    end
       
     def form
       yield @admin_assistant.form_settings
@@ -29,6 +21,18 @@ class AdminAssistant
     def index
       i = @admin_assistant.index_settings
       block_given? ? yield(i) : i
+    end
+    
+    def inputs
+      @admin_assistant.form_settings.inputs
+    end
+    
+    def label(column, label)
+      @admin_assistant.custom_column_labels[column.to_s] = label
+    end
+    
+    def show
+      @admin_assistant.show_settings
     end
   end
   
@@ -150,5 +154,8 @@ class AdminAssistant
         end
       end
     end
+  end
+  
+  class ShowSettings < Settings
   end
 end
