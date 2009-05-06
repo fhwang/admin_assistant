@@ -234,6 +234,9 @@ class AdminAssistant
             :success => "Effect.Fade('record_#{record.id}')"
           ) << ' '
         end
+        links << @action_view.link_to(
+          'Show', :action => 'show', :id => record.id
+        ) << ' '
         @right_column_lambdas.each do |lambda|
           link_args = lambda.call record
           links << @action_view.link_to(*link_args)

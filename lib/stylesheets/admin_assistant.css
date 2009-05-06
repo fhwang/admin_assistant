@@ -73,3 +73,13 @@ Don't edit this file: It gets re-copied every time the server starts.
   font-size: large
 }
 
+/***** Show stuff ************************************************************/
+#admin_assistant.show .column {
+  margin-bottom: 10px;
+}
+
+#admin_assistant.show label {
+  font-size: small;
+}
+
+

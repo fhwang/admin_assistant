@@ -11,17 +11,23 @@ class AdminAssistant
     end
     
     def form_view(action_view, opts = {})
-      klass = self.class.const_get 'FormView'
-      klass.new self, action_view, opts
+      view 'FormView', action_view, opts
     end
     
     def index_view(action_view, opts = {})
-      klass = self.class.const_get 'IndexView'
-      klass.new self, action_view, opts
+      view 'IndexView', action_view, opts
     end
 
     def search_view(action_view, opts = {})
-      klass = self.class.const_get 'SearchView'
+      view 'SearchView', action_view, opts
+    end
+    
+    def show_view(action_view, opts = {})
+      view 'ShowView', action_view, opts
+    end
+    
+    def view(view_class_name, action_view, opts)
+      klass = self.class.const_get view_class_name
       klass.new self, action_view, opts
     end
   end

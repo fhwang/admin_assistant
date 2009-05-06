@@ -1,0 +1,19 @@
+<div id="admin_assistant" class="show <%=
+  @admin_assistant.controller_css_class(controller)
+%>">
+  <div id="header">
+    <h2><%= h(
+      "#{@admin_assistant.model_class.name.gsub(/([A-Z])/, ' \1')[1..-1]} #{@record.id}"
+    ) %></h2>
+    <%= link_to 'Edit', :action => 'edit', :id => @record.id %>
+  </div>
+  <%
+  show_view = AdminAssistant::ShowView.new(@record, @admin_assistant, self)
+  %>
+  <% show_view.columns.each do |column| %>
+    <div class="column">
+    <label><%= h(column.label) %></label>
+    <br /><%= show_view.column_html(column) %>
+    </div>
+  <% end %>
+</div>

@@ -116,10 +116,19 @@ class AdminAssistant
       end
     end
     
-    module SearchViewMethods
+    module SearchViewMethods      
       def set_instance_variables_from_options(opts)
         @comparators = opts[:comparators]
         @search = opts[:search]
+      end
+    end
+    
+    module ShowViewMethods
+      def html(record)
+        @action_view.send(:h, field_value(record))
+      end
+      
+      def set_instance_variables_from_options(opts)
       end
     end
   end
@@ -266,6 +275,10 @@ class AdminAssistant
         "<p><label>#{label}</label> <br/>#{input}</p>"
       end
     end
+    
+    class ShowView < View
+      include AdminAssistant::Column::ShowViewMethods
+    end
   end
 
   class AdminAssistantColumn < Column
@@ -285,6 +298,10 @@ class AdminAssistant
     
     class SearchView < View
       include AdminAssistant::Column::SearchViewMethods
+    end
+    
+    class ShowView < View
+      include AdminAssistant::Column::ShowViewMethods
     end
   end
   
@@ -335,6 +352,10 @@ class AdminAssistant
         "<p><label>#{label}</label> <br/>#{input}</p>"
       end
     end
+    
+    class ShowView < View
+      include AdminAssistant::Column::ShowViewMethods
+    end
   end
   
   class DefaultSearchColumn < Column
@@ -355,6 +376,10 @@ class AdminAssistant
       def html
         @action_view.text_field_tag("search", @column.search_terms)
       end
+    end
+    
+    class ShowView < View
+      include AdminAssistant::Column::ShowViewMethods
     end
   end
   
@@ -406,10 +431,21 @@ class AdminAssistant
     class SearchView < View
       include AdminAssistant::Column::SearchViewMethods
     end
+    
+    class ShowView < View
+      include AdminAssistant::Column::ShowViewMethods
+      
+      def html(record)
+        image_html(record) if file_exists?(record)
+      end
+    end
   end
   
   class PaperclipColumn < Column
     class View < AdminAssistant::Column::View
+      def image_html(record)
+        @action_view.image_tag record.send(@column.name).url
+      end
     end
     
     class FormView < View
@@ -424,12 +460,20 @@ class AdminAssistant
       include AdminAssistant::Column::IndexViewMethods
       
       def html(record)
-        @action_view.image_tag record.send(@column.name).url
+        image_html record
       end
     end
     
     class SearchView < View
       include AdminAssistant::Column::SearchViewMethods
+    end
+    
+    class ShowView < View
+      include AdminAssistant::Column::ShowViewMethods
+      
+      def html(record)
+        image_html record
+      end
     end
   end
 end

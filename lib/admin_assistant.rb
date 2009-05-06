@@ -15,7 +15,7 @@ class AdminAssistant
   
   def initialize(controller_class, model_class)
     @controller_class, @model_class = controller_class, model_class
-    @actions = [:index, :create, :update]
+    @actions = [:index, :create, :update, :show]
     @form_settings = FormSettings.new self
     @index_settings = IndexSettings.new self
     @custom_column_labels = {}
@@ -99,7 +99,7 @@ class AdminAssistant
   end
   
   def method_missing(meth, *args)
-    request_methods = [:create, :destroy, :edit, :index, :new, :update]
+    request_methods = [:create, :destroy, :edit, :index, :new, :update, :show]
     if request_methods.include?(meth) and args.size == 1
       dispatch_to_request_method meth, args.first
     else

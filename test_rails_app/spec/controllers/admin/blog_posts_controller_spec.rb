@@ -155,6 +155,12 @@ describe Admin::BlogPostsController do
         )
       end
       
+      it 'should have a show link' do
+        response.should have_tag(
+          "a[href=/admin/blog_posts/show/#{@blog_post.id}]", 'Show'
+        )
+      end
+      
       it 'should show sort links' do
         pretty_column_names = {
           'id' => 'ID', 'title' => 'Title', 'created_at' => 'Created at', 
@@ -624,6 +630,33 @@ describe Admin::BlogPostsController do
                  @user.id, :text => 'soren'
         without_tag "option[value='']"
       end
+    end
+  end
+  
+  describe '#show' do
+    before :all do
+      BlogPost.destroy_all
+      @blog_post = BlogPost.create!(
+        :title => "foo > bar & baz", :user => @user, :textile => false
+      )
+    end
+    
+    before :each do
+      get :show, :id => @blog_post.id
+    end
+    
+    it 'should show the HTML-escaped title' do
+      response.body.should match(/foo &gt; bar &amp; baz/)
+    end
+    
+    it 'should have a link to edit' do
+      response.should have_tag(
+        "a[href=/admin/blog_posts/edit/#{@blog_post.id}]", 'Edit'
+      )
+    end
+    
+    it 'should show soren' do
+      response.body.should match(/soren/)
     end
   end
   

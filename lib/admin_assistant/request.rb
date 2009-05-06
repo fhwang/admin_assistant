@@ -167,6 +167,16 @@ class AdminAssistant
       end
     end
     
+    class Show < Base
+      def call
+        @record = model_class.find @controller.params[:id]
+        @controller.instance_variable_set :@record, @record
+        @controller.send(
+          :render, :file => template_file('show'), :layout => true
+        )
+      end
+    end
+    
     class Update < Base
       def call
         @record = model_class.find @controller.params[:id]
