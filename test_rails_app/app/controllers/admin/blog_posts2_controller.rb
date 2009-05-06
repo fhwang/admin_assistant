@@ -47,6 +47,9 @@ class Admin::BlogPosts2Controller < ApplicationController
       # In addition to the 'Create'/'Update' button at the bottom, we also have
       # a 'Preview' button
       form.submit_buttons << 'Preview'
+      
+      form.descriptions[:publish] =
+          "Click this and published_at will be set automatically"
     end
     
     # Only show some columns on the show page

@@ -466,6 +466,12 @@ describe Admin::BlogPosts2Controller do
       )
     end
     
+    it "should show the description for the 'publish' virtual field" do
+      response.body.should match(
+        /Click this and published_at will be set automatically/
+      )
+    end
+    
     it 'should show a preview button' do
       response.should have_tag('input[type=submit][value=Preview]')
     end

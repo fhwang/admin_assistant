@@ -49,10 +49,11 @@ class AdminAssistant
   end
   
   class FormSettings < Settings
-    attr_reader :inputs, :submit_buttons
+    attr_reader :descriptions, :inputs, :submit_buttons
     
     def initialize(admin_assistant)
       super
+      @descriptions = {}
       @inputs = {}
       @submit_buttons = []
       @read_only = []

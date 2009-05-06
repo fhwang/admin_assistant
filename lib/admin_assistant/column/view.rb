@@ -39,6 +39,10 @@ class AdminAssistant
     end
     
     module FormViewMethods
+      def description
+        @description
+      end
+      
       def value(record)
         value_method = "#{@column.name}_value"
         if @action_view.respond_to?(value_method)
@@ -50,6 +54,7 @@ class AdminAssistant
       
       def set_instance_variables_from_options(opts)
         @input = opts[:input]
+        @description = opts[:description]
       end
     end
     

@@ -70,7 +70,8 @@ class AdminAssistant
         c.form_view(
           @action_view,
           :input => settings.inputs[c.name.to_sym],
-          :label => @admin_assistant.custom_column_labels[c.name]
+          :label => @admin_assistant.custom_column_labels[c.name],
+          :description => settings.descriptions[c.name.to_sym]
         )
       }
     end

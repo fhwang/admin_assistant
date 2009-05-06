@@ -52,8 +52,8 @@ Don't edit this file: It gets re-copied every time the server starts.
   margin-bottom: 10px;
 }
 
-#admin_assistant.form label {
-/*  font-size: small;*/
+#admin_assistant.form .column .description {
+  font-size: small;
 }
 
 #admin_assistant.form input {
