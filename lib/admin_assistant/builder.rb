@@ -15,7 +15,8 @@ class AdminAssistant
     end
       
     def form
-      yield @admin_assistant.form_settings
+      f = @admin_assistant.form_settings
+      block_given? ? yield(f) : f
     end
       
     def index
