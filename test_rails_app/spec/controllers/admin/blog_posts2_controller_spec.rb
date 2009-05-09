@@ -453,17 +453,33 @@ describe Admin::BlogPosts2Controller do
     end
     
     it "should show a checkbox for the 'publish' virtual field" do
-      response.body.should match(
-        %r!
-          <input[^>]*
-          (name="blog_post\[publish\][^>]*type="hidden"[^>]value="0"|
-          type="hidden"[^>]*name="blog_post\[publish\][^>]value="0")
-          .*
-          <input[^>]*
-          (name="blog_post\[publish\][^>]*type="checkbox"[^>]value="1"|
-           type="checkbox"[^>]*name="blog_post\[publish\][^>]value="1")
-        !x
-      )
+      if RAILS_GEM_VERSION == '2.3.2'
+        response.body.should match(
+          %r!
+            <input[^>]*
+            (name="blog_post\[publish\][^>]*type="hidden"[^>]value="0"|
+            type="hidden"[^>]*name="blog_post\[publish\][^>]value="0")
+            .*
+            <input[^>]*
+            (name="blog_post\[publish\][^>]*type="checkbox"[^>]value="1"|
+             type="checkbox"[^>]*name="blog_post\[publish\][^>]value="1")
+          !x
+        )
+      elsif %w(2.1.2 2.2.2).include?(RAILS_GEM_VERSION)
+        response.body.should match(
+          %r!
+            <input[^>]*
+            (name="blog_post\[publish\][^>]*type="checkbox"[^>]value="1"|
+             type="checkbox"[^>]*name="blog_post\[publish\][^>]value="1")
+            .*
+            <input[^>]*
+            (name="blog_post\[publish\][^>]*type="hidden"[^>]value="0"|
+            type="hidden"[^>]*name="blog_post\[publish\][^>]value="0")
+          !x
+        )
+      else
+        raise "I don't have a specifed behavior for #{RAILS_GEM_VERSION}"
+      end
     end
     
     it "should show the description for the 'publish' virtual field" do

@@ -127,8 +127,15 @@ class AdminAssistant
       fv = column.value @record
       if input_type
         if input_type == :check_box
-          @action_view.send(:hidden_field_tag, input_name, '0') +
-              @action_view.send(:check_box_tag, input_name, '1', fv)
+          # Rails 2.3 wants the hidden tag to come before the checkbox, but
+          # it's the opposite for Rails 2.2 and 2.1
+          if RAILS_GEM_VERSION =~ /^2.3/
+            @action_view.send(:hidden_field_tag, input_name, '0') +
+                @action_view.send(:check_box_tag, input_name, '1', fv)
+          else
+            @action_view.send(:check_box_tag, input_name, '1', fv) +
+                @action_view.send(:hidden_field_tag, input_name, '0')
+          end
         end
       else
         @action_view.send(:text_field_tag, input_name, fv)
