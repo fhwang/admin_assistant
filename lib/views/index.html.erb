@@ -1,13 +1,9 @@
 <div id="admin_assistant" class="index <%=
   @admin_assistant.controller_css_class(controller)
 %>">
-<script type="text/javascript">
-function show_search_form() { $('search_form').show(); }
-</script>
-
 <div id="header">
 <div class="actions">
-<%= link_to_function('Search', 'show_search_form()') %>
+<%= link_to_function('Search', 'AdminAssistant.show_search_form()') %>
 <%= link_to(
   "New #{@admin_assistant.model_class_name}", @admin_assistant.url_params(:new)
 ) %>
@@ -44,9 +40,7 @@ function show_search_form() { $('search_form').show(); }
 <% end %>
 
 <% if @index.search_terms %>
-<script type="text/javascript">
-show_search_form();
-</script>
+<script type="text/javascript">AdminAssistant.show_search_form();</script>
 <% end %>
 
 <% if !@index.records.empty? %>

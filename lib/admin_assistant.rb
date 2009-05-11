@@ -180,6 +180,10 @@ FileUtils.copy(
   "#{File.dirname(__FILE__)}/stylesheets/admin_assistant.css",
   "#{RAILS_ROOT}/public/stylesheets/admin_assistant.css"
 )
+FileUtils.copy(
+  "#{File.dirname(__FILE__)}/javascripts/admin_assistant.js",
+  "#{RAILS_ROOT}/public/javascripts/admin_assistant.js"
+)
 images_dir = "#{RAILS_ROOT}/public/images/admin_assistant"
 FileUtils.mkdir(images_dir) unless File.exist?(images_dir)
 FileUtils.cp_r(Dir.glob("#{File.dirname(__FILE__)}/images/*"), images_dir)

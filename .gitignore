@@ -2,6 +2,7 @@ test_rails_app/db/*.sqlite3
 test_rails_app/log/*.log
 test_rails_app/db/schema.rb
 test_rails_app/public/images/*
-test_rails_app/public/stylesheets/*
+test_rails_app/public/javascripts/admin_assistant.js
+test_rails_app/public/stylesheets/admin_assistant.css
 test_rails_app/public/file_column_image/*
 test_rails_app/public/product/*

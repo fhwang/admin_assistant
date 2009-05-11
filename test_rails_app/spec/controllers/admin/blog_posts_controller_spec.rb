@@ -113,7 +113,7 @@ describe Admin::BlogPostsController do
       
       it 'should have a search form' do
         response.body.should match(
-          %r|<a.*onclick="show_search_form\(\);.*>Search</a>|
+          %r|<a.*onclick="AdminAssistant.show_search_form\(\);.*>Search</a>|
         )
       end
       
