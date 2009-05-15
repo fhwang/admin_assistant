@@ -4,7 +4,7 @@ class Admin::FileColumnImages2Controller < ApplicationController
   admin_assistant_for FileColumnImage do |a|
     a.index do |i|
       i.columns :image
-      i.image_sizes[:image] = '300x500'
+      i[:image].image_size = '300x500'
     end
   end
 end

@@ -5,8 +5,8 @@ class Admin::UsersController < ApplicationController
     a.actions << :destroy
     
     # If you're in a hurry you don't have to send this to the form builder
-    # object
-    a.inputs[:state] = :us_state
+    # object 
+    a[:state].input = :us_state
     
     a.index do |index|
       # Add a right column link

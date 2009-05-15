@@ -5,6 +5,10 @@ class AdminAssistant
     def initialize(admin_assistant)
       @admin_assistant = admin_assistant
     end
+
+    def [](column_name)
+      ColumnConfigLookup.new(column_name, [form, index, show, index.search])
+    end
     
     def actions(*a)
       if a.empty?
@@ -24,16 +28,67 @@ class AdminAssistant
       block_given? ? yield(i) : i
     end
     
-    def inputs
-      @admin_assistant.form_settings.inputs
-    end
-    
     def label(column, label)
       @admin_assistant.custom_column_labels[column.to_s] = label
     end
     
     def show
       @admin_assistant.show_settings
+    end
+    
+    class ColumnConfigLookup
+      def initialize(column_name, settingses)
+        @column_name, @settingses = column_name, settingses
+      end
+      
+      def method_missing(meth, *args)
+        match = meth
+        if match.to_s =~ /^(.*)=$/
+          match = $1.to_sym
+        elsif match.to_s =~ /^(.*)\?$/
+          match = $1.to_sym
+        end
+        setting = @settingses.detect { |setting|
+          setting.column_config_args.keys.include?(match)
+        }
+        if setting
+          setting[@column_name].send(meth, *args)
+        else
+          super
+        end
+      end
+    end
+  end
+  
+  class ColumnConfig
+    def initialize(fields_config)
+      @fields_config = fields_config
+      @values = {}
+    end
+    
+    def method_missing(meth, *args)
+      if field_type = @fields_config[meth]
+        if field_type == :accessor
+          return @values[meth]
+        elsif field_type == :boolean
+          return @values[meth] = true
+        end
+      elsif meth.to_s =~ /=$/
+        field_name, field_type = @fields_config.detect { |fn, ft|
+          meth.to_s =~ /^#{fn}=$/
+        }
+        if field_type == :accessor
+          return @values[field_name] = args.first
+        end
+      elsif meth.to_s =~ /\?$/
+        field_name, field_type = @fields_config.detect { |fn, ft|
+          meth.to_s =~ /^#{fn}\?$/
+        }
+        if field_type == :boolean
+          return !@values[field_name].nil?
+        end
+      end
+      super
     end
   end
   
@@ -42,6 +97,13 @@ class AdminAssistant
     
     def initialize(admin_assistant)
       @admin_assistant = admin_assistant
+      @column_configs = HashWithIndifferentAccess.new { |h, k|
+        h[k] = ColumnConfig.new(column_config_args)
+      }
+    end
+    
+    def [](column_name)
+      @column_configs[column_name]
     end
     
     def columns(*args)
@@ -50,15 +112,16 @@ class AdminAssistant
   end
   
   class FormSettings < Settings
-    attr_reader :descriptions, :inputs, :submit_buttons
+    attr_reader :submit_buttons
     
     def initialize(admin_assistant)
       super
-      @descriptions = {}
-      @inputs = {}
       @submit_buttons = []
-      @read_only = []
-      @write_once = []
+    end
+    
+    def column_config_args
+      {:description => :accessor, :input => :accessor, :read_only => :boolean, 
+       :write_once => :boolean}
     end
     
     def columns_for_edit(*args)
@@ -76,49 +139,24 @@ class AdminAssistant
         @columns_for_new = args
       end
     end
-    
-    def read_only(*args)
-      if args.empty?
-        @read_only
-      else
-        args.each do |arg| @read_only << arg.to_s; end
-      end
-    end
-    
-    def write_once(*args)
-      if args.empty?
-        @write_once
-      else
-        args.each do |arg| @write_once << arg.to_s; end
-      end
-    end
   end
   
   class IndexSettings < Settings
-    attr_reader :actions, :image_sizes, :link_to_args, :right_column_links,
-                :search_settings, :sort_by
+    attr_reader :actions, :right_column_links, :search_settings, :sort_by
     attr_accessor :total_entries
     
     def initialize(admin_assistant)
       super
       @actions = {}
-      @boolean_labels = {}
-      @image_sizes = {}
-      @link_to_args = {}
       @right_column_links = []
       @search_fields = []
       @search_settings = SearchSettings.new @admin_assistant
       @sort_by = 'id desc'
     end
     
-    def boolean_labels(*args)
-      if args.size == 1
-        args.first.each do |column_name, pairs|
-          @boolean_labels[column_name.to_s] = pairs
-        end
-      else
-        @boolean_labels
-      end
+    def column_config_args
+      {:boolean_labels => :accessor, :image_size => :accessor,
+       :link_to_args => :accessor}
     end
     
     def conditions(&block)
@@ -128,6 +166,8 @@ class AdminAssistant
     def search(*columns)
       if block_given?
         yield @search_settings
+      elsif columns.empty?
+        @search_settings
       else
         @search_settings.columns *columns
       end
@@ -142,30 +182,27 @@ class AdminAssistant
     end
     
     class SearchSettings < Settings
-      attr_reader :column_names, :comparators,
-                  :match_text_fields_for_association
+      attr_reader :column_names
       
       def initialize(admin_assistant)
         super
         @column_names = []
-        @comparators = {}
-        @match_text_fields_for_association = []
+      end
+      
+      def column_config_args
+        {:comparators => :accessor,
+         :match_text_fields_for_association => :boolean}
       end
       
       def columns(*c)
         @column_names = c
       end
-      
-      def match_text_fields_for_association(*c)
-        if c.empty?
-          @match_text_fields_for_association
-        else
-          @match_text_fields_for_association = c
-        end
-      end
     end
   end
   
   class ShowSettings < Settings
+    def column_config_args
+      {}
+    end
   end
 end

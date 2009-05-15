@@ -23,13 +23,13 @@ class Admin::BlogPosts2Controller < ApplicationController
       
       # When showing the textile field, say 'Yes' and 'No' instead of 'true'
       # and 'false'
-      index.boolean_labels :textile => %w(Yes No)
+      index[:textile].boolean_labels = %w(Yes No)
       
       # Let's have specific fields for searching
       index.search :id, :title, :body, :textile, :user
       
       # Make the author field a link
-      index.link_to_args[:user] = lambda { |blog_post|
+      index[:user].link_to_args = lambda { |blog_post|
         { :controller => 'admin/users', :action => 'edit',
           :id => blog_post.user_id }
       }
@@ -42,13 +42,13 @@ class Admin::BlogPosts2Controller < ApplicationController
       
       # 'publish' isn't defined on BlogPost, we have to specify that it's a
       # check box
-      form.inputs[:publish] = :check_box
+      form[:publish].input = :check_box
       
       # In addition to the 'Create'/'Update' button at the bottom, we also have
       # a 'Preview' button
       form.submit_buttons << 'Preview'
       
-      form.descriptions[:publish] =
+      form[:publish].description =
           "Click this and published_at will be set automatically"
     end
     

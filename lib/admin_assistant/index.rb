@@ -139,9 +139,8 @@ class AdminAssistant
               :search_comparator =>
                   @search_params["#{column_name}(comparator)"],
               :match_text_fields =>
-                  settings.match_text_fields_for_association.include?(
-                    column_name.to_sym
-                  )
+                  settings[column_name.to_sym].
+                  match_text_fields_for_association?
             )
           }
           columns
@@ -156,8 +155,8 @@ class AdminAssistant
           }
           if c.respond_to?(:name) && c.name
             opts[:boolean_labels] =
-                @admin_assistant.index_settings.boolean_labels[c.name]
-            opts[:comparators] = settings.comparators[c.name.to_sym]
+                @admin_assistant.index_settings[c.name].boolean_labels
+            opts[:comparators] = settings[c.name.to_sym].comparators
           end
           c.search_view(action_view, opts)
         }
@@ -202,11 +201,11 @@ class AdminAssistant
           @columns = @index.columns.map { |c|
             c.index_view(
               @action_view,
-              :boolean_labels => @index.settings.boolean_labels[c.name],
+              :boolean_labels => @index.settings[c.name].boolean_labels,
               :sort_order => (@index.sort_order if c.name == @index.sort),
-              :link_to_args => @index.settings.link_to_args[c.name.to_sym],
+              :link_to_args => @index.settings[c.name.to_sym].link_to_args,
               :label => @custom_column_labels[c.name],
-              :image_size => @index.settings.image_sizes[c.name.to_sym]
+              :image_size => @index.settings[c.name.to_sym].image_size
             )
           }
         end

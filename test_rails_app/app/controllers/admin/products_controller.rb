@@ -4,7 +4,7 @@ class Admin::ProductsController < ApplicationController
   admin_assistant_for Product do |a|
     a.index.search do |search|
       search.columns :name, :price
-      search.comparators[:price] = :all
+      search[:price].comparators = :all
     end
   end
   
