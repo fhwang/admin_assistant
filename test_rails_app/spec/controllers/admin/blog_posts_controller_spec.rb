@@ -8,6 +8,50 @@ describe Admin::BlogPostsController do
     @user = User.create! :username => 'soren'
   end
   
+  describe '#autocomplete_user' do
+    before :all do
+      @bill1 = User.create! :username => 'Bill 1'
+      @bill2 = User.create! :username => 'Bill 2'
+      1.upto(11) do |i|
+        User.create! :username => "Bob #{i}"
+      end
+    end
+    
+    describe 'with no matches' do
+      before :each do
+        get :autocomplete_user, :user_autocomplete_input => 'Jane'
+      end
+
+      it 'should return empty results' do
+        response.should have_tag('ul')
+        response.should_not have_tag('ul > li')
+      end
+    end
+    
+    describe 'with two matches' do
+      before :each do
+        get :autocomplete_user, :user_autocomplete_input => 'Bill'
+      end
+      
+      it 'should return those two matches' do
+        response.should have_tag('ul') do
+          with_tag "li[id=user#{@bill1.id}]", :text => 'Bill 1'
+          with_tag "li[id=user#{@bill2.id}]", :text => 'Bill 2'
+        end
+      end
+    end
+    
+    describe 'with 11 matches' do
+      before :each do
+        get :autocomplete_user, :user_autocomplete_input => 'Bob'
+      end
+      
+      it 'should return a max of ten users' do
+        response.should have_tag('ul > li', :count => 10)
+      end
+    end
+  end
+  
   describe '#create' do
     describe 'when there are no validation errors' do
       before :each do
@@ -83,6 +127,43 @@ describe Admin::BlogPostsController do
       
     it 'should show a link back to the index page' do
       response.should have_tag("a[href=/admin/blog_posts]", 'Back to index')
+    end
+  end
+  
+  describe '#edit when there are more than 15 users' do
+    before :all do
+      @blog_post = BlogPost.create! :title => random_word, :user => @user
+      1.upto(16) do |i|
+        User.create! :username => "--user #{i}--"
+      end
+    end
+    
+    before :each do
+      get :edit, :id => @blog_post.id
+    end
+    
+    it 'should use the restricted autocompleter instead of a drop-down' do
+      response.should_not have_tag("select[name=?]", "blog_post[user_id]")
+      response.should have_tag(
+        "input[id=user_autocomplete_input][value=soren]"
+      )
+      response.should have_tag(
+        "input[type=hidden][name=?][id=blog_post_user_id][value=?]",
+        "blog_post[user_id]", @user.id.to_s
+      )
+      response.should have_tag("div[id=user_autocomplete_palette]")
+      response.should have_tag('div[id=clear_user_link]')
+      response.body.should match(
+        %r|
+          var\s*user_autocompleter\s*=
+          \s*new\s*AdminAssistant.RestrictedAutocompleter\(
+          \s*"user",
+          \s*"blog_post_user_id",
+          \s*"/admin/blog_posts/autocomplete_user",
+          \s*false
+          \s*\)
+        |mx
+      )
     end
   end
   
@@ -630,6 +711,41 @@ describe Admin::BlogPostsController do
                  @user.id, :text => 'soren'
         without_tag "option[value='']"
       end
+    end
+  end
+  
+  describe '#new when there are more than 15 users' do
+    before :all do
+      User.destroy_all
+      1.upto(16) do |i|
+        User.create! :username => "--user #{i}--"
+      end
+    end
+    
+    before :each do
+      get :new
+    end
+    
+    it 'should use the restricted autocompleter instead of a drop-down' do
+      response.should_not have_tag("select[name=?]", "blog_post[user_id]")
+      response.should have_tag("input[id=user_autocomplete_input]")
+      response.should have_tag(
+        "input[type=hidden][name=?][id=blog_post_user_id]",
+        "blog_post[user_id]"
+      )
+      response.should have_tag("div[id=user_autocomplete_palette]")
+      response.should have_tag('div[id=clear_user_link]')
+      response.body.should match(
+        %r|
+          var\s*user_autocompleter\s*=
+          \s*new\s*AdminAssistant.RestrictedAutocompleter\(
+          \s*"user",
+          \s*"blog_post_user_id",
+          \s*"/admin/blog_posts/autocomplete_user",
+          \s*false
+          \s*\)
+        |mx
+      )
     end
   end
   

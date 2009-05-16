@@ -105,6 +105,43 @@ describe Admin::BlogPosts2Controller do
       end
     end
   end
+  
+  describe '#edit when there are more than 15 users' do
+    before :all do
+      @blog_post = BlogPost.create! :title => random_word, :user => @user
+      1.upto(16) do |i|
+        User.create! :username => "--user #{i}--"
+      end
+    end
+    
+    before :each do
+      get :edit, :id => @blog_post.id
+    end
+    
+    it 'should use the restricted autocompleter instead of a drop-down' do
+      response.should_not have_tag("select[name=?]", "blog_post[user_id]")
+      response.should have_tag(
+        "input[id=user_autocomplete_input][value=soren]"
+      )
+      response.should have_tag(
+        "input[type=hidden][name=?][id=blog_post_user_id][value=?]",
+        "blog_post[user_id]", @user.id.to_s
+      )
+      response.should have_tag("div[id=user_autocomplete_palette]")
+      response.should have_tag('div[id=clear_user_link]')
+      response.body.should match(
+        %r|
+          var\s*user_autocompleter\s*=
+          \s*new\s*AdminAssistant.RestrictedAutocompleter\(
+          \s*"user",
+          \s*"blog_post_user_id",
+          \s*"/admin/blog_posts2/autocomplete_user",
+          \s*true
+          \s*\)
+        |mx
+      )
+    end
+  end
 
   describe '#index' do
     describe 'when there is one record' do

@@ -1,0 +1,36 @@
+<%
+class_name = record.class.name.underscore.downcase
+text_field_id = "#{associated_class_name}_autocomplete_input"
+palette_id = "#{associated_class_name}_autocomplete_palette"
+hidden_field_id = "#{class_name}_#{column.association_foreign_key}"
+associated = record.send(column.name)
+if associated
+  associated_id = associated.id
+else
+  associated_id = nil
+end
+autocompleter_js_var = "#{associated_class_name}_autocompleter"
+column_view = AdminAssistant::BelongsToColumn::View.new(column, self)
+%>
+<%= text_field_tag(
+  text_field_id, column_view.assoc_field_value(associated), :id => text_field_id
+) %>
+<%= hidden_field_tag(
+  "#{class_name}[#{column.association_foreign_key}]", associated_id,
+  :id => hidden_field_id
+) %>
+<div id="<%= palette_id %>" class="autocomplete_palette" style="display:none"></div>
+
+<div id="clear_<%= associated_class_name %>_link" style="display:none; padding: 5px">
+<%= link_to_function(
+  "Clear #{associated_class_name}", "#{autocompleter_js_var}.clearSelected()"
+) %>
+</div>
+
+<script type="text/javascript">
+var <%= autocompleter_js_var %> = new AdminAssistant.RestrictedAutocompleter(
+  "<%= associated_class_name %>", "<%= hidden_field_id %>", "/<%= controller.controller_path %>/autocomplete_<%= associated_class_name %>",
+  <%= @admin_assistant.form_settings[column.name].exclude_blank? %>
+);
+</script>
+

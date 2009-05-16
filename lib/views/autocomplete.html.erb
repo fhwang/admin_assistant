@@ -1,0 +1,10 @@
+<%
+column_view = AdminAssistant::BelongsToColumn::IndexView.new(column, self)
+%>
+<ul>
+  <% records.each do |record| %>
+    <li id="<%= prefix %><%= record.id %>"><%=
+      column_view.assoc_field_value(record)
+    %></li>
+  <% end %>
+</ul>

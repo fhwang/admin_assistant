@@ -50,6 +50,8 @@ class Admin::BlogPosts2Controller < ApplicationController
       
       form[:publish].description =
           "Click this and published_at will be set automatically"
+        
+      form[:user].exclude_blank
     end
     
     # Only show some columns on the show page

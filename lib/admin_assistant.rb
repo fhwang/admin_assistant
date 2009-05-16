@@ -13,6 +13,16 @@ class AdminAssistant
               :model_class, :show_settings
   attr_accessor :actions
   
+  def self.searchable_columns(model_class)
+    model_class.columns.select { |column|
+      [:string, :text].include?(column.type)
+    }
+  end
+
+  def self.template_file(template_name)
+    "#{File.dirname(__FILE__)}/views/#{template_name}.html.erb"
+  end
+
   def initialize(controller_class, model_class)
     @controller_class, @model_class = controller_class, model_class
     @actions = [:index, :create, :update, :show]
@@ -33,6 +43,21 @@ class AdminAssistant
       end
     end
     columns
+  end
+  
+  def autocomplete_actions
+    if [:new, :create, :edit, :update].any? { |action|
+      actions.include?(action)
+    }
+      column_names = model_class.columns.reject { |ar_column|
+        %w(id created_at updated_at).include?(ar_column.name)
+      }.map { |ar_column| ar_column.name }
+      accumulate_columns(column_names).select { |column|
+        column.is_a?(BelongsToColumn)
+      }.map { |column|
+        "autocomplete_#{column.name}".to_sym
+      }
+    end
   end
   
   def belongs_to_assoc(association_name)
@@ -69,6 +94,7 @@ class AdminAssistant
     c_actions = actions.clone
     c_actions << :new if c_actions.include?(:create)
     c_actions << :edit if c_actions.include?(:update)
+    c_actions.concat autocomplete_actions
     c_actions
   end
     
@@ -76,10 +102,9 @@ class AdminAssistant
     controller.controller_path.gsub(%r|/|, '_')
   end
   
-  def dispatch_to_request_method(request_method, controller)
+  def dispatch_to_request_method(request_class, controller)
     controller.instance_variable_set :@admin_assistant, self
-    klass = Request.const_get request_method.to_s.capitalize
-    @request = klass.new(self, controller)
+    @request = request_class.new(self, controller)
     @request.call
     @request = nil
   end
@@ -102,7 +127,10 @@ class AdminAssistant
   def method_missing(meth, *args)
     request_methods = [:create, :destroy, :edit, :index, :new, :update, :show]
     if request_methods.include?(meth) and args.size == 1
-      dispatch_to_request_method meth, args.first
+      request_class = Request.const_get meth.to_s.capitalize
+      dispatch_to_request_method request_class, args.first
+    elsif autocomplete_actions.include?(meth)
+      dispatch_to_request_method Request::Autocomplete, args.first
     else
       if meth.to_s =~ /(.*)\?/ && request_methods.include?($1.to_sym)
         @actions.include?($1.to_sym)
@@ -136,12 +164,6 @@ class AdminAssistant
     end
   end
   
-  def self.searchable_columns(model_class)
-    model_class.columns.select { |column|
-      [:string, :text].include?(column.type)
-    }
-  end
-  
   def search_settings
     @index_settings.search_settings
   end
@@ -169,6 +191,11 @@ class AdminAssistant
         self.send(:define_method, action) do
           self.class.admin_assistant.send(action, self)
         end
+      end
+      unless self.admin_assistant.autocomplete_actions.empty?
+        self.protect_from_forgery(
+          :except => self.admin_assistant.autocomplete_actions
+        )
       end
     end
   end

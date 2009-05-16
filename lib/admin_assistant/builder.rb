@@ -120,8 +120,8 @@ class AdminAssistant
     end
     
     def column_config_args
-      {:description => :accessor, :input => :accessor, :read_only => :boolean, 
-       :write_once => :boolean}
+      {:description => :accessor, :exclude_blank => :boolean,
+       :input => :accessor, :read_only => :boolean, :write_once => :boolean}
     end
     
     def columns_for_edit(*args)

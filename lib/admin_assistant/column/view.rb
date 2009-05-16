@@ -3,12 +3,14 @@ class AdminAssistant
     class View < Delegator
       attr_reader :sort_order
       
-      def initialize(column, action_view, opts)
+      def initialize(column, action_view, opts = {})
         super(column)
         @column, @action_view, @opts = column, action_view, opts
         @boolean_labels = opts[:boolean_labels]
         @label = opts[:label]
-        set_instance_variables_from_options opts
+        if respond_to?(:set_instance_variables_from_options)
+          set_instance_variables_from_options(opts)
+        end
       end
       
       def __getobj__
@@ -131,9 +133,6 @@ class AdminAssistant
     module ShowViewMethods
       def html(record)
         @action_view.send(:h, field_value(record))
-      end
-      
-      def set_instance_variables_from_options(opts)
       end
     end
   end
@@ -312,13 +311,16 @@ class AdminAssistant
   
   class BelongsToColumn < Column
     class View < AdminAssistant::Column::View
-      def field_value(record)
-        assoc_value = record.send name
+      def assoc_field_value(assoc_value)
         if assoc_value.respond_to?(:name_for_admin_assistant)
           assoc_value.name_for_admin_assistant
         elsif assoc_value && default_name_method
           assoc_value.send default_name_method
         end
+      end
+      
+      def field_value(record)
+        assoc_field_value record.send(name)
       end
       
       def options_for_select
@@ -333,7 +335,17 @@ class AdminAssistant
       include AdminAssistant::Column::FormViewMethods
       
       def html(form)
-        form.select association_foreign_key, options_for_select
+        if associated_class.count > 15
+          @action_view.render(
+            :file => AdminAssistant.template_file('_restricted_autocompleter'),
+            :locals => {
+              :record => form.object, :column => @column,
+              :associated_class_name => associated_class.name.underscore
+            }
+          )
+        else
+          form.select association_foreign_key, options_for_select
+        end
       end
     end
 

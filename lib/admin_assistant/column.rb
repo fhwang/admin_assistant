@@ -97,7 +97,7 @@ class AdminAssistant
   class BelongsToColumn < Column
     attr_reader :search_terms
     
-    def initialize(belongs_to_assoc, opts)
+    def initialize(belongs_to_assoc, opts = {})
       super opts
       @belongs_to_assoc = belongs_to_assoc
       if !@match_text_fields && @search_terms

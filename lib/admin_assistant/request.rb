@@ -80,14 +80,17 @@ class AdminAssistant
       
       def render_form
         html = @controller.send(
-          :render_to_string, :file => template_file('form'), :layout => false
+          :render_to_string,
+          :file => AdminAssistant.template_file('form'), :layout => false
         )
         html << render_after_form if after_form_html_template_exists?
         @controller.send :render, :text => html, :layout => true
       end
       
       def render_template_file(template_name = action, options_plus = {})
-        options = {:file => template_file(template_name), :layout => true}
+        options = {
+          :file => AdminAssistant.template_file(template_name), :layout => true
+        }
         options = options.merge options_plus
         @controller.send(:render, options)
       end
@@ -98,9 +101,26 @@ class AdminAssistant
         end
         @record.save
       end
+    end
     
-      def template_file(template_name = action)
-        "#{File.dirname(__FILE__)}/../views/#{template_name}.html.erb"
+    class Autocomplete < Base
+      def call
+        action =~ /autocomplete_(.*)/
+        assoc = @admin_assistant.belongs_to_assoc $1
+        column = BelongsToColumn.new assoc
+        search_string = @controller.params["#{$1}_autocomplete_input"]
+        opts = {
+          :conditions => [
+            "LOWER(#{column.default_name_method}) like ?",
+            "%#{search_string.downcase unless search_string.nil?}%"
+          ],
+          :limit => 10
+        }
+        records = column.associated_class.find :all, opts
+        render_template_file(
+          'autocomplete', :layout => false,
+          :locals => {:records => records, :prefix => $1, :column => column}
+        )
       end
     end
     
@@ -172,7 +192,8 @@ class AdminAssistant
         @record = model_class.find @controller.params[:id]
         @controller.instance_variable_set :@record, @record
         @controller.send(
-          :render, :file => template_file('show'), :layout => true
+          :render,
+          :file => AdminAssistant.template_file('show'), :layout => true
         )
       end
     end
