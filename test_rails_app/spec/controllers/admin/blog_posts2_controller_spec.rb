@@ -503,7 +503,7 @@ describe Admin::BlogPosts2Controller do
              type="checkbox"[^>]*name="blog_post\[publish\][^>]value="1")
           !x
         )
-      elsif %w(2.1.2 2.2.2).include?(RAILS_GEM_VERSION)
+      elsif %w(2.1.0 2.1.2 2.2.2).include?(RAILS_GEM_VERSION)
         response.body.should match(
           %r!
             <input[^>]*
@@ -516,7 +516,7 @@ describe Admin::BlogPosts2Controller do
           !x
         )
       else
-        raise "I don't have a specifed behavior for #{RAILS_GEM_VERSION}"
+        raise "I don't have a specified behavior for #{RAILS_GEM_VERSION}"
       end
     end
     

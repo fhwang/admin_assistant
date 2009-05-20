@@ -336,7 +336,8 @@ class AdminAssistant
       
       def html(form)
         if associated_class.count > 15
-          @action_view.render(
+          @action_view.controller.send(
+            :render,
             :file => AdminAssistant.template_file('_restricted_autocompleter'),
             :locals => {
               :record => form.object, :column => @column,

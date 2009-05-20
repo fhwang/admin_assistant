@@ -98,10 +98,16 @@ class AdminAssistant
     end
     
     def render_from_custom_template(slug)
-      template = File.join(
-        RAILS_ROOT, 'app/views', controller.controller_path, "#{slug}.html.erb"
+      abs_template_file = File.join(
+        RAILS_ROOT, 'app/views', controller.controller_path, 
+        "#{slug}.html.erb"
       )
-      if File.exist?(template)
+      if File.exist?(abs_template_file)
+        template = if RAILS_GEM_VERSION == '2.1.0'
+          File.join(controller.controller_path, "#{slug}.html.erb")
+        else
+          abs_template_file
+        end
         @action_view.render(
           :file => template,
           :locals => {model_class.name.underscore.to_sym => @record}

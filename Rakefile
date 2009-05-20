@@ -8,7 +8,7 @@ task :default => :spec
 
 desc 'Run all specs across all supported Rails gem versions.'
 task :spec do
-  %w(2.1.2 2.2.2 2.3.2).each do |rails_gem_version|
+  %w(2.1.0 2.1.2 2.2.2 2.3.2).each do |rails_gem_version|
     puts "*** RAILS #{rails_gem_version} ***"
     cmd = "cd test_rails_app && RAILS_GEM_VERSION=#{rails_gem_version} rake"
     puts cmd

@@ -615,9 +615,12 @@ module FileColumn # :nodoc:
     def file_column(attr, options={})
       options = DEFAULT_OPTIONS.merge(options) if options
       
-      my_options = FileColumn::init_options(options, 
-                                            ActiveSupport::Inflector.underscore(self.name).to_s,
-                                            attr.to_s)
+      my_options = FileColumn::init_options(
+        options, 
+        (RAILS_GEM_VERSION=='2.1.0' ? Inflector : ActiveSupport::Inflector).
+            underscore(self.name).to_s,
+        attr.to_s
+      )
       
       state_attr = "@#{attr}_state".to_sym
       state_method = "#{attr}_state".to_sym
