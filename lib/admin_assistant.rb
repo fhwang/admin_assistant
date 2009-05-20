@@ -192,11 +192,6 @@ class AdminAssistant
           self.class.admin_assistant.send(action, self)
         end
       end
-      unless self.admin_assistant.autocomplete_actions.empty?
-        self.protect_from_forgery(
-          :except => self.admin_assistant.autocomplete_actions
-        )
-      end
     end
   end
 end

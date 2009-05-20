@@ -27,10 +27,20 @@ column_view = AdminAssistant::BelongsToColumn::View.new(column, self)
 ) %>
 </div>
 
+<%
+auth_token = if protect_against_forgery?
+  form_authenticity_token
+else
+  ''
+end
+%>
 <script type="text/javascript">
 var <%= autocompleter_js_var %> = new AdminAssistant.RestrictedAutocompleter(
-  "<%= associated_class_name %>", "<%= hidden_field_id %>", "/<%= controller.controller_path %>/autocomplete_<%= associated_class_name %>",
-  <%= @admin_assistant.form_settings[column.name].exclude_blank? %>
+  "<%= associated_class_name %>",
+  "<%= hidden_field_id %>",
+  "/<%= controller.controller_path %>/autocomplete_<%= associated_class_name %>",
+  <%= @admin_assistant.form_settings[column.name].exclude_blank? %>,
+  {parameters: "authenticity_token=<%= auth_token %>"}
 );
 </script>
 

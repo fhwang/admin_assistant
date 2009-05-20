@@ -136,7 +136,8 @@ describe Admin::BlogPosts2Controller do
           \s*"user",
           \s*"blog_post_user_id",
           \s*"/admin/blog_posts2/autocomplete_user",
-          \s*true
+          \s*true,
+          \s*\{parameters:\s*"authenticity_token=.*"\s*\}
           \s*\)
         |mx
       )
