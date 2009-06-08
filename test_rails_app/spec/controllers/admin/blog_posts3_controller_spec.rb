@@ -21,8 +21,8 @@ describe Admin::BlogPosts3Controller do
       response.should have_tag('textarea[name=?]', 'blog_post[body]')
     end
     
-    it 'should not include published at' do
-      response.body.should_not match(/Published at/)
+    it 'should not include textile' do
+      response.body.should_not match(/textile/)
     end
   end
   
@@ -160,6 +160,16 @@ describe Admin::BlogPosts3Controller do
     
     it 'should not have a body field' do
       response.should_not have_tag('textarea[name=?]', 'blog_post[body]')
+    end
+    
+    it 'should have a published_at select that starts in the year 2009' do
+      name = 'blog_post[published_at(1i)]'
+      response.should have_tag('select[name=?]', name) do
+        with_tag "option[value='']"
+        with_tag "option[value='2009']"
+        with_tag "option[value='2010']"
+        without_tag "option[value='2008']"
+      end
     end
   end
 end

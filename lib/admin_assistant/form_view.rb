@@ -71,7 +71,8 @@ class AdminAssistant
           @action_view,
           :input => settings[c.name.to_sym].input,
           :label => @admin_assistant.custom_column_labels[c.name],
-          :description => settings[c.name.to_sym].description
+          :description => settings[c.name.to_sym].description,
+          :select_options => settings[c.name.to_sym].select_options
         )
       }
     end

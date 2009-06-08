@@ -26,8 +26,9 @@ class Admin::BlogPosts3Controller < ApplicationController
     end
     
     a.form do |form|
-      form.columns_for_new  :title, :user
-      form.columns_for_edit :title, :user, :body
+      form.columns_for_new  :title, :user, :published_at
+      form.columns_for_edit :title, :user, :published_at, :body
+      form[:published_at].select_options = {:start_year => 2009}
     end
   end
 end

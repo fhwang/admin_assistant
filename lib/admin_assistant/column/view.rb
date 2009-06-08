@@ -57,6 +57,7 @@ class AdminAssistant
       def set_instance_variables_from_options(opts)
         @input = opts[:input]
         @description = opts[:description]
+        @select_options = opts[:select_options] || {}
       end
     end
     
@@ -154,7 +155,9 @@ class AdminAssistant
           when :boolean
             form.check_box name
           when :datetime
-            form.datetime_select name, :include_blank => true
+            form.datetime_select(
+              name, {:include_blank => true}.merge(@select_options)
+            )
           when :date
             form.date_select name, :include_blank => true
           when :us_state
