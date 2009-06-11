@@ -294,6 +294,11 @@ describe Admin::BlogPostsController do
         end
       end
 
+      it 'should not show the page selector form' do
+        response.should have_tag('.pagination') do
+          without_tag('form[method=get][action=/admin/blog_posts]')
+        end
+      end
     end
     
     describe 'when there is one record that somehow has a nil User' do
@@ -325,6 +330,28 @@ describe Admin::BlogPostsController do
         get :index
         end_time = Time.now
         (end_time.to_f - start_time.to_f).should be_close(0.0, 0.250)
+      end
+    end
+    
+    describe 'when there are more than 10 pages of results' do
+      before :all do
+        BlogPost.count.upto(251) do
+          @blog_post = BlogPost.create!(
+            :title => "hi there", :user => @user, :textile => false
+          )
+        end
+      end
+      
+      before :each do
+        get :index
+      end
+      
+      it 'should show the page selector form at the bottom' do
+        response.should have_tag('.pagination') do
+          with_tag('form[method=get][action=/admin/blog_posts]') do
+            with_tag 'input[name=page]'
+          end
+        end
       end
     end
   end

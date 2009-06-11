@@ -18,7 +18,8 @@ has_many_associations = {BlogPost => [Tag]}
     [:string, :text].include?(c.type)
   }
   count = model_class.count
-  count.upto(100) do
+  max = model_class == BlogPost ? 251 : 100
+  count.upto(max) do
     saved = false
     until saved
       atts = {}

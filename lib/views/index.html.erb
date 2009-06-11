@@ -79,7 +79,17 @@
 </table>
 <% end %>
 <div id="aa_footer">
-<%= will_paginate @index.records %>
+<div class="pagination">
+  <div class="links">
+    <%= will_paginate @index.records, :container => false %>
+  </div>
+<% if @index.records.total_pages > 10 %>
+  <% form_tag({:action => 'index'}, :method => 'get') do %>
+    <%= text_field_tag('page', nil, :size => 2) %>
+    <%= submit_tag('Jump') %>
+  <% end %>
+<% end %>
+</div>
 <%= @index.records.empty? ? 'No' : @index.records.total_entries %> <%= @admin_assistant.model_class_name %><%= 's' unless @index.records.total_entries == 1 %> found
 </div>
 </div>

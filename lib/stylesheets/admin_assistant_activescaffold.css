@@ -92,6 +92,13 @@ Don't edit this file: It gets re-copied every time the server starts.
 #admin_assistant.index #aa_footer .pagination {
   float: right;
 }
+#admin_assistant.index #aa_footer .pagination .links {
+  float: left;
+}
+#admin_assistant.index #aa_footer .pagination form {
+  margin-left: 5px;
+  float: left;
+}
 
 /***** Form stuff ************************************************************/
 
