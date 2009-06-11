@@ -232,9 +232,9 @@ describe Admin::BlogPostsController do
       end
       
       it 'should have an edit link' do
-        response.should have_tag(
-          "a[href=/admin/blog_posts/edit/#{@blog_post.id}]", 'Edit'
-        )
+        response.should have_tag('td.actions') do
+          with_tag "a[href=/admin/blog_posts/edit/#{@blog_post.id}]", 'Edit'
+        end
       end
       
       it 'should have a show link' do
