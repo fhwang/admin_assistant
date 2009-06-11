@@ -198,10 +198,14 @@ end
 
 ActionController::Base.send :include, AdminAssistant::ControllerMethods
 
-FileUtils.copy(
-  "#{File.dirname(__FILE__)}/stylesheets/admin_assistant.css",
-  "#{RAILS_ROOT}/public/stylesheets/admin_assistant.css"
-)
+Dir.entries("#{File.dirname(__FILE__)}/stylesheets").each do |entry|
+  if entry =~ /css$/
+    FileUtils.copy(
+      "#{File.dirname(__FILE__)}/stylesheets/#{entry}",
+      "#{RAILS_ROOT}/public/stylesheets/#{entry}"
+    )
+  end
+end
 FileUtils.copy(
   "#{File.dirname(__FILE__)}/javascripts/admin_assistant.js",
   "#{RAILS_ROOT}/public/javascripts/admin_assistant.js"

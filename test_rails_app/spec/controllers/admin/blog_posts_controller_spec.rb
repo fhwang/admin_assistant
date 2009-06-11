@@ -202,6 +202,12 @@ describe Admin::BlogPostsController do
       it 'should use the admin layout' do
         response.body.should match(/admin_assistant sample Rails app/)
       end
+      
+      it 'should use the default admin_assistant CSS' do
+        response.should have_tag(
+          'link[href^=/stylesheets/admin_assistant_default.css]'
+        )
+      end
     end
 
     describe 'when there is one record' do

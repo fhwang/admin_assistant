@@ -2,7 +2,11 @@
   <head>
     <title>Admin</title>
     <%= javascript_include_tag("prototype", "effects", "controls") %>
-    <%= admin_assistant_includes %>
+    <% if controller.is_a?(Admin::BlogPosts3Controller) %>
+      <%= admin_assistant_includes :theme => 'activescaffold' %>
+    <% else %>
+      <%= admin_assistant_includes %>
+    <% end %>
     <%= stylesheet_link_tag 'admin' %>
   </head>
   <body>

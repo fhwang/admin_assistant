@@ -27,6 +27,23 @@ describe Admin::BlogPosts3Controller do
   end
   
   describe '#index' do
+    describe 'with no blog posts' do
+      before :all do
+        BlogPost.destroy_all
+      end
+      
+      before :each do
+        get :index
+        response.should be_success
+      end
+
+      it 'should use the activescaffold-themed CSS' do
+        response.should have_tag(
+          'link[href^=/stylesheets/admin_assistant_activescaffold.css]'
+        )
+      end
+    end
+    
     describe 'with 26 unpublished blog posts' do
       before :all do
         BlogPost.destroy_all
