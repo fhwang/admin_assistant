@@ -32,6 +32,10 @@ class AdminAssistant
       @admin_assistant.custom_column_labels[column.to_s] = label
     end
     
+    def model_class_name=(mcn)
+      @admin_assistant.model_class_name = mcn
+    end
+    
     def show
       @admin_assistant.show_settings
     end

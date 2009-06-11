@@ -9,9 +9,10 @@ require 'admin_assistant/request'
 require 'will_paginate'
 
 class AdminAssistant
-  attr_reader :custom_column_labels, :form_settings, :index_settings, 
-              :model_class, :show_settings
+  attr_reader   :custom_column_labels, :form_settings, :index_settings, 
+                :model_class, :show_settings
   attr_accessor :actions
+  attr_writer   :model_class_name
   
   def self.searchable_columns(model_class)
     model_class.columns.select { |column|
@@ -143,7 +144,8 @@ class AdminAssistant
   end
     
   def model_class_name
-    @model_class.name.gsub(/([A-Z])/, ' \1')[1..-1].downcase
+    @model_class_name ||
+        @model_class.name.gsub(/([A-Z])/, ' \1')[1..-1].downcase
   end
     
   def paperclip_attachments

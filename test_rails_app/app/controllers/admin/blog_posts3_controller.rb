@@ -2,6 +2,8 @@ class Admin::BlogPosts3Controller < ApplicationController
   layout 'admin'
 
   admin_assistant_for BlogPost do |a|
+    a.model_class_name = 'post'
+    
     a.index do |index|
       index.total_entries = lambda { 25 }
       

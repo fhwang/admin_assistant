@@ -42,6 +42,10 @@ describe Admin::BlogPosts3Controller do
           'link[href^=/stylesheets/admin_assistant_activescaffold.css]'
         )
       end
+      
+      it "should say 'Posts'" do
+        response.should have_tag('h2', :text => 'Posts')
+      end
     end
     
     describe 'with 26 unpublished blog posts' do
@@ -63,7 +67,7 @@ describe Admin::BlogPosts3Controller do
       end
       
       it 'should only say 25 blog posts found' do
-        response.body.should match(/25 blog posts found/)
+        response.body.should match(/25 posts found/)
       end
       
       it 'should show a search form with specific fields' do
@@ -98,7 +102,7 @@ describe Admin::BlogPosts3Controller do
       
       it 'should not show the blog post' do
         response.body.should_not match(/published blog post/)
-        response.body.should match(/No blog posts found/)
+        response.body.should match(/No posts found/)
       end
     end
     
@@ -187,6 +191,25 @@ describe Admin::BlogPosts3Controller do
         with_tag "option[value='2010']"
         without_tag "option[value='2008']"
       end
+    end
+    
+    it "should say 'New post'" do
+      response.should have_tag('h2', :text => 'New post')
+    end
+  end
+  
+  describe '#show' do
+    before :all do
+      @blog_post = BlogPost.create! :title => "title", :user => @user
+    end
+    
+    before :each do
+      get :show, :id => @blog_post.id
+      response.should be_success
+    end
+    
+    it "should say 'Post [ID]'" do
+      response.should have_tag('h2', :text => "Post #{@blog_post.id}")
     end
   end
 end
