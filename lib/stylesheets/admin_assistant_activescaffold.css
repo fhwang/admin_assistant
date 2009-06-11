@@ -99,34 +99,93 @@ Don't edit this file: It gets re-copied every time the server starts.
   margin-left: 5px;
   float: left;
 }
+#admin_assistant.index #search_form {
+  background-color: #DAFFCD;
+  border: 1px solid #7FCF00;
+  padding: 4px;
+  font-family: verdana, sans-serif;
+  font-size: 11px;
+  margin-bottom: 0px;
+}
 
 /***** Form stuff ************************************************************/
+
+#admin_assistant.form {
+  background: #DAFFCD;
+  border: 1px solid #7FCF00;
+  padding: 4px;
+}
+
+#admin_assistant.form #aa_header h2 {
+  color: #1F7F00;
+  font-size: 16px;
+  letter-spacing: -1px;
+  padding: 2px;
+}
+
+#admin_assistant.form form {
+  margin-top: 20px;
+  padding: 0px 5px;
+}
 
 #admin_assistant.form .column {
   margin-bottom: 10px;
 }
 
-#admin_assistant.form .column .description {
-  font-size: small;
-}
-
-#admin_assistant.form input {
-  font-size: large
+#admin_assistant.form label {
+  font-size: 11px;
 }
 
 #admin_assistant.form input[type=text] {
   width: 100%
 }
 
-#admin_assistant.form select {
-  font-size: large
+#admin_assistant.form input, #admin_assistant.form select, #admin_assistant.form textarea {
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: -1px;
 }
 
 #admin_assistant.form textarea {
   width: 100%;
-  font-size: large
 }
 
+#admin_assistant.form .errorExplanation {
+  background: #FFCCCC;
+  border: 1px solid #FF6666;
+  margin: 2px 0;
+}
+
+#admin_assistant.form .errorExplanation h2 {
+  background: #FF6666;
+  color: #333333;
+  font-family: Verdana;
+  font-size: 11px;
+  padding: 2px 5px;
+  margin: 0;
+}
+
+#admin_assistant.form .errorExplanation p {
+  font-family: Verdana;
+  font-size: 11px;
+  margin: 0;
+  padding: 2px 5px;
+}
+
+#admin_assistant.form .errorExplanation ul {
+  list-style: none outside disc;
+  margin: 0;
+  padding: 0 2px 4px 25px;
+}
+
+#admin_assistant.form .errorExplanation ul li {
+  font-family: Verdana;
+  font-size: 11px;
+  letter-spacing: -1px;
+  margin: 0;
+  padding: 0;
+  font-weight: bold;
+}
 
 #admin_assistant .autocomplete_palette {
   background: white;
