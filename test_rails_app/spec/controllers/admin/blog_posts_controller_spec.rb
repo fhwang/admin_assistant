@@ -268,7 +268,9 @@ describe Admin::BlogPostsController do
       end
       
       it 'should say how many records are found' do
-        response.body.should match(/1 blog post found/)
+        response.should have_tag(
+          'span.num_records', :text => '1 blog post found'
+        )
       end
       
       it "should say username because that's one of our default name fields" do

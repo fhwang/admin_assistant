@@ -79,5 +79,5 @@
 </table>
 <%= will_paginate @index.records %>
 <% end %>
-<%= @index.records.empty? ? 'No' : @index.records.total_entries %> <%= @admin_assistant.model_class_name %><%= 's' unless @index.records.total_entries == 1 %> found
+<span class="num_records"><%= @index.records.empty? ? 'No' : @index.records.total_entries %> <%= @admin_assistant.model_class_name %><%= 's' unless @index.records.total_entries == 1 %> found</span>
 </div>
