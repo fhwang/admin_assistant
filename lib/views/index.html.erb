@@ -11,9 +11,7 @@
   <%= link_to_unless_current(action, params) %>
 <% end %>
 </div>
-<h2><%= h(
-  @admin_assistant.model_class.name.pluralize.gsub(/([A-Z])/, ' \1')[1..-1]
-) %></h2>
+<h2><%= h(@admin_assistant.model_class_name.pluralize.capitalize) %></h2>
 </div>
 
 <% @search = @index.search %>

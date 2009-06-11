@@ -184,7 +184,7 @@ describe Admin::BlogPostsController do
       end
       
       it "should say the name of the model you're editing" do
-        response.body.should match(/Blog Posts/)
+        response.body.should match(/Blog posts/)
       end
       
       it 'should have a new link' do
@@ -228,7 +228,7 @@ describe Admin::BlogPostsController do
       end
       
       it "should say the name of the model you're editing" do
-        response.body.should match(/Blog Posts/)
+        response.body.should match(/Blog posts/)
       end
       
       it 'should have a new link' do
