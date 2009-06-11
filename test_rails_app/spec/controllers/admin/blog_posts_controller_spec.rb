@@ -269,7 +269,7 @@ describe Admin::BlogPostsController do
       
       it 'should say how many records are found' do
         response.should have_tag(
-          'span.num_records', :text => '1 blog post found'
+          'div#footer', :text => '1 blog post found'
         )
       end
       
