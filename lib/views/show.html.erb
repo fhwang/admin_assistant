@@ -1,7 +1,7 @@
 <div id="admin_assistant" class="show <%=
   @admin_assistant.controller_css_class(controller)
 %>">
-  <div id="header">
+  <div id="aa_header">
     <h2><%= h(
       "#{@admin_assistant.model_class.name.gsub(/([A-Z])/, ' \1')[1..-1]} #{@record.id}"
     ) %></h2>

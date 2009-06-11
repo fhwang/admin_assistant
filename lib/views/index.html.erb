@@ -1,7 +1,7 @@
 <div id="admin_assistant" class="index <%=
   @admin_assistant.controller_css_class(controller)
 %>">
-<div id="header">
+<div id="aa_header">
 <div class="actions">
 <%= link_to_function('Search', 'AdminAssistant.show_search_form()') %>
 <%= link_to(
@@ -78,7 +78,7 @@
   </tbody>
 </table>
 <% end %>
-<div id="footer">
+<div id="aa_footer">
 <%= will_paginate @index.records %>
 <%= @index.records.empty? ? 'No' : @index.records.total_entries %> <%= @admin_assistant.model_class_name %><%= 's' unless @index.records.total_entries == 1 %> found
 </div>
