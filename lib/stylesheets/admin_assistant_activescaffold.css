@@ -2,8 +2,14 @@
 Don't edit this file: It gets re-copied every time the server starts.
 ******************************************************************************/
 
-#admin_assistant { font-family: "Arial", sans-serif }
-#admin_assistant #aa_header { position: relative }
+#admin_assistant {
+  font-family: "Arial", sans-serif;
+  margin: 9px 0
+}
+#admin_assistant #aa_header {
+  position: relative;
+  padding-bottom: 5px;
+}
 #admin_assistant #aa_header h2 {
   font-size: 160%;
   font-weight: bold;
@@ -37,7 +43,7 @@ Don't edit this file: It gets re-copied every time the server starts.
 #admin_assistant.index th {
   background: #555;
   color: white;
-  padding: 2px 15px 5px 2px;
+  padding: 2px 15px 5px 4px;
   text-align: left;
   font-weight: bold;
   font-family: Arial, sans-serif;
