@@ -12,12 +12,6 @@ class Admin::BlogPosts2Controller < ApplicationController
       # Add the link 'All' to the top-right corner
       index.actions['All'] = {:all => '1'}
       
-      # By default, only show unpublished blog posts unless params[:all] is
-      # passed in
-      index.conditions do |params|
-        "published_at is null" unless params[:all]
-      end
-      
       # Sort by published_at descending, then updated_at descending
       index.sort_by "published_at desc, updated_at desc"
       
@@ -65,6 +59,12 @@ class Admin::BlogPosts2Controller < ApplicationController
     if params[:blog_post][:publish] == '1' && blog_post.published_at.nil?
       blog_post.published_at = Time.now.utc
     end
+  end
+  
+  # By default, only show unpublished blog posts unless params[:all] is
+  # passed in
+  def conditions_for_index
+    "published_at is null" unless params[:all]
   end
 
   # After a successful save, redirect to the edit page with preview=1 to show

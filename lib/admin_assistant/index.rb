@@ -2,9 +2,11 @@ require 'ar_query'
 
 class AdminAssistant
   class Index
-    def initialize(admin_assistant, url_params = {})
-      @admin_assistant = admin_assistant
-      @url_params = url_params
+    def initialize(
+          admin_assistant, url_params = {}, conditions_from_controller = nil
+        )
+      @admin_assistant, @url_params, @conditions_from_controller =
+            admin_assistant, url_params, conditions_from_controller
     end
     
     def belongs_to_sort_column
@@ -18,7 +20,7 @@ class AdminAssistant
       @admin_assistant.accumulate_columns column_names
     end
     
-    def conditions
+    def conditions_block
       settings.conditions
     end
     
@@ -51,8 +53,10 @@ class AdminAssistant
           :order => order_sql, :include => find_include,
           :per_page => 25, :page => @url_params[:page]
         )
-        if conditions
-          conditions_sql = conditions.call @url_params
+        if @conditions_from_controller
+          ar_query.condition_sqls << @conditions_from_controller
+        elsif conditions_block
+          conditions_sql = conditions_block.call @url_params
           ar_query.condition_sqls << conditions_sql if conditions_sql
         end
         search.add_to_query(ar_query)

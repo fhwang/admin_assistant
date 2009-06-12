@@ -166,7 +166,11 @@ class AdminAssistant
     
     class Index < Base
       def call
-        index = AdminAssistant::Index.new(@admin_assistant, @controller.params)
+        args = [@admin_assistant, @controller.params]
+        if @controller.respond_to?(:conditions_for_index)
+          args << @controller.send(:conditions_for_index)
+        end
+        index = AdminAssistant::Index.new *args
         @controller.instance_variable_set :@index, index
         render_template_file
       end
