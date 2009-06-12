@@ -33,5 +33,11 @@ describe Admin::BlogPostsReadOnlyController do
         "div[id=?]", "blog_post_#{@blog_post.id}_textile"
       )
     end
+    
+    it 'should have a show link' do
+      response.should have_tag(
+        "a[href=/admin/blog_posts_read_only/show/#{@blog_post.id}]", 'Show'
+      )
+    end
   end
 end

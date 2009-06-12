@@ -191,6 +191,7 @@ class AdminAssistant
         @index, @action_view = index, action_view
         @custom_column_labels = admin_assistant.custom_column_labels
         @ajax_toggle_allowed = admin_assistant.update?
+        @right_column_show = admin_assistant.show?
         @right_column_update = admin_assistant.update?
         @right_column_destroy = admin_assistant.destroy?
         @right_column_lambdas =
@@ -217,6 +218,7 @@ class AdminAssistant
       def right_column?
         @right_column_update or
             @right_column_destroy or
+            @right_column_show or
             !@right_column_lambdas.empty?
       end
       
