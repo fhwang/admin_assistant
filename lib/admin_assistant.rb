@@ -95,7 +95,7 @@ class AdminAssistant
     c_actions = actions.clone
     c_actions << :new if c_actions.include?(:create)
     c_actions << :edit if c_actions.include?(:update)
-    c_actions.concat autocomplete_actions
+    c_actions.concat(autocomplete_actions) if autocomplete_actions
     c_actions
   end
     
@@ -130,7 +130,7 @@ class AdminAssistant
     if request_methods.include?(meth) and args.size == 1
       request_class = Request.const_get meth.to_s.capitalize
       dispatch_to_request_method request_class, args.first
-    elsif autocomplete_actions.include?(meth)
+    elsif autocomplete_actions && autocomplete_actions.include?(meth)
       dispatch_to_request_method Request::Autocomplete, args.first
     else
       if meth.to_s =~ /(.*)\?/ && request_methods.include?($1.to_sym)

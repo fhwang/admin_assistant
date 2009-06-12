@@ -190,6 +190,7 @@ class AdminAssistant
       def initialize(index, action_view, admin_assistant)
         @index, @action_view = index, action_view
         @custom_column_labels = admin_assistant.custom_column_labels
+        @ajax_toggle_allowed = admin_assistant.update?
         @right_column_update = admin_assistant.update?
         @right_column_destroy = admin_assistant.destroy?
         @right_column_lambdas =
@@ -205,7 +206,8 @@ class AdminAssistant
               :sort_order => (@index.sort_order if c.name == @index.sort),
               :link_to_args => @index.settings[c.name.to_sym].link_to_args,
               :label => @custom_column_labels[c.name],
-              :image_size => @index.settings[c.name.to_sym].image_size
+              :image_size => @index.settings[c.name.to_sym].image_size,
+              :ajax_toggle_allowed => @ajax_toggle_allowed
             )
           }
         end

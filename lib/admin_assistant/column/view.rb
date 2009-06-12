@@ -121,6 +121,7 @@ class AdminAssistant
         @link_to_args = opts[:link_to_args]
         @sort_order = opts[:sort_order]
         @image_size = opts[:image_size]
+        @ajax_toggle_allowed = opts[:ajax_toggle_allowed]
       end
     end
     
@@ -198,7 +199,7 @@ class AdminAssistant
       include AdminAssistant::Column::IndexViewMethods
 
       def ajax_toggle?
-        @column.sql_type == :boolean
+        @column.sql_type == :boolean && @ajax_toggle_allowed
       end
       
       def ajax_toggle_div_id(record)
