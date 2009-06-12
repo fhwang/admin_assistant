@@ -2,7 +2,7 @@ class Admin::BlogPosts2Controller < ApplicationController
   layout 'admin'
 
   admin_assistant_for BlogPost do |a|
-    a.label :user, 'Author'
+    a[:user].label = 'Author'
     
     # For the index view:
     a.index do |index|

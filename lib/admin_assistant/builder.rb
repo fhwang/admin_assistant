@@ -7,7 +7,9 @@ class AdminAssistant
     end
 
     def [](column_name)
-      ColumnConfigLookup.new(column_name, [form, index, show, index.search])
+      ColumnConfigLookup.new(
+        column_name, [form, index, show, index.search], @admin_assistant
+      )
     end
     
     def actions(*a)
@@ -28,10 +30,6 @@ class AdminAssistant
       block_given? ? yield(i) : i
     end
     
-    def label(column, label)
-      @admin_assistant.custom_column_labels[column.to_s] = label
-    end
-    
     def model_class_name=(mcn)
       @admin_assistant.model_class_name = mcn
     end
@@ -41,8 +39,13 @@ class AdminAssistant
     end
     
     class ColumnConfigLookup
-      def initialize(column_name, settingses)
-        @column_name, @settingses = column_name, settingses
+      def initialize(column_name, settingses, admin_assistant)
+        @column_name, @settingses, @admin_assistant =
+            column_name, settingses, admin_assistant
+      end
+      
+      def label=(l)
+        @admin_assistant.custom_column_labels[@column_name.to_s] = l
       end
       
       def method_missing(meth, *args)
