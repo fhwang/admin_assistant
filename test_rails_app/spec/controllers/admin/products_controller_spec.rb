@@ -3,7 +3,13 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 describe Admin::ProductsController do
   integrate_views
   
-  describe '#index' do
+  describe '#index with at least one Product' do
+    before :all do
+      @product = (
+        Product.find(:first) || Product.create!(:name => 'product name')
+      )
+    end
+    
     before :each do
       get :index
     end
@@ -19,6 +25,12 @@ describe Admin::ProductsController do
         end
         with_tag('input[name=?]', 'search[price]')
       end
+    end
+    
+    it 'should not have a Show link' do
+      response.should_not have_tag(
+        "a[href=/admin/products/show/#{@product.id}]", 'Show'
+      )
     end
   end
   
@@ -53,7 +65,7 @@ describe Admin::ProductsController do
       end
     end
   end
-
+  
   describe '#new' do
     before :each do
       get :new
