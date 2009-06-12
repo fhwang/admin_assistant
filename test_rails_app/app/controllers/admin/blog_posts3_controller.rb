@@ -5,7 +5,9 @@ class Admin::BlogPosts3Controller < ApplicationController
     a.model_class_name = 'post'
     
     a.index do |index|
-      index.total_entries = lambda { 25 }
+      index.total_entries do
+        25
+      end
       
       # Add the link 'All' to the top-right corner
       index.actions['All'] = {:all => '1'}

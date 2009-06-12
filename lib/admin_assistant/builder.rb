@@ -73,12 +73,18 @@ class AdminAssistant
       @values = {}
     end
     
-    def method_missing(meth, *args)
+    def method_missing(meth, *args, &block)
       if field_type = @fields_config[meth]
         if field_type == :accessor
           return @values[meth]
         elsif field_type == :boolean
           return @values[meth] = true
+        elsif field_type == :block
+          if block
+            return @values[meth] = block
+          else
+            return @values[meth]
+          end
         end
       elsif meth.to_s =~ /=$/
         field_name, field_type = @fields_config.detect { |fn, ft|
@@ -151,7 +157,6 @@ class AdminAssistant
   
   class IndexSettings < Settings
     attr_reader :actions, :right_column_links, :search_settings, :sort_by
-    attr_accessor :total_entries
     
     def initialize(admin_assistant)
       super
@@ -164,7 +169,7 @@ class AdminAssistant
     
     def column_config_args
       {:boolean_labels => :accessor, :image_size => :accessor,
-       :link_to_args => :accessor}
+       :link_to_args => :block}
     end
     
     def conditions(&block)
@@ -187,6 +192,10 @@ class AdminAssistant
       else
         @sort_by = sb.first
       end
+    end
+    
+    def total_entries(&block)
+      block ? (@total_entries = block) : @total_entries
     end
     
     class SearchSettings < Settings
