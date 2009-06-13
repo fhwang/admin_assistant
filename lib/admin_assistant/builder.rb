@@ -172,8 +172,14 @@ class AdminAssistant
        :link_to_args => :block}
     end
     
-    def conditions(&block)
-      block ? (@conditions = block) : @conditions
+    def conditions(str = nil, &block)
+      if str.nil? && block.nil?
+        @conditions
+      elsif str
+        @conditions = str
+      elsif block
+        @conditions = block
+      end
     end
     
     def search(*columns)

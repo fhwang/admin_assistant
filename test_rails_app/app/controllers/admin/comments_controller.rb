@@ -3,5 +3,7 @@ class Admin::CommentsController < ApplicationController
 
   admin_assistant_for Comment do |a|
     a.form[:comment].read_only
+    
+    a.index.conditions "comment like '%smart%'"
   end
 end

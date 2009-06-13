@@ -17,4 +17,18 @@ describe Admin::CommentsController do
       response.should_not have_tag('textarea')
     end
   end
+  
+  describe "#index with a comment without the word 'smart'" do
+    before :all do
+      Comment.create! :comment => "something else"
+    end
+    
+    before :each do
+      get :index
+    end
+    
+    it 'should not include the index' do
+      response.body.should_not match(/something else/)
+    end
+  end
 end

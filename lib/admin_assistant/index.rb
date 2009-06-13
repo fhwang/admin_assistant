@@ -20,7 +20,7 @@ class AdminAssistant
       @admin_assistant.accumulate_columns column_names
     end
     
-    def conditions_block
+    def conditions_from_settings
       settings.conditions
     end
     
@@ -55,8 +55,12 @@ class AdminAssistant
         )
         if @conditions_from_controller
           ar_query.condition_sqls << @conditions_from_controller
-        elsif conditions_block
-          conditions_sql = conditions_block.call @url_params
+        elsif conditions_from_settings
+          if conditions_from_settings.respond_to?(:call)
+            conditions_sql = conditions_from_settings.call @url_params
+          else
+            conditions_sql = conditions_from_settings
+          end
           ar_query.condition_sqls << conditions_sql if conditions_sql
         end
         search.add_to_query(ar_query)
