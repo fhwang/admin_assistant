@@ -292,7 +292,7 @@ class AdminAssistant
   class AdminAssistantColumn < Column
     class View < AdminAssistant::Column::View
       def field_value(record)
-        nil
+        record.send(name) if record.respond_to?(name)
       end
     end
     

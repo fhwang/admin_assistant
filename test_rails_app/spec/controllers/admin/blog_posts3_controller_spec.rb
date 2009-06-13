@@ -48,6 +48,30 @@ describe Admin::BlogPosts3Controller do
       end
     end
     
+    describe 'with one unpublished blog post' do
+      before :all do
+        BlogPost.destroy_all
+        @blog_post = BlogPost.create!(
+          :title => "unpublished blog post", :user => @user,
+          :published_at => nil
+        )
+      end
+      
+      before :each do
+        get :index
+      end
+      
+      it 'should show the blog post' do
+        response.body.should match(/unpublished blog post/)
+      end
+      
+      it "should show 'true' from having called BlogPost#published?" do
+        response.should have_tag("tr[id=record_#{@blog_post.id}]") do
+          with_tag "td", :text => 'false'
+        end
+      end
+    end
+    
     describe 'with 26 unpublished blog posts' do
       before :all do
         BlogPost.destroy_all

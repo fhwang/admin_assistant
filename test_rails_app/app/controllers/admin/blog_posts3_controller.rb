@@ -5,6 +5,9 @@ class Admin::BlogPosts3Controller < ApplicationController
     a.model_class_name = 'post'
     
     a.index do |index|
+      index.columns :id, :title, :created_at, :updated_at, :body, :textile,
+                    :published?, :user
+      
       index.total_entries do
         25
       end
