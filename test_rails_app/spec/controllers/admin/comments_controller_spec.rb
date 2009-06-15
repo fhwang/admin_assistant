@@ -31,4 +31,24 @@ describe Admin::CommentsController do
       response.body.should_not match(/something else/)
     end
   end
+  
+  describe '#new with at least 16 blog posts and 16 users' do
+    before :all do
+      user = User.find_or_create_by_username 'soren'
+      BlogPost.count.upto(16) do
+        BlogPost.create! :title => random_word, :user => user
+      end
+      User.count.upto(16) do
+        User.create! :username => random_word
+      end
+    end
+    
+    before :each do
+      get :new
+    end
+    
+    it 'should be a success' do
+      response.should be_success
+    end
+  end
 end
