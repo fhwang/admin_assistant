@@ -164,7 +164,6 @@ class AdminAssistant
           if c.respond_to?(:name) && c.name
             opts[:boolean_labels] =
                 @admin_assistant.index_settings[c.name].boolean_labels
-            opts[:comparators] = settings[c.name.to_sym].comparators
           end
           c.search_view(action_view, opts)
         }

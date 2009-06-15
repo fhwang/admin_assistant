@@ -127,7 +127,6 @@ class AdminAssistant
     
     module SearchViewMethods      
       def set_instance_variables_from_options(opts)
-        @comparators = opts[:comparators]
         @search = opts[:search]
       end
     end
@@ -247,9 +246,10 @@ class AdminAssistant
           ['equal to', '='], ['less than or equal to', '<='],
           ['less than', '<']
         ]
+        selected_comparator = @column.search_comparator || '='
         option_tags = comparator_opts.map { |text, value|
           opt = "<option value=\"#{value}\""
-          if @column.search_comparator == value
+          if selected_comparator == value
             opt << " selected=\"selected\""
           end
           opt << ">#{text}</option>"
@@ -273,7 +273,7 @@ class AdminAssistant
             end
             input = @action_view.select("search", name, opts)
           else
-            if @comparators == :all
+            if @column.sql_type == :integer
               input << comparator_html << ' '
             end
             input << @action_view.text_field_tag(

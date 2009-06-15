@@ -5,7 +5,6 @@ class Admin::ProductsController < ApplicationController
     a.actions :index, :create, :update, :destroy
     a.index.search do |search|
       search.columns :name, :price
-      search[:price].comparators = :all
     end
   end
   

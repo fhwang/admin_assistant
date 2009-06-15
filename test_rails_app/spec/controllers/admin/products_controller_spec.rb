@@ -19,11 +19,17 @@ describe Admin::ProductsController do
         with_tag("select[name=?]", "search[price(comparator)]") do
           with_tag("option[value='>']", :text => 'greater than')
           with_tag("option[value='>=']", :text => 'greater than or equal to')
-          with_tag("option[value='=']", :text => 'equal to')
+          with_tag("option[value='='][selected=selected]", :text => 'equal to')
           with_tag("option[value='<=']", :text => 'less than or equal to')
           with_tag("option[value='<']", :text => 'less than')
         end
         with_tag('input[name=?]', 'search[price]')
+      end
+    end
+    
+    it 'should not have a comparator for the name search field' do
+      response.should have_tag('form[id=search_form][method=get]') do
+        without_tag("select[name=?]", "search[name(comparator)]")
       end
     end
     

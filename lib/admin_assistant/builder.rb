@@ -213,8 +213,7 @@ class AdminAssistant
       end
       
       def column_config_args
-        {:comparators => :accessor,
-         :match_text_fields_for_association => :boolean}
+        {:match_text_fields_for_association => :boolean}
       end
       
       def columns(*c)
