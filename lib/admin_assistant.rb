@@ -6,6 +6,7 @@ require 'admin_assistant/form_view'
 require 'admin_assistant/helper'
 require 'admin_assistant/index'
 require 'admin_assistant/request'
+require 'admin_assistant/search'
 require 'will_paginate'
 
 class AdminAssistant
@@ -74,19 +75,19 @@ class AdminAssistant
     }
   end
   
-  def column(name, opts = {})
+  def column(name)
     column = if file_columns.include?(name.to_s)
-      FileColumnColumn.new name, opts
+      FileColumnColumn.new name
     elsif paperclip_attachments.include?(name)
-      PaperclipColumn.new name, opts
+      PaperclipColumn.new name
     elsif belongs_to_assoc = belongs_to_assoc(name)
-      BelongsToColumn.new(belongs_to_assoc, opts)
+      BelongsToColumn.new belongs_to_assoc
     elsif belongs_to_assoc = belongs_to_assoc_by_foreign_key(name)
-      BelongsToColumn.new(belongs_to_assoc, opts)
+      BelongsToColumn.new belongs_to_assoc
     elsif (ar_column = @model_class.columns_hash[name.to_s])
-      ActiveRecordColumn.new(ar_column, opts)
+      ActiveRecordColumn.new ar_column
     else
-      AdminAssistantColumn.new(name, opts)
+      AdminAssistantColumn.new name
     end
     column
   end

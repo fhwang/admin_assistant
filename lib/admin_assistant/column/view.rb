@@ -250,7 +250,7 @@ class AdminAssistant
           ['equal to', '='], ['less than or equal to', '<='],
           ['less than', '<']
         ]
-        selected_comparator = @column.search_comparator || '='
+        selected_comparator = @column.comparator || '='
         option_tags = comparator_opts.map { |text, value|
           opt = "<option value=\"#{value}\""
           if selected_comparator == value
@@ -380,31 +380,6 @@ class AdminAssistant
           )
         end
         "<p><label>#{label}</label> <br/>#{input}</p>"
-      end
-    end
-    
-    class ShowView < View
-      include AdminAssistant::Column::ShowViewMethods
-    end
-  end
-  
-  class DefaultSearchColumn < Column
-    class View < AdminAssistant::Column::View
-    end
-    
-    class FormView < View
-      include AdminAssistant::Column::FormViewMethods
-    end
-
-    class IndexView < View
-      include AdminAssistant::Column::IndexViewMethods
-    end
-    
-    class SearchView < View
-      include AdminAssistant::Column::SearchViewMethods
-      
-      def html
-        @action_view.text_field_tag("search", @column.search_terms)
       end
     end
     

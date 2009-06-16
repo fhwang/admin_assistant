@@ -73,11 +73,13 @@ class AdminAssistant
     end
     
     def search
-      @search ||= Search.new(@admin_assistant, @url_params['search'])
+      @search ||= AdminAssistant::Search.new(
+        @admin_assistant, @url_params['search']
+      )
     end
     
-    def search_terms
-      @url_params['search']
+    def search_requested?
+      !@url_params['search'].blank?
     end
     
     def settings
@@ -107,90 +109,6 @@ class AdminAssistant
       @view ||= View.new(
         self, action_view, @admin_assistant
       )
-    end
-    
-    class Search
-      def initialize(admin_assistant, search_params)
-        @admin_assistant, @search_params = admin_assistant, search_params
-        @search_params ||= {}
-      end
-      
-      def [](name)
-        @search_params[name]
-      end
-    
-      def add_to_query(ar_query)
-        unless @search_params.empty?
-          ar_query.add_condition do |cond|
-            if match_any_conditions?
-              cond.boolean_join = :or
-            end
-            columns.each do |column|
-              column.add_to_query_condition cond
-            end
-          end
-        end
-      end
-      
-      def columns
-        column_names = settings.column_names
-        if column_names.empty?
-          [DefaultSearchColumn.new(
-            (@search_params if @search_params.is_a?(String)),
-            @admin_assistant.model_class
-          )]
-        else
-          columns = column_names.map { |column_name|
-            @admin_assistant.column(
-              column_name.to_s,
-              :search_terms => @search_params[column_name],
-              :search_comparator =>
-                  @search_params["#{column_name}(comparator)"],
-              :match_text_fields =>
-                  settings[column_name.to_sym].
-                  match_text_fields_for_association?
-            )
-          }
-          columns
-        end
-      end
-      
-      def column_views(action_view)
-        columns.map { |c|
-          opts = {
-            :search => self,
-            :label => @admin_assistant.custom_column_labels[c.name]
-          }
-          if c.respond_to?(:name) && c.name
-            opts[:boolean_labels] =
-                @admin_assistant.index_settings[c.name].boolean_labels
-          end
-          c.search_view(action_view, opts)
-        }
-      end
-      
-      def id
-      end
-      
-      def match_all_conditions?
-        !match_any_conditions?
-      end
-      
-      def match_any_conditions?
-        @search_params["(all_or_any)"] == 'any'
-      end
-      
-      def method_missing(meth, *args)
-        if column = columns.detect { |c| c.name == meth.to_s }
-          column.search_value
-        else
-          super
-        end
-      end
-    
-      def settings
-        @admin_assistant.search_settings
-      end
     end
     
     class View

@@ -34,10 +34,12 @@
     <%= column_view.html %>
   <% end %>
   <%= submit_tag('Search') %>
-  <%= link_to('Back to index', :action => 'index') if @index.search_terms %>
+  <%=
+    link_to('Back to index', :action => 'index') if @index.search_requested?
+  %>
 <% end %>
 
-<% if @index.search_terms %>
+<% if @index.search_requested? %>
 <script type="text/javascript">AdminAssistant.show_search_form();</script>
 <% end %>
 
