@@ -57,7 +57,11 @@ class AdminAssistant
       def set_instance_variables_from_options(opts)
         @input = opts[:input]
         @description = opts[:description]
+        @datetime_select_options = opts[:datetime_select_options] || {}
         @select_options = opts[:select_options] || {}
+        unless @select_options.has_key?(:include_blank)
+          @select_options[:include_blank] = true
+        end
       end
     end
     
@@ -156,7 +160,7 @@ class AdminAssistant
             form.check_box name
           when :datetime
             form.datetime_select(
-              name, {:include_blank => true}.merge(@select_options)
+              name, {:include_blank => true}.merge(@datetime_select_options)
             )
           when :date
             form.date_select name, :include_blank => true
@@ -346,11 +350,14 @@ class AdminAssistant
             :use_full_path => false,
             :locals => {
               :record => form.object, :column => @column,
-              :associated_class_name => associated_class.name.underscore
+              :associated_class_name => associated_class.name.underscore,
+              :select_options => @select_options
             }
           )
         else
-          form.select association_foreign_key, options_for_select
+          form.select(
+            association_foreign_key, options_for_select, @select_options
+          )
         end
       end
     end

@@ -39,7 +39,7 @@ var <%= autocompleter_js_var %> = new AdminAssistant.RestrictedAutocompleter(
   "<%= associated_class_name %>",
   "<%= hidden_field_id %>",
   "/<%= controller.controller_path %>/autocomplete_<%= associated_class_name %>",
-  <%= @admin_assistant.form_settings[column.name].exclude_blank? %>,
+  <%= select_options[:include_blank] %>,
   {parameters: "authenticity_token=<%= auth_token %>"}
 );
 </script>

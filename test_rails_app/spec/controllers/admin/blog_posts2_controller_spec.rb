@@ -136,11 +136,33 @@ describe Admin::BlogPosts2Controller do
           \s*"user",
           \s*"blog_post_user_id",
           \s*"/admin/blog_posts2/autocomplete_user",
-          \s*true,
+          \s*false,
           \s*\{parameters:\s*"authenticity_token=.*"\s*\}
           \s*\)
         |mx
       )
+    end
+  end
+  
+  describe '#edit when there are less than 15 users' do
+    before :all do
+      @blog_post = BlogPost.create! :title => random_word, :user => @user
+      User.count.downto(14) do
+        user = User.find(
+          :first, :conditions => ['username != ?', @user.username]
+        )
+        user.destroy
+      end
+    end
+    
+    before :each do
+      get :edit, :id => @blog_post.id
+    end
+    
+    it 'should use a drop-down without a blank option' do
+      response.should have_tag('select[name=?]', 'blog_post[user_id]') do
+        without_tag "option[value='']"
+      end
     end
   end
 

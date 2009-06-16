@@ -72,6 +72,8 @@ class AdminAssistant
           :input => settings[c.name.to_sym].input,
           :label => @admin_assistant.custom_column_labels[c.name],
           :description => settings[c.name.to_sym].description,
+          :datetime_select_options =>
+              settings[c.name.to_sym].datetime_select_options,
           :select_options => settings[c.name.to_sym].select_options
         )
       }

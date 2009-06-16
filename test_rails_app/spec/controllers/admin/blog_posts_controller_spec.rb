@@ -160,7 +160,7 @@ describe Admin::BlogPostsController do
           \s*"user",
           \s*"blog_post_user_id",
           \s*"/admin/blog_posts/autocomplete_user",
-          \s*false,
+          \s*true,
           \s*\{parameters:\s*"authenticity_token=.*"\s*\}
           \s*\)
         |mx
@@ -168,6 +168,28 @@ describe Admin::BlogPostsController do
     end
   end
   
+  describe '#edit when there are less than 15 users' do
+    before :all do
+      @blog_post = BlogPost.create! :title => random_word, :user => @user
+      User.count.downto(14) do
+        user = User.find(
+          :first, :conditions => ['username != ?', @user.username]
+        )
+        user.destroy
+      end
+    end
+    
+    before :each do
+      get :edit, :id => @blog_post.id
+    end
+    
+    it 'should use a drop-down with a blank option' do
+      response.should have_tag('select[name=?]', 'blog_post[user_id]') do
+        with_tag "option[value='']"
+      end
+    end
+  end
+
   describe '#index' do 
     describe 'when there are no records' do
       before :all do
@@ -708,9 +730,9 @@ describe Admin::BlogPostsController do
     
     it 'should use a drop-down for the user field' do
       response.should have_tag("select[name=?]", "blog_post[user_id]") do
-        with_tag "option:nth-child(1)[value=?]", @alfie.id, :text => 'alfie'
-        with_tag "option:nth-child(2)[value=?]", @user.id, :text => 'soren'
-        without_tag "option[value='']"
+        with_tag "option:nth-child(1)[value='']"
+        with_tag "option:nth-child(2)[value=?]", @alfie.id, :text => 'alfie'
+        with_tag "option:nth-child(3)[value=?]", @user.id, :text => 'soren'
       end
     end
     
@@ -745,7 +767,7 @@ describe Admin::BlogPostsController do
       response.should have_tag("select[name=?]", "blog_post[user_id]") do
         with_tag "option[value=?][selected=selected]",
                  @user.id, :text => 'soren'
-        without_tag "option[value='']"
+        with_tag "option[value='']"
       end
     end
   end
@@ -778,7 +800,7 @@ describe Admin::BlogPostsController do
           \s*"user",
           \s*"blog_post_user_id",
           \s*"/admin/blog_posts/autocomplete_user",
-          \s*false,
+          \s*true,
           \s*\{parameters:\s*"authenticity_token=.*"\s*\}
           \s*\)
         |mx

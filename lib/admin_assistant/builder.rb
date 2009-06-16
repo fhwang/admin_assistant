@@ -133,9 +133,9 @@ class AdminAssistant
     end
     
     def column_config_args
-      {:description => :accessor, :exclude_blank => :boolean,
-       :input => :accessor, :read_only => :boolean, :write_once => :boolean,
-       :select_options => :accessor}
+      {:datetime_select_options => :accessor, :description => :accessor, 
+       :exclude_blank => :boolean, :input => :accessor, :read_only => :boolean, 
+       :write_once => :boolean, :select_options => :accessor}
     end
     
     def columns_for_edit(*args)
