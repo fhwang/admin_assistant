@@ -62,17 +62,30 @@ class AdminAssistant
     end
   end
   
+  def belongs_to_associations
+    @model_class.reflect_on_all_associations.select { |assoc|
+      assoc.macro == :belongs_to
+    }
+  end
+  
   def belongs_to_assoc(association_name)
-    @model_class.reflect_on_all_associations.detect { |assoc|
-      assoc.macro == :belongs_to && assoc.name.to_s == association_name.to_s
+    belongs_to_associations.detect { |assoc|
+      assoc.name.to_s == association_name.to_s
     }
   end
   
   def belongs_to_assoc_by_foreign_key(foreign_key)
-    @model_class.reflect_on_all_associations.detect { |assoc|
-      assoc.macro == :belongs_to &&
-          assoc.association_foreign_key == foreign_key
+    belongs_to_associations.detect { |assoc|
+      assoc.association_foreign_key == foreign_key
     }
+  end
+  
+  def belongs_to_assoc_by_polymorphic_type(name)
+    if name =~ /^(.*)_type/
+      belongs_to_associations.detect { |assoc|
+        assoc.options[:polymorphic] && $1 == assoc.name.to_s
+      }
+    end
   end
   
   def column(name)
@@ -84,6 +97,7 @@ class AdminAssistant
       BelongsToColumn.new belongs_to_assoc
     elsif belongs_to_assoc = belongs_to_assoc_by_foreign_key(name)
       BelongsToColumn.new belongs_to_assoc
+    elsif belongs_to_assoc = belongs_to_assoc_by_polymorphic_type(name)
     elsif (ar_column = @model_class.columns_hash[name.to_s])
       ActiveRecordColumn.new ar_column
     else

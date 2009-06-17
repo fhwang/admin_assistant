@@ -88,6 +88,10 @@ class AdminAssistant
         @belongs_to_assoc.association_foreign_key
       end
     end
+    
+    def polymorphic?
+      @belongs_to_assoc.options[:polymorphic]
+    end
   end
   
   class FileColumnColumn < Column

@@ -58,6 +58,7 @@ class AdminAssistant
         @input = opts[:input]
         @description = opts[:description]
         @datetime_select_options = opts[:datetime_select_options] || {}
+        @polymorphic_types = opts[:polymorphic_types]
         @select_options = opts[:select_options] || {}
         unless @select_options.has_key?(:include_blank)
           @select_options[:include_blank] = true
@@ -328,7 +329,12 @@ class AdminAssistant
       end
       
       def field_value(record)
-        assoc_field_value record.send(name)
+        assoc_value = record.send name
+        if polymorphic?
+          "#{assoc_value.class.name} #{assoc_value.id}"
+        else
+          assoc_field_value assoc_value
+        end
       end
       
       def options_for_select
@@ -343,7 +349,11 @@ class AdminAssistant
       include AdminAssistant::Column::FormViewMethods
       
       def html(form)
-        if associated_class.count > 15
+        if polymorphic?
+          opts_for_select = @polymorphic_types.map { |t| [t.name, t.name] }
+          form.select(name + '_type', opts_for_select, @select_options) + " " +
+              form.text_field(name + '_id', :class => 'integer')
+        elsif associated_class.count > 15
           @action_view.send(
             :render,
             :file => AdminAssistant.template_file('_restricted_autocompleter'),

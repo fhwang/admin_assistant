@@ -140,6 +140,10 @@ Don't edit this file: It gets re-copied every time the server starts.
   width: 100%
 }
 
+#admin_assistant.form input[type=text].integer {
+  width: 50px
+}
+
 #admin_assistant.form input, #admin_assistant.form select, #admin_assistant.form textarea {
   font-size: 16px;
   font-weight: bold;
