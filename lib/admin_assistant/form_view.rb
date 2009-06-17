@@ -63,7 +63,7 @@ class AdminAssistant
         c.form_view(
           @action_view,
           :input => settings[c.name.to_sym].input,
-          :label => @admin_assistant.custom_column_labels[c.name],
+          :label => @admin_assistant[c.name].label,
           :description => settings[c.name.to_sym].description,
           :datetime_select_options =>
               settings[c.name.to_sym].datetime_select_options,

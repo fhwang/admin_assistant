@@ -8,7 +8,9 @@ class AdminAssistant
 
     def [](column_name)
       ColumnConfigLookup.new(
-        column_name, [form, index, show, index.search], @admin_assistant
+        column_name,
+        [@admin_assistant.base_settings, form, index, show, index.search], 
+        @admin_assistant
       )
     end
     
@@ -42,10 +44,6 @@ class AdminAssistant
       def initialize(column_name, settingses, admin_assistant)
         @column_name, @settingses, @admin_assistant =
             column_name, settingses, admin_assistant
-      end
-      
-      def label=(l)
-        @admin_assistant.custom_column_labels[@column_name.to_s] = l
       end
       
       def method_missing(meth, *args)
@@ -105,7 +103,7 @@ class AdminAssistant
     end
   end
   
-  class Settings
+  class AbstractSettings
     attr_reader :column_names
     
     def initialize(admin_assistant)
@@ -124,7 +122,13 @@ class AdminAssistant
     end
   end
   
-  class FormSettings < Settings
+  class BaseSettings < AbstractSettings
+    def column_config_args
+      {:label => :accessor}
+    end
+  end
+  
+  class FormSettings < AbstractSettings
     attr_reader :submit_buttons
     
     def initialize(admin_assistant)
@@ -165,7 +169,7 @@ class AdminAssistant
     end
   end
   
-  class IndexSettings < Settings
+  class IndexSettings < AbstractSettings
     attr_reader :actions, :right_column_links, :search_settings, :sort_by
     
     def initialize(admin_assistant)
@@ -214,7 +218,7 @@ class AdminAssistant
       block ? (@total_entries = block) : @total_entries
     end
     
-    class SearchSettings < Settings
+    class SearchSettings < AbstractSettings
       attr_reader :column_names
       
       def initialize(admin_assistant)
@@ -232,7 +236,7 @@ class AdminAssistant
     end
   end
   
-  class ShowSettings < Settings
+  class ShowSettings < AbstractSettings
     def column_config_args
       {}
     end

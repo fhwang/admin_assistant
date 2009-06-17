@@ -113,14 +113,12 @@ class AdminAssistant
     
     class View
       def initialize(index, action_view, admin_assistant)
-        @index, @action_view = index, action_view
-        @custom_column_labels = admin_assistant.custom_column_labels
-        @ajax_toggle_allowed = admin_assistant.update?
-        @right_column_show = admin_assistant.show?
-        @right_column_update = admin_assistant.update?
-        @right_column_destroy = admin_assistant.destroy?
-        @right_column_lambdas =
-            admin_assistant.index_settings.right_column_links
+        @index, @action_view, @admin_assistant =
+            index, action_view, admin_assistant
+      end
+      
+      def ajax_toggle_allowed?
+        @admin_assistant.update?
       end
       
       def columns
@@ -131,9 +129,9 @@ class AdminAssistant
               :boolean_labels => @index.settings[c.name].boolean_labels,
               :sort_order => (@index.sort_order if c.name == @index.sort),
               :link_to_args => @index.settings[c.name.to_sym].link_to_args,
-              :label => @custom_column_labels[c.name],
+              :label => @admin_assistant[c.name].label,
               :image_size => @index.settings[c.name.to_sym].image_size,
-              :ajax_toggle_allowed => @ajax_toggle_allowed
+              :ajax_toggle_allowed => ajax_toggle_allowed?
             )
           }
         end
@@ -141,20 +139,34 @@ class AdminAssistant
       end
       
       def right_column?
-        @right_column_update or
-            @right_column_destroy or
-            @right_column_show or
-            !@right_column_lambdas.empty?
+        update? or destroy? or show? or !right_column_lambdas.empty?
+      end
+      
+      def right_column_lambdas
+        @right_column_lambdas ||=
+            @admin_assistant.index_settings.right_column_links
+      end
+      
+      def destroy?
+        @destroy ||= @admin_assistant.destroy?
+      end
+      
+      def show?
+        @show ||= @admin_assistant.show?
+      end
+      
+      def update?
+        @update ||= @admin_assistant.update?
       end
       
       def right_column_links(record)
         links = ""
-        if @right_column_update
+        if update?
           links << @action_view.link_to(
             'Edit', :action => 'edit', :id => record.id
           ) << " "
         end
-        if @right_column_destroy
+        if destroy?
           links << @action_view.link_to_remote(
             'Delete',
             :url => {:action => 'destroy', :id => record.id},
@@ -162,12 +174,12 @@ class AdminAssistant
             :success => "Effect.Fade('record_#{record.id}')"
           ) << ' '
         end
-        if @right_column_show
+        if show?
           links << @action_view.link_to(
             'Show', :action => 'show', :id => record.id
           ) << ' '
         end
-        @right_column_lambdas.each do |lambda|
+        right_column_lambdas.each do |lambda|
           link_args = lambda.call record
           links << @action_view.link_to(*link_args)
         end

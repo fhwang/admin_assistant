@@ -51,7 +51,7 @@ class AdminAssistant
         if c.respond_to?(:name) && c.name
           opts[:boolean_labels] =
               @admin_assistant.index_settings[c.name].boolean_labels
-          opts[:label] = @admin_assistant.custom_column_labels[c.name]
+          opts[:label] = @admin_assistant[c.name].label
         end
         c.view action_view, opts
       }

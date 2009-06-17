@@ -10,8 +10,8 @@ require 'admin_assistant/search'
 require 'will_paginate'
 
 class AdminAssistant
-  attr_reader   :custom_column_labels, :form_settings, :index_settings, 
-                :model_class, :show_settings
+  attr_reader   :base_settings, :form_settings, :index_settings,  :model_class,
+                :show_settings
   attr_accessor :actions
   attr_writer   :model_class_name
   
@@ -31,7 +31,11 @@ class AdminAssistant
     @form_settings = FormSettings.new self
     @index_settings = IndexSettings.new self
     @show_settings = ShowSettings.new self
-    @custom_column_labels = {}
+    @base_settings = BaseSettings.new self
+  end
+  
+  def [](name)
+    @base_settings[name]
   end
     
   def accumulate_columns(names)
