@@ -49,6 +49,11 @@ Don't edit this file: It gets re-copied every time the server starts.
   background: #ccc
 }
 
+/***** Search stuff ***********************************************************/
+#admin_assistant.index #search_form .autocomplete_palette {
+  width: 500px
+}
+
 /***** Form stuff ************************************************************/
 
 #admin_assistant.form .column {

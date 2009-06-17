@@ -137,7 +137,7 @@ describe Admin::BlogPosts2Controller do
           \s*"blog_post_user_id",
           \s*"/admin/blog_posts2/autocomplete_user",
           \s*false,
-          \s*\{parameters:\s*"authenticity_token=.*"\s*\}
+          \s*\options
           \s*\)
         |mx
       )
@@ -167,7 +167,7 @@ describe Admin::BlogPosts2Controller do
   end
 
   describe '#index' do
-    describe 'when there is one record' do
+    describe 'when there is one record and 15 or less users' do
       before :all do
         BlogPost.destroy_all
         @blog_post = BlogPost.create!(
@@ -178,6 +178,10 @@ describe Admin::BlogPosts2Controller do
         BlogPostTag.create! :blog_post => @blog_post, :tag => tag1
         tag2 = Tag.find_or_create_by_tag 'tag2'
         BlogPostTag.create! :blog_post => @blog_post, :tag => tag2
+        User.count.downto(15) do
+          user = User.find(:first, :conditions => ['id != ?', @user.id])
+          user.destroy
+        end
       end
       
       before :each do
@@ -242,7 +246,7 @@ describe Admin::BlogPosts2Controller do
             with_tag("option[value='true']", :text => 'Yes')
             with_tag("option[value='false']", :text => 'No')
           end
-          with_tag('select[name=?]', 'search[user]') do
+          with_tag('select[name=?]', 'search[user_id]') do
             with_tag("option[value='']", :text => '')
             with_tag("option[value=?]", @user.id)
           end
@@ -271,6 +275,44 @@ describe Admin::BlogPosts2Controller do
       it 'should not show the published post' do
         response.body.should_not match(/--published--/)
       end
+    end
+  end
+  
+  describe '#index when there is 1 blog post and 16 Users' do
+    before :all do
+      @blog_post = BlogPost.create! :title => random_word, :user => @user
+      User.count.upto(16) do |i|
+        User.create! :username => random_word
+      end
+    end
+    
+    before :each do
+      get :index
+    end
+    
+    it 'should use the autocompleter in the search form for users' do
+      response.should_not have_tag("select[name=?]", "search[user_id]]")
+      response.should have_tag(
+        "input:not([value])[id=user_autocomplete_input]"
+      )
+      response.should have_tag(
+        "input:not([value])[type=hidden][name=?][id=search_user_id]",
+        "search[user_id]"
+      )
+      response.should have_tag("div[id=user_autocomplete_palette]")
+      response.should have_tag('div[id=clear_user_link]')
+      response.body.should match(
+        %r|
+          var\s*user_autocompleter\s*=
+          \s*new\s*AdminAssistant.RestrictedAutocompleter\(
+          \s*"user",
+          \s*"search_user_id",
+          \s*"/admin/blog_posts2/autocomplete_user",
+          \s*true,
+          \s*\options
+          \s*\)
+        |mx
+      )
     end
   end
   
@@ -457,9 +499,18 @@ describe Admin::BlogPosts2Controller do
     end
   end
   
-  describe '#index when searching by user' do
+  describe '#index when searching by user and there are less than 15 users' do
     before :all do
       @user2 = User.create! :username => 'Jean-Paul'
+      User.count.downto(14) do
+        user = User.find(
+          :first,
+          :conditions => [
+            'username != ? and username != ?', @user.username, @user.username
+          ]
+        )
+        user.destroy
+      end
       BlogPost.destroy_all
       BlogPost.create! :title => "Soren's first post", :user => @user
       BlogPost.create! :title => "Soren's second post", :user => @user
@@ -469,7 +520,7 @@ describe Admin::BlogPosts2Controller do
     before :each do
       get(
         :index,
-        :search => {:textile => '', :title => '', :user => @user2.id.to_s}
+        :search => {:textile => '', :title => '', :user_id => @user2.id.to_s}
       )
       response.should be_success
     end
@@ -487,11 +538,53 @@ describe Admin::BlogPosts2Controller do
       response.should have_tag(
         'form[id=search_form][method=get]', :text => /Title/
       ) do
-        with_tag('select[name=?]', 'search[user]') do
+        with_tag('select[name=?]', 'search[user_id]') do
           with_tag("option[value='']", :text => '')
           with_tag("option[value=?][selected=selected]", @user2.id)
         end
       end
+    end
+  end
+  
+  describe '#index when searching by user and there are more than 15 users' do
+    before :all do
+      @blog_post = BlogPost.create! :title => random_word, :user => @user
+      User.count.upto(16) do |i|
+        User.create! :username => "--user #{i}--"
+      end
+    end
+    
+    before :each do
+      get(
+        :index,
+        :search => {:textile => '', :title => '', :user_id => @user.id.to_s}
+      )
+      response.should be_success
+    end
+    
+    it 'should show pre-populated user autocomplete in the search form' do
+      response.should_not have_tag("select[name=?]", "search[user_id]]")
+      response.should have_tag(
+        "input[id=user_autocomplete_input][value=?]", @user.username
+      )
+      response.should have_tag(
+        "input[type=hidden][name=?][id=search_user_id][value=?]",
+        "search[user_id]", @user.id.to_s
+      )
+      response.should have_tag("div[id=user_autocomplete_palette]")
+      response.should have_tag('div[id=clear_user_link]')
+      response.body.should match(
+        %r|
+          var\s*user_autocompleter\s*=
+          \s*new\s*AdminAssistant.RestrictedAutocompleter\(
+          \s*"user",
+          \s*"search_user_id",
+          \s*"/admin/blog_posts2/autocomplete_user",
+          \s*true,
+          \s*\options
+          \s*\)
+        |mx
+      )
     end
   end
   

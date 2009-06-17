@@ -374,9 +374,22 @@ class AdminAssistant
           @action_view.text_field_tag(
             "search[#{name}]", @column.search_terms
           )
+        elsif associated_class.count > 15
+          @action_view.send(
+            :render,
+            :file => AdminAssistant.template_file('_restricted_autocompleter'),
+            :use_full_path => false,
+            :locals => {
+              :record => @search, :column => @column,
+              :associated_class_name => associated_class.name.underscore,
+              :select_options => {:include_blank => true},
+              :palette_clones_input_width => false
+            }
+          )
         else
           @action_view.select(
-            'search', name, options_for_select, :include_blank => true
+            'search', association_foreign_key, options_for_select, 
+            :include_blank => true
           )
         end
         "<p><label>#{label}</label> <br/>#{input}</p>"

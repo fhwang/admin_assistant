@@ -161,7 +161,7 @@ describe Admin::BlogPostsController do
           \s*"blog_post_user_id",
           \s*"/admin/blog_posts/autocomplete_user",
           \s*true,
-          \s*\{parameters:\s*"authenticity_token=.*"\s*\}
+          \s*\options
           \s*\)
         |mx
       )
@@ -801,7 +801,7 @@ describe Admin::BlogPostsController do
           \s*"blog_post_user_id",
           \s*"/admin/blog_posts/autocomplete_user",
           \s*true,
-          \s*\{parameters:\s*"authenticity_token=.*"\s*\}
+          \s*\options
           \s*\)
         |mx
       )

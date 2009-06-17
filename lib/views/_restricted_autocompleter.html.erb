@@ -1,5 +1,8 @@
 <%
-class_name = record.class.name.underscore.downcase
+unless defined?(palette_clones_input_width) && !palette_clones_input_width.nil?
+  palette_clones_input_width = true
+end
+class_name = record.class.name.gsub(/.*::/, '').underscore.downcase
 text_field_id = "#{associated_class_name}_autocomplete_input"
 palette_id = "#{associated_class_name}_autocomplete_palette"
 hidden_field_id = "#{class_name}_#{column.association_foreign_key}"
@@ -35,12 +38,26 @@ else
 end
 %>
 <script type="text/javascript">
+var options = {parameters: "authenticity_token=<%= auth_token %>"};
+<% unless palette_clones_input_width %>
+options.onShow = function(element, update){
+  if(!update.style.position || update.style.position=='absolute') {
+    update.style.position = 'absolute';
+    Position.clone(element, update, {
+      setHeight: false,
+      setWidth: false,
+      offsetTop: element.offsetHeight
+    });
+  }
+  Effect.Appear(update,{duration:0.15});
+};
+<% end %>
 var <%= autocompleter_js_var %> = new AdminAssistant.RestrictedAutocompleter(
   "<%= associated_class_name %>",
   "<%= hidden_field_id %>",
   "/<%= controller.controller_path %>/autocomplete_<%= associated_class_name %>",
   <%= select_options[:include_blank] %>,
-  {parameters: "authenticity_token=<%= auth_token %>"}
+  options
 );
 </script>
 

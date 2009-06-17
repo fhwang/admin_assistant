@@ -69,10 +69,19 @@ class AdminAssistant
     end
     
     def method_missing(meth, *args)
-      if column = columns.detect { |c| c.name == meth.to_s }
-        column.search_value
+      column = columns.detect { |c| c.name == meth.to_s }
+      if column
+        column.value_for_search_object
       else
-        super
+        column = columns.detect { |c|
+          c.respond_to?(:association_foreign_key ) &&
+          c.association_foreign_key == meth.to_s 
+        }
+        if column
+          column.value_for_query
+        else
+          super
+        end
       end
     end
   
@@ -97,48 +106,51 @@ class AdminAssistant
         klass = @column.class.const_get 'SearchView'
         klass.new self, action_view, opts
       end
-      
-      def terms
-        @search_params[@column.name]
-      end
     end
     
     class ActiveRecordSearchColumn < SearchColumn
       def add_to_query_condition(ar_query_condition)
-        unless terms.blank?
+        unless value_for_query.nil?
           comp = comparator
           unless %w(< <= = >= >).include?(comparator)
             comp = nil
           end
           if comp
             ar_query_condition.sqls << "#{name} #{comp} ?"
-            ar_query_condition.bind_vars << search_value
+            ar_query_condition.bind_vars << value_for_query
           else
             case sql_type
               when :boolean
                 ar_query_condition.sqls << "#{name} = ?"
-                ar_query_condition.bind_vars << search_value
+                ar_query_condition.bind_vars << value_for_query
               else
                 ar_query_condition.sqls << "#{name} like ?"
-                ar_query_condition.bind_vars << "%#{terms}%"
+                ar_query_condition.bind_vars << "%#{value_for_query}%"
             end
           end
         end
       end
+      
+      def value_for_search_object
+        value_for_query
+      end
     
-      def search_value
-        case sql_type
-          when :boolean
-            terms.blank? ? nil : (terms == 'true')
-          else
-            terms
+      def value_for_query
+        terms = @search_params[@column.name]
+        unless terms.blank?
+          case sql_type
+            when :boolean
+              terms.blank? ? nil : (terms == 'true')
+            else
+              terms
+          end
         end
       end
     end
     
     class BelongsToSearchColumn < SearchColumn
       def add_to_query_condition(ar_query_condition)
-        unless terms.blank?
+        if value_for_query
           if @match_text_fields
             ar_query_condition.ar_query.joins << name.to_sym
             searchable_columns = AdminAssistant.searchable_columns(
@@ -149,18 +161,27 @@ class AdminAssistant
               searchable_columns.each do |column|
                 sub_cond.sqls <<
                     "#{associated_class.table_name}.#{column.name} like ?"
-                sub_cond.bind_vars << "%#{terms}%"
+                sub_cond.bind_vars << "%#{value_for_query}%"
               end
             end
-          elsif terms.to_i != 0
+          elsif value_for_query
             ar_query_condition.sqls << "#{association_foreign_key} = ?"
-            ar_query_condition.bind_vars << terms
+            ar_query_condition.bind_vars << value_for_query
           end
         end
       end
+      
+      def value_for_search_object
+        associated_class.find(value_for_query) if value_for_query
+      end
     
-      def search_value
-        terms.to_i
+      def value_for_query
+        if @match_text_fields
+          @search_params[@column.name]
+        else
+          terms = @search_params[@column.association_foreign_key]
+          terms.to_i unless terms.blank?
+        end
       end
     end
   
