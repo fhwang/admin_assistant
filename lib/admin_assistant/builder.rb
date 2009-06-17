@@ -133,16 +133,17 @@ class AdminAssistant
     end
     
     def column_config_args
-      {:datetime_select_options => :accessor, :description => :accessor, 
-       :exclude_blank => :boolean, :input => :accessor,
-       :polymorphic_types => :accessor, :read_only => :boolean,
-       :write_once => :boolean, :select_options => :accessor,
+      {:datetime_select_options => :accessor, :default => :block,
+       :description => :accessor, :exclude_blank => :boolean,
+       :input => :accessor, :polymorphic_types => :accessor,
+       :read_only => :boolean, :write_once => :boolean,
+       :select_options => :accessor
       }
     end
     
     def columns_for_edit(*args)
       if args.empty?
-        @columns_for_edit
+        @columns_for_edit || column_names
       else
         @columns_for_edit = args
       end
@@ -150,10 +151,17 @@ class AdminAssistant
     
     def columns_for_new(*args)
       if args.empty?
-        @columns_for_new
+        @columns_for_new || column_names
       else
         @columns_for_new = args
       end
+    end
+    
+    def column_names
+      @column_names ||
+          @admin_assistant.model_class.columns.reject { |ar_column|
+            %w(id created_at updated_at).include?(ar_column.name)
+          }.map { |ar_column| ar_column.name }
     end
   end
   

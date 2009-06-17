@@ -36,6 +36,9 @@ class Admin::BlogPosts3Controller < ApplicationController
       form.columns_for_new  :title, :user, :published_at
       form.columns_for_edit :title, :user, :published_at, :body
       form[:published_at].datetime_select_options = {:start_year => 2009}
+      form[:published_at].default do
+        Time.now.utc
+      end
     end
   end
 end

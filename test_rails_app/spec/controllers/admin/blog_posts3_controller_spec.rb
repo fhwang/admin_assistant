@@ -200,6 +200,7 @@ describe Admin::BlogPosts3Controller do
   
   describe '#new' do
     before :each do
+      @request_time = Time.now.utc
       get :new
     end
     
@@ -214,6 +215,13 @@ describe Admin::BlogPosts3Controller do
         with_tag "option[value='2009']"
         with_tag "option[value='2010']"
         without_tag "option[value='2008']"
+      end
+    end
+    
+    it 'should have a published_at select that is set to now' do
+      name = 'blog_post[published_at(3i)]'
+      response.should have_tag('select[name=?]', name) do
+        with_tag "option[value=?][selected=selected]", @request_time.day
       end
     end
     
