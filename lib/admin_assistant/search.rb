@@ -172,7 +172,13 @@ class AdminAssistant
       end
       
       def value_for_search_object
-        associated_class.find(value_for_query) if value_for_query
+        if value_for_query
+          if @match_text_fields
+            value_for_query
+          else
+            associated_class.find(value_for_query)
+          end
+        end
       end
     
       def value_for_query
@@ -211,7 +217,7 @@ class AdminAssistant
           @column, @action_view = column, action_view
         end
         
-        def html
+        def html(form)
           @action_view.text_field_tag("search", @column.terms)
         end
       end

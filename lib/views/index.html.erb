@@ -14,24 +14,23 @@
 <h2><%= h(@admin_assistant.model_class_name.pluralize.capitalize) %></h2>
 </div>
 
-<% @search = @index.search %>
 <% form_for(
-  :search,
+  :search, @index.search,
   :url => {:action => 'index'},
   :html => {:id => 'search_form', :style => 'display:none', :method => 'get'}
 ) do |form| %>
-  <% column_views = @search.column_views self %>
+  <% column_views = @index.search.column_views self %>
   <% if column_views.size > 1 %>
     Match all conditions <%= radio_button_tag(
-      "search[(all_or_any)]", "all", @search.match_all_conditions?
+      "search[(all_or_any)]", "all", @index.search.match_all_conditions?
     ) %>
     &nbsp;&nbsp;&nbsp;
     Match any condition <%= radio_button_tag(
-      "search[(all_or_any)]", "any", @search.match_any_conditions?
+      "search[(all_or_any)]", "any", @index.search.match_any_conditions?
     ) %>
   <% end %>
   <% column_views.each do |column_view| %>
-    <%= column_view.html %>
+    <%= column_view.html(form) %>
   <% end %>
   <%= submit_tag('Search') %>
   <%=

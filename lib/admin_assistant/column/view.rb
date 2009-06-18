@@ -264,7 +264,7 @@ class AdminAssistant
         )
       end
       
-      def html
+      def html(form)
         input = ''
         case @column.sql_type
           when :boolean
@@ -276,14 +276,12 @@ class AdminAssistant
               opts << ['true', true]
               opts << ['false', false]
             end
-            input = @action_view.select("search", name, opts)
+            input = form.select(name, opts)
           else
             if @column.sql_type == :integer
               input << comparator_html << ' '
             end
-            input << @action_view.text_field_tag(
-              "search[#{name}]", @search[name]
-            )
+            input << form.text_field(name)
         end
         "<p><label>#{label}</label> <br/>#{input}</p>"
       end
@@ -359,7 +357,7 @@ class AdminAssistant
             :file => AdminAssistant.template_file('_restricted_autocompleter'),
             :use_full_path => false,
             :locals => {
-              :record => form.object, :column => @column,
+              :form => form, :column => @column,
               :associated_class_name => associated_class.name.underscore,
               :select_options => @select_options
             }
@@ -379,27 +377,24 @@ class AdminAssistant
     class SearchView < View
       include AdminAssistant::Column::SearchViewMethods
       
-      def html
+      def html(form)
         input = if @column.match_text_fields
-          @action_view.text_field_tag(
-            "search[#{name}]", @column.search_terms
-          )
+          form.text_field(name)
         elsif associated_class.count > 15
           @action_view.send(
             :render,
             :file => AdminAssistant.template_file('_restricted_autocompleter'),
             :use_full_path => false,
             :locals => {
-              :record => @search, :column => @column,
+              :form => form, :column => @column,
               :associated_class_name => associated_class.name.underscore,
               :select_options => {:include_blank => true},
               :palette_clones_input_width => false
             }
           )
         else
-          @action_view.select(
-            'search', association_foreign_key, options_for_select, 
-            :include_blank => true
+          form.select(
+            association_foreign_key, options_for_select, :include_blank => true
           )
         end
         "<p><label>#{label}</label> <br/>#{input}</p>"

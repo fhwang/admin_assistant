@@ -1,4 +1,5 @@
 <%
+record = form.object
 unless defined?(palette_clones_input_width) && !palette_clones_input_width.nil?
   palette_clones_input_width = true
 end
@@ -18,10 +19,9 @@ column_view = AdminAssistant::BelongsToColumn::View.new(column, self)
 <%= text_field_tag(
   text_field_id, column_view.assoc_field_value(associated), :id => text_field_id
 ) %>
-<%= hidden_field_tag(
-  "#{class_name}[#{column.association_foreign_key}]", associated_id,
-  :id => hidden_field_id
-) %>
+<%=
+  form.hidden_field(column.association_foreign_key, :id => hidden_field_id)
+%>
 <div id="<%= palette_id %>" class="autocomplete_palette" style="display:none"></div>
 
 <div id="clear_<%= associated_class_name %>_link" style="display:none; padding: 5px">
