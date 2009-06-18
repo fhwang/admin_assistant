@@ -126,7 +126,7 @@ class AdminAssistant
           @columns = @index.columns.map { |c|
             c.index_view(
               @action_view,
-              :boolean_labels => @index.settings[c.name].boolean_labels,
+              :boolean_labels => @admin_assistant[c.name].boolean_labels,
               :sort_order => (@index.sort_order if c.name == @index.sort),
               :link_to_args => @index.settings[c.name.to_sym].link_to_args,
               :label => @admin_assistant[c.name].label,

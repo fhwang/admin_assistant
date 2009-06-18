@@ -106,8 +106,7 @@ class AdminAssistant
     class Autocomplete < Base
       def call
         action =~ /autocomplete_(.*)/
-        assoc = @admin_assistant.belongs_to_assoc $1
-        column = BelongsToColumn.new assoc
+        column = @admin_assistant.column $1
         search_string = @controller.params["#{$1}_autocomplete_input"]
         opts = {
           :conditions => [

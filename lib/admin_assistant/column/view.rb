@@ -245,13 +245,13 @@ class AdminAssistant
     class SearchView < View
       include AdminAssistant::Column::SearchViewMethods
       
-      def comparator_html
+      def comparator_html(search)
         comparator_opts = [
           ['greater than', '>'], ['greater than or equal to', '>='],
           ['equal to', '='], ['less than or equal to', '<='],
           ['less than', '<']
         ]
-        selected_comparator = @column.comparator || '='
+        selected_comparator = @column.comparator(search) || '='
         option_tags = comparator_opts.map { |text, value|
           opt = "<option value=\"#{value}\""
           if selected_comparator == value
@@ -279,7 +279,7 @@ class AdminAssistant
             input = form.select(name, opts)
           else
             if @column.sql_type == :integer
-              input << comparator_html << ' '
+              input << comparator_html(form.object) << ' '
             end
             input << form.text_field(name)
         end
@@ -378,7 +378,7 @@ class AdminAssistant
       include AdminAssistant::Column::SearchViewMethods
       
       def html(form)
-        input = if @column.match_text_fields
+        input = if @column.match_text_fields_in_search
           form.text_field(name)
         elsif associated_class.count > 15
           @action_view.send(

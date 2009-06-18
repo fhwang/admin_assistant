@@ -4,6 +4,10 @@ class Admin::BlogPosts2Controller < ApplicationController
   admin_assistant_for BlogPost do |a|
     a[:user].label = 'Author'
     
+    # When showing the textile field, say 'Yes' and 'No' instead of 'true'
+    # and 'false'
+    a[:textile].boolean_labels = %w(Yes No)
+    
     # For the index view:
     a.index do |index|
       # Only show these columns
@@ -14,10 +18,6 @@ class Admin::BlogPosts2Controller < ApplicationController
       
       # Sort by published_at descending, then updated_at descending
       index.sort_by "published_at desc, updated_at desc"
-      
-      # When showing the textile field, say 'Yes' and 'No' instead of 'true'
-      # and 'false'
-      index[:textile].boolean_labels = %w(Yes No)
       
       # Let's have specific fields for searching
       index.search :id, :title, :body, :textile, :user

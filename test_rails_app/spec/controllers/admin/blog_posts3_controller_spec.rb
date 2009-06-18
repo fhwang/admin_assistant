@@ -192,7 +192,7 @@ describe Admin::BlogPosts3Controller do
         response.should be_success
       end
       
-      it 'should by username' do
+      it 'should sort by username' do
         response.body.should match(%r|AARDVARKS!!!!!1.*Wanna go climbing|m)
       end
     end

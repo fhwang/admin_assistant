@@ -124,7 +124,7 @@ class AdminAssistant
   
   class BaseSettings < AbstractSettings
     def column_config_args
-      {:label => :accessor}
+      {:boolean_labels => :accessor, :label => :accessor}
     end
   end
   
@@ -182,8 +182,7 @@ class AdminAssistant
     end
     
     def column_config_args
-      {:boolean_labels => :accessor, :image_size => :accessor,
-       :link_to_args => :block}
+      {:image_size => :accessor, :link_to_args => :block}
     end
     
     def conditions(str = nil, &block)
