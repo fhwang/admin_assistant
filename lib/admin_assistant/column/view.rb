@@ -327,12 +327,7 @@ class AdminAssistant
       end
       
       def field_value(record)
-        assoc_value = record.send name
-        if polymorphic?
-          "#{assoc_value.class.name} #{assoc_value.id}"
-        else
-          assoc_field_value assoc_value
-        end
+        assoc_field_value record.send(name)
       end
       
       def options_for_select
@@ -347,11 +342,7 @@ class AdminAssistant
       include AdminAssistant::Column::FormViewMethods
       
       def html(form)
-        if polymorphic?
-          opts_for_select = @polymorphic_types.map { |t| [t.name, t.name] }
-          form.select(name + '_type', opts_for_select, @select_options) + " " +
-              form.text_field(name + '_id', :class => 'integer')
-        elsif associated_class.count > 15
+        if associated_class.count > 15
           @action_view.send(
             :render,
             :file => AdminAssistant.template_file('_restricted_autocompleter'),
@@ -497,6 +488,37 @@ class AdminAssistant
       def html(record)
         image_html record
       end
+    end
+  end
+  
+  class PolymorphicBelongsToColumn < Column
+    class View < AdminAssistant::Column::View
+      def field_value(record)
+        assoc_value = record.send name
+        "#{assoc_value.class.name} #{assoc_value.id}"
+      end
+    end
+    
+    class FormView < View
+      include AdminAssistant::Column::FormViewMethods
+      
+      def html(form)
+        opts_for_select = @polymorphic_types.map { |t| [t.name, t.name] }
+        form.select(name + '_type', opts_for_select, @select_options) + " " +
+            form.text_field(name + '_id', :class => 'integer')
+      end
+    end
+
+    class IndexView < View
+      include AdminAssistant::Column::IndexViewMethods
+    end
+    
+    class SearchView < View
+      include AdminAssistant::Column::SearchViewMethods
+    end
+    
+    class ShowView < View
+      include AdminAssistant::Column::ShowViewMethods
     end
   end
 end

@@ -151,10 +151,6 @@ class AdminAssistant
         @belongs_to_assoc.association_foreign_key
       end
     end
-    
-    def polymorphic?
-      @belongs_to_assoc.options[:polymorphic]
-    end
       
     def value_for_search_object(search_params)
       if @match_text_fields_in_search
@@ -222,6 +218,24 @@ class AdminAssistant
       column_name.to_s == @name ||
       column_name.to_s =~
           /^#{@name}_(file_name|content_type|file_size|updated_at)$/
+    end
+  end
+  
+  class PolymorphicBelongsToColumn < Column
+    def initialize(belongs_to_assoc)
+      @belongs_to_assoc = belongs_to_assoc
+    end
+    
+    def association_foreign_key
+      @belongs_to_assoc.association_foreign_key
+    end
+    
+    def contains?(column_name)
+      column_name.to_s == name
+    end
+    
+    def name
+      @belongs_to_assoc.name.to_s
     end
   end
 end

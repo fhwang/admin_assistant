@@ -104,12 +104,17 @@ class AdminAssistant
             search_settings[name].match_text_fields_for_association?
       )
     elsif belongs_to_assoc = belongs_to_assoc_by_foreign_key(name)
-      BelongsToColumn.new(
-        belongs_to_assoc,
-        :match_text_fields_in_search => 
-            search_settings[name].match_text_fields_for_association?
-      )
+      if belongs_to_assoc.options[:polymorphic]
+        PolymorphicBelongsToColumn.new belongs_to_assoc
+      else
+        BelongsToColumn.new(
+          belongs_to_assoc,
+          :match_text_fields_in_search => 
+              search_settings[name].match_text_fields_for_association?
+        )
+      end
     elsif belongs_to_assoc = belongs_to_assoc_by_polymorphic_type(name)
+      # skip it, actually
     elsif (ar_column = @model_class.columns_hash[name.to_s])
       ActiveRecordColumn.new ar_column
     else
