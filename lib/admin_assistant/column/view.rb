@@ -329,13 +329,6 @@ class AdminAssistant
       def field_value(record)
         assoc_field_value record.send(name)
       end
-      
-      def options_for_select
-        associated_class.
-            find(:all).
-            sort_by { |model| model.send(default_name_method) }.
-            map { |model| [model.send(default_name_method), model.id] }
-      end
     end
     
     class FormView < View

@@ -97,6 +97,7 @@ class AdminAssistant
     def initialize(belongs_to_assoc, opts)
       @belongs_to_assoc = belongs_to_assoc
       @match_text_fields_in_search = opts[:match_text_fields_in_search]
+      @association_target = AssociationTarget.new associated_class
     end
     
     def add_to_query_condition(ar_query_condition, search)
@@ -134,9 +135,7 @@ class AdminAssistant
     end
     
     def default_name_method
-      [:name, :title, :login, :username].detect { |m|
-        associated_class.columns.any? { |column| column.name.to_s == m.to_s }
-      }
+      @association_target.default_name_method
     end
     
     def name
@@ -150,6 +149,10 @@ class AdminAssistant
       else
         @belongs_to_assoc.association_foreign_key
       end
+    end
+    
+    def options_for_select
+      @association_target.options_for_select
     end
       
     def value_for_search_object(search_params)
@@ -236,6 +239,25 @@ class AdminAssistant
     
     def name
       @belongs_to_assoc.name.to_s
+    end
+  end
+  
+  class AssociationTarget
+    def initialize(associated_class)
+      @associated_class = associated_class
+    end
+    
+    def default_name_method
+      [:name, :title, :login, :username].detect { |m|
+        @associated_class.columns.any? { |column| column.name.to_s == m.to_s }
+      }
+    end
+      
+    def options_for_select
+      @associated_class.
+          find(:all).
+          sort_by { |model| model.send(default_name_method) }.
+          map { |model| [model.send(default_name_method), model.id] }
     end
   end
 end

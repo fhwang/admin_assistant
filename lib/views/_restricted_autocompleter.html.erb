@@ -17,7 +17,7 @@ autocompleter_js_var = "#{associated_class_name}_autocompleter"
 column_view = AdminAssistant::BelongsToColumn::View.new(column, self)
 %>
 <%= text_field_tag(
-  text_field_id, column_view.assoc_field_value(associated), :id => text_field_id
+  text_field_id, column_view.field_value(record), :id => text_field_id
 ) %>
 <%=
   form.hidden_field(column.association_foreign_key, :id => hidden_field_id)
