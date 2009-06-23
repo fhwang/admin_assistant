@@ -122,6 +122,10 @@ class AdminAssistant
       end
     end
     
+    def assoc_field_value(assoc_value)
+      @association_target.assoc_field_value assoc_value
+    end
+    
     def associated_class
       @belongs_to_assoc.klass
     end
@@ -247,6 +251,14 @@ class AdminAssistant
       @associated_class = associated_class
     end
     
+    def assoc_field_value(assoc_value)
+      if assoc_value.respond_to?(:name_for_admin_assistant)
+        assoc_value.name_for_admin_assistant
+      elsif assoc_value && default_name_method
+        assoc_value.send default_name_method
+      end
+    end
+      
     def default_name_method
       [:name, :title, :login, :username].detect { |m|
         @associated_class.columns.any? { |column| column.name.to_s == m.to_s }

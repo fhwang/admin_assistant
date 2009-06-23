@@ -318,14 +318,6 @@ class AdminAssistant
   
   class BelongsToColumn < Column
     class View < AdminAssistant::Column::View
-      def assoc_field_value(assoc_value)
-        if assoc_value.respond_to?(:name_for_admin_assistant)
-          assoc_value.name_for_admin_assistant
-        elsif assoc_value && default_name_method
-          assoc_value.send default_name_method
-        end
-      end
-      
       def field_value(record)
         assoc_field_value record.send(name)
       end

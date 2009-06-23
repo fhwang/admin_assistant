@@ -122,7 +122,10 @@ class AdminAssistant
         records = column.associated_class.find :all, opts
         render_template_file(
           'autocomplete', :layout => false,
-          :locals => {:records => records, :prefix => $1, :column => column}
+          :locals => {
+            :records => records, :prefix => $1,
+            :associated_class => column.associated_class
+          }
         )
       end
     end
