@@ -347,11 +347,11 @@ describe Admin::BlogPostsController do
         end
       end
       
-      it 'should render in at most 250 milliseconds' do
+      it 'should render in at most 500 milliseconds' do
         start_time = Time.now
         get :index
         end_time = Time.now
-        (end_time.to_f - start_time.to_f).should be_close(0.0, 0.250)
+        (end_time.to_f - start_time.to_f).should be_close(0.0, 0.500)
       end
     end
     
