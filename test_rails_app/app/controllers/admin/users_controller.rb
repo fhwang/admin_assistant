@@ -16,6 +16,12 @@ class Admin::UsersController < ApplicationController
             :blog_post => {:user_id => user.id} } ]
       }
     end
+    
+    a.form do |form|
+      form.columns :username, :password, :birthday, :state, :tmp_avatar
+    end
+    
+    a[:tmp_avatar].label = 'Avatar'
   end
   
   protected

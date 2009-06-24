@@ -105,6 +105,16 @@ describe Admin::UsersController do
         with_tag "option", :count => 53
       end
     end
+    
+    it "should have a multipart form" do
+      response.should have_tag('form[enctype=multipart/form-data]')
+    end
+    
+    it 'should have a file input for tmp_avatar' do
+      response.body.should match(
+        %r|<input[^>]*name="user\[tmp_avatar\]"[^>]*type="file"|
+      )
+    end
   end
   
   describe '#update' do

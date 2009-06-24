@@ -3,6 +3,9 @@ class User < ActiveRecord::Base
   
   validates_uniqueness_of :username
   
+  attr_accessor :tmp_avatar
+  file_column :tmp_avatar
+  
   def reset_password
     letters = 'abcdefghijklmnopqrstuvwxyz'.split //
     random_passwd = (1..10).to_a.map { letters[rand(letters.size)] }.join('')

@@ -143,18 +143,27 @@ class AdminAssistant
   end
   
   def file_columns
-    fc = []
-    if @model_class.respond_to?(:file_column)
-      @model_class.columns.each do |column|
-        suffixes = %w( relative_path dir relative_dir temp )
-        if suffixes.all? { |suffix|
-          @model_class.method_defined? "#{column.name}_#{suffix}".to_sym
-        }
-          fc << column.name
+    unless @file_columns
+      @file_columns = []
+      if @model_class.respond_to?(:file_column)
+        names_to_check = @model_class.columns.map &:name
+        names_to_check.concat(
+          @model_class.instance_methods.
+              select { |m| m =~ /=$/ }.
+              map { |m| m.gsub(/=/, '')}.
+              select { |m| @model_class.instance_methods.include?(m) }
+        )
+        names_to_check.uniq.each do |name|
+          suffixes = %w( relative_path dir relative_dir temp )
+          if suffixes.all? { |suffix|
+            @model_class.method_defined? "#{name}_#{suffix}".to_sym
+          }
+            @file_columns << name
+          end
         end
       end
     end
-    fc
+    @file_columns
   end
   
   def method_missing(meth, *args)
