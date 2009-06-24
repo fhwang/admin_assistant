@@ -122,10 +122,6 @@ class AdminAssistant
       end
     end
     
-    def assoc_field_value(assoc_value)
-      @association_target.assoc_field_value assoc_value
-    end
-    
     def associated_class
       @belongs_to_assoc.klass
     end
@@ -153,10 +149,6 @@ class AdminAssistant
       else
         @belongs_to_assoc.association_foreign_key
       end
-    end
-    
-    def options_for_select
-      @association_target.options_for_select
     end
       
     def value_for_search_object(search_params)

@@ -1,24 +1,15 @@
 class AdminAssistant
   class Column
-    class View < Delegator
+    class View
       attr_reader :sort_order
       
       def initialize(column, action_view, opts = {})
-        super(column)
         @column, @action_view, @opts = column, action_view, opts
         @boolean_labels = opts[:boolean_labels]
         @label = opts[:label]
         if respond_to?(:set_instance_variables_from_options)
           set_instance_variables_from_options(opts)
         end
-      end
-      
-      def __getobj__
-        @column
-      end
-      
-      def __setobj__(column)
-        @column = column
       end
       
       def label
@@ -29,6 +20,10 @@ class AdminAssistant
         else
           @column.name.to_s.capitalize.gsub(/_/, ' ') 
         end
+      end
+      
+      def name
+        @column.name
       end
       
       def paperclip?
@@ -318,8 +313,29 @@ class AdminAssistant
   
   class BelongsToColumn < Column
     class View < AdminAssistant::Column::View
+      def initialize(column, action_view, opts = {})
+        super
+        @association_target = AssociationTarget.new associated_class
+      end
+      
+      def assoc_field_value(assoc_value)
+        @association_target.assoc_field_value assoc_value
+      end
+      
+      def associated_class
+        @column.associated_class
+      end
+      
+      def association_foreign_key
+        @column.association_foreign_key
+      end
+      
       def field_value(record)
         assoc_field_value record.send(name)
+      end
+    
+      def options_for_select
+        @association_target.options_for_select
       end
     end
     
