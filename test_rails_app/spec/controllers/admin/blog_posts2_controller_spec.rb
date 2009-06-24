@@ -36,6 +36,10 @@ describe Admin::BlogPosts2Controller do
       it 'should set published_at because of the publish flag' do
         @blog_post.published_at.should_not be_nil
       end
+      
+      it 'should set the tags_string' do
+        @blog_post.tags_string.should match(/tag1,tag2/)
+      end
     end
     
     describe "when the user has clicked 'Preview'" do
@@ -688,6 +692,19 @@ describe Admin::BlogPosts2Controller do
   describe '#update' do
     before :all do
       @blog_post = BlogPost.create! :title => random_word, :user => @user
+    end
+    
+    describe 'when there are no validation errors' do
+      before :each do
+        post(
+          :update,
+          :id => @blog_post.id, :blog_post => {:tags => 'tag1 tag2 tag3'}
+        )
+      end
+      
+      it 'should set the tags_string' do
+        @blog_post.reload.tags_string.should match(/tag1,tag2,tag3/)
+      end
     end
     
     describe "when the user has clicked 'Preview'" do

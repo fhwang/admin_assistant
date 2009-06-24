@@ -61,6 +61,13 @@ class Admin::BlogPosts2Controller < ApplicationController
     end
   end
   
+  # This is run after all saves, whether they're creates or updates
+  def after_save(blog_post)
+    unless blog_post.tags.empty?
+      blog_post.update_attribute(:tags_string, blog_post.tags.map(&:tag).join(','))
+    end
+  end
+  
   # By default, only show unpublished blog posts unless params[:all] is
   # passed in
   def conditions_for_index
