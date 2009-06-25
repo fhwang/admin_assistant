@@ -54,7 +54,13 @@ class AdminAssistant
           end
         end
         destroy_params.each do |k,v|
-          params[k] = nil
+          unless whole_params[k]
+            params[k] = nil
+            mname = "destroy_#{k}_in_attributes"
+            if @controller.respond_to?(mname)
+              @controller.send(mname, params)
+            end
+          end
         end
         whole_params.each do |k, v|
           from_form_method = "#{k}_from_form".to_sym

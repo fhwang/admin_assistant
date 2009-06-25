@@ -26,6 +26,13 @@ class Admin::UsersController < ApplicationController
   
   protected
   
+  def after_save(user)
+    if user.tmp_avatar
+      user.update_attribute('avatar_version', user.avatar_version + 1)
+      user.save
+    end
+  end
+  
   # Run before a user is created
   def before_create(user)
     user.reset_password
@@ -36,5 +43,17 @@ class Admin::UsersController < ApplicationController
     if params[:reset_password]
       user.reset_password
     end
+  end
+  
+  def destroy_tmp_avatar_in_attributes(attributes)
+    attributes[:has_avatar] = false
+  end
+  
+  def tmp_avatar_exists?(user)
+    user.has_avatar?
+  end
+  
+  def tmp_avatar_url(user)
+    "http://my-image-server.com/users/#{user.id}.jpg?v=#{user.avatar_version}"
   end
 end

@@ -53,6 +53,8 @@ class AdminAssistant
         @input = opts[:input]
         @description = opts[:description]
         @datetime_select_options = opts[:datetime_select_options] || {}
+        @file_exists_method = opts[:file_exists_method]
+        @file_url_method = opts[:file_url_method]
         @polymorphic_types = opts[:polymorphic_types]
         @select_options = opts[:select_options] || {}
         unless @select_options.has_key?(:include_blank)
@@ -401,7 +403,11 @@ class AdminAssistant
   class FileColumnColumn < Column
     class View < AdminAssistant::Column::View
       def file_exists?(record)
-        !source_for_image_tag(record).nil?
+        if @file_exists_method
+          @file_exists_method.call record
+        else
+          !source_for_image_tag(record).nil?
+        end
       end
       
       def image_html(record)
@@ -411,8 +417,12 @@ class AdminAssistant
       end
       
       def source_for_image_tag(record)
-        @action_view.instance_variable_set :@record, record
-        @action_view.url_for_file_column 'record', @column.name
+        if @file_url_method
+          @file_url_method.call record
+        else
+          @action_view.instance_variable_set :@record, record
+          @action_view.url_for_file_column 'record', @column.name
+        end
       end
     end
     

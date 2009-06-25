@@ -31,6 +31,10 @@ describe Admin::UsersController do
   end
   
   describe '#edit' do
+    before :all do
+      @user.update_attributes :has_avatar => true, :avatar_version => 9
+    end
+    
     before :each do
       get :edit, :id => @user.id
     end
@@ -41,6 +45,28 @@ describe Admin::UsersController do
     
     it 'should show a reset password checkbox' do
       response.should have_tag("input[type=checkbox][name=reset_password]")
+    end
+    
+    it "should have a multipart form" do
+      response.should have_tag('form[enctype=multipart/form-data]')
+    end
+    
+    it 'should have a file input for tmp_avatar' do
+      response.should have_tag(
+        'input[name=?][type=file]', 'user[tmp_avatar]'
+      )
+    end
+    
+    it 'should show the current tmp_avatar with a custom src' do
+      response.should have_tag(
+        "img[src^=?]", "http://my-image-server.com/users/#{@user.id}.jpg?v=9"
+      )
+    end
+    
+    it 'should have a remove-image option' do
+      response.should have_tag(
+        "input[type=checkbox][name=?]", 'user[tmp_avatar(destroy)]'
+      )
     end
   end
   
@@ -139,6 +165,58 @@ describe Admin::UsersController do
     it 'should assign a new random password' do
       @user.reload
       @user.password.should_not == 'crocker'
+    end
+  end
+  
+  describe '#update while updating the current tmp_avatar' do
+    before :all do
+      @user.update_attributes :has_avatar => true, :avatar_version => 9
+    end
+    
+    before :each do
+      file = File.new './spec/data/tweenbot.jpg'
+      post :update, :id => @user.id, :user => {:tmp_avatar => file}
+    end
+    
+    it 'should increment the avatar_version through before_save' do
+      @user.reload
+      @user.avatar_version.should == 10
+    end
+  end
+  
+  describe '#update while removing the current tmp_avatar' do
+    before :all do
+      @user.update_attributes :has_avatar => true, :avatar_version => 9
+    end
+    
+    before :each do
+      post :update, :id => @user.id, :user => {'tmp_avatar(destroy)' => '1' }
+    end
+      
+    it 'should set has_avatar to false' do
+      @user.reload
+      @user.has_avatar?.should be_false
+    end
+  end
+  
+  describe 'while trying to update and remove tmp_avatar at the same time' do
+    before :all do
+      @user.update_attributes :has_avatar => true, :avatar_version => 9
+    end
+    
+    before :each do
+      file = File.new './spec/data/tweenbot.jpg'
+      post(
+        :update,
+        :id => @user.id,
+        :user => {:tmp_avatar => file, 'tmp_avatar(destroy)' => '1'}
+      )
+    end
+
+    it 'should assume you meant to update' do
+      @user.reload
+      @user.avatar_version.should == 10
+      @user.has_avatar?.should be_true
     end
   end
 end

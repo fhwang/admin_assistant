@@ -60,9 +60,21 @@ class AdminAssistant
     
     def columns
       @admin_assistant.accumulate_columns(column_names).map { |c|
+        file_exists_method = nil
+        fem_name = c.name + '_exists?'
+        if @action_view.controller.respond_to?(fem_name)
+          file_exists_method = @action_view.controller.method(fem_name)
+        end
+        file_url_method = nil
+        fum_name = c.name + '_url'
+        if @action_view.controller.respond_to?(fum_name)
+          file_url_method = @action_view.controller.method(fum_name)
+        end
         c.form_view(
           @action_view,
           :input => settings[c.name.to_sym].input,
+          :file_exists_method => file_exists_method,
+          :file_url_method => file_url_method,
           :label => @admin_assistant[c.name].label,
           :description => settings[c.name.to_sym].description,
           :datetime_select_options =>
