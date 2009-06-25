@@ -256,6 +256,16 @@ describe Admin::BlogPosts2Controller do
           end
         end
       end
+      
+      it 'should show a link to /admin/comments/new' do
+        response.should have_tag('td') do
+          with_tag(
+            "a[href=?]",
+            "/admin/comments/new?comment%5Bblog_post_id%5D=#{@blog_post.id}",
+            :text => "New comment"
+          )
+        end
+      end
     end
     
     describe 'when there is one published post and one unpublished post' do

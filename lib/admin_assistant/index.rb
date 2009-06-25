@@ -2,11 +2,11 @@ require 'ar_query'
 
 class AdminAssistant
   class Index
-    def initialize(
-          admin_assistant, url_params = {}, conditions_controller_method = nil
-        )
-      @admin_assistant, @url_params, @conditions_controller_method =
-            admin_assistant, url_params, conditions_controller_method
+    attr_reader :controller_methods
+    
+    def initialize(admin_assistant, url_params = {}, controller_methods = {})
+      @admin_assistant, @url_params, @controller_methods =
+            admin_assistant, url_params, controller_methods
     end
     
     def belongs_to_sort_column
@@ -55,8 +55,8 @@ class AdminAssistant
           :order => order_sql, :include => find_include,
           :per_page => 25, :page => @url_params[:page]
         )
-        if @conditions_controller_method
-          sql = @conditions_controller_method.call
+        if @controller_methods[:conditions_for_index]
+          sql = @controller_methods[:conditions_for_index].call
           ar_query.condition_sqls << sql if sql
         elsif conditions_from_settings
           if conditions_from_settings.respond_to?(:call)
@@ -185,6 +185,12 @@ class AdminAssistant
         right_column_lambdas.each do |lambda|
           link_args = lambda.call record
           links << @action_view.link_to(*link_args)
+        end
+        if m = @index.controller_methods[:extra_right_column_links_for_index]
+          link_args_ary = m.call(record) || []
+          link_args_ary.each do |link_args|
+            links << @action_view.link_to(*link_args)
+          end
         end
         links
       end

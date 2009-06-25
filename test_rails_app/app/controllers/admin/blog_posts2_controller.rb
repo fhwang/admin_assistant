@@ -54,17 +54,17 @@ class Admin::BlogPosts2Controller < ApplicationController
   
   protected
   
-  # This is run before all saves, whether they're creates or updates
-  def before_save(blog_post)
-    if params[:blog_post][:publish] == '1' && blog_post.published_at.nil?
-      blog_post.published_at = Time.now.utc
-    end
-  end
-  
   # This is run after all saves, whether they're creates or updates
   def after_save(blog_post)
     unless blog_post.tags.empty?
       blog_post.update_attribute(:tags_string, blog_post.tags.map(&:tag).join(','))
+    end
+  end
+  
+  # This is run before all saves, whether they're creates or updates
+  def before_save(blog_post)
+    if params[:blog_post][:publish] == '1' && blog_post.published_at.nil?
+      blog_post.published_at = Time.now.utc
     end
   end
   
@@ -81,6 +81,16 @@ class Admin::BlogPosts2Controller < ApplicationController
     if params[:commit] == 'Preview'
       {:action => 'edit', :id => blog_post.id, :preview => '1'}
     end
+  end
+  
+  def extra_right_column_links_for_index(blog_post)
+    [[
+      'New comment',
+      {
+        :controller => 'admin/comments', :action => 'new',
+        :comment => {:blog_post_id => blog_post.id}
+      }
+    ]]
   end
   
   # Preprocesses the 'tags' string from the form to an array of Tag objects.
