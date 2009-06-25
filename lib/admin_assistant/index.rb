@@ -3,10 +3,10 @@ require 'ar_query'
 class AdminAssistant
   class Index
     def initialize(
-          admin_assistant, url_params = {}, conditions_from_controller = nil
+          admin_assistant, url_params = {}, conditions_controller_method = nil
         )
-      @admin_assistant, @url_params, @conditions_from_controller =
-            admin_assistant, url_params, conditions_from_controller
+      @admin_assistant, @url_params, @conditions_controller_method =
+            admin_assistant, url_params, conditions_controller_method
     end
     
     def belongs_to_sort_column
@@ -53,8 +53,9 @@ class AdminAssistant
           :order => order_sql, :include => find_include,
           :per_page => 25, :page => @url_params[:page]
         )
-        if @conditions_from_controller
-          ar_query.condition_sqls << @conditions_from_controller
+        if @conditions_controller_method
+          sql = @conditions_controller_method.call
+          ar_query.condition_sqls << sql if sql
         elsif conditions_from_settings
           if conditions_from_settings.respond_to?(:call)
             conditions_sql = conditions_from_settings.call @url_params

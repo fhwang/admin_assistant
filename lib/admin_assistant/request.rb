@@ -174,7 +174,7 @@ class AdminAssistant
       def call
         args = [@admin_assistant, @controller.params]
         if @controller.respond_to?(:conditions_for_index)
-          args << @controller.send(:conditions_for_index)
+          args << @controller.method(:conditions_for_index)
         end
         index = AdminAssistant::Index.new *args
         @controller.instance_variable_set :@index, index
