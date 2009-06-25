@@ -32,8 +32,15 @@ class AdminAssistant
         params = {}
         split_params = {}
         whole_params = {}
+        destroy_params = {}
         @controller.params[model_class_symbol].each do |k, v|
-          k =~ /\([0-9]+i\)$/ ? (split_params[k] = v) : (whole_params[k] = v)
+          if k =~ /\([0-9]+i\)$/
+            split_params[k] = v
+          elsif k =~ %r|(.*)\(destroy\)|
+            destroy_params[$1] = v
+          else
+            whole_params[k] = v
+          end
         end
         bases = split_params.map{ |k, v| k.gsub(/\([0-9]+i\)$/, '') }.uniq
         bases.each do |b|
@@ -46,16 +53,15 @@ class AdminAssistant
             params.merge! h
           end
         end
+        destroy_params.each do |k,v|
+          params[k] = nil
+        end
         whole_params.each do |k, v|
-          if k =~ %r|(.*)\(destroy\)|
-            params[$1] = nil
-          else
-            from_form_method = "#{k}_from_form".to_sym
-            if @controller.respond_to?(from_form_method)
-              params[k] = @controller.send(from_form_method, v)
-            elsif @record.respond_to?("#{k}=")
-              params[k] = v
-            end
+          from_form_method = "#{k}_from_form".to_sym
+          if @controller.respond_to?(from_form_method)
+            params[k] = @controller.send(from_form_method, v)
+          elsif @record.respond_to?("#{k}=")
+            params[k] = v
           end
         end
         params
