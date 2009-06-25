@@ -25,9 +25,11 @@ class AdminAssistant
     end
     
     def find_include
+      fi = settings.include || []
       if by_assoc = belongs_to_sort_column
-        by_assoc.name
+        fi << by_assoc.name
       end
+      fi
     end
     
     def model_class

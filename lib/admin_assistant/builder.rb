@@ -178,7 +178,7 @@ class AdminAssistant
       @right_column_links = []
       @search_fields = []
       @search_settings = SearchSettings.new @admin_assistant
-      @sort_by = 'id desc'
+      @sort_by = "#{admin_assistant.model_class.table_name}.id desc"
     end
     
     def column_config_args
@@ -192,6 +192,14 @@ class AdminAssistant
         @conditions = str
       elsif block
         @conditions = block
+      end
+    end
+    
+    def include(*associations)
+      if associations.empty?
+        @include
+      else
+        @include = associations
       end
     end
     
