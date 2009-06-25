@@ -54,7 +54,7 @@ class AdminAssistant
           end
         end
         destroy_params.each do |k,v|
-          unless whole_params[k]
+          if whole_params[k].blank?
             params[k] = nil
             mname = "destroy_#{k}_in_attributes"
             if @controller.respond_to?(mname)
@@ -67,7 +67,9 @@ class AdminAssistant
           if @controller.respond_to?(from_form_method)
             params[k] = @controller.send(from_form_method, v)
           elsif @record.respond_to?("#{k}=")
-            params[k] = v
+            unless destroy_params[k] && v.blank?
+              params[k] = v
+            end
           end
         end
         params

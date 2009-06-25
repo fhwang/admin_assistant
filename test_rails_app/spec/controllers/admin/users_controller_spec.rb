@@ -190,7 +190,11 @@ describe Admin::UsersController do
     end
     
     before :each do
-      post :update, :id => @user.id, :user => {'tmp_avatar(destroy)' => '1' }
+      post(
+        :update,
+        :id => @user.id,
+        :user => {:tmp_avatar => '', 'tmp_avatar(destroy)' => '1' }
+      )
     end
       
     it 'should set has_avatar to false' do

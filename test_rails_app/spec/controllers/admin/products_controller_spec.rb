@@ -161,7 +161,9 @@ describe Admin::ProductsController do
         post(
           :update,
           :id => @product.id,
-          :product => {'file_column_image(destroy)' => '1' }
+          :product => {
+            'file_column_image(destroy)' => '1', :file_column_image => ''
+          }
         )
       end
       
