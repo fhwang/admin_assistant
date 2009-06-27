@@ -335,23 +335,6 @@ describe Admin::BlogPostsController do
       end
     end
     
-    describe 'with at least 25 blog posts' do
-      before :all do
-        25.times do
-          @blog_post = BlogPost.create!(
-            :title => "hi there", :user => @user, :textile => false
-          )
-        end
-      end
-      
-      it 'should render in at most 500 milliseconds' do
-        start_time = Time.now
-        get :index
-        end_time = Time.now
-        (end_time.to_f - start_time.to_f).should be_close(0.0, 0.500)
-      end
-    end
-    
     describe 'when there are more than 10 pages of results' do
       before :all do
         BlogPost.count.upto(251) do
