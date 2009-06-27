@@ -28,7 +28,8 @@ class AdminAssistant
     end
     
     def add_to_query_condition(ar_query_condition, search)
-      value_for_query = value_for_search_object search.params
+      value_for_query =
+          attributes_for_search_object(search.params).values.first
       unless value_for_query.nil?
         comp = comparator(search)
         unless %w(< <= = >= >).include?(comp)
@@ -50,6 +51,19 @@ class AdminAssistant
       end
     end
       
+    def attributes_for_search_object(search_params)
+      terms = search_params[@ar_column.name]
+      value = unless terms.blank?
+        case sql_type
+          when :boolean
+            terms.blank? ? nil : (terms == 'true')
+          else
+            terms
+        end
+      end
+      {name => value}
+    end
+      
     def comparator(search)
       search.params["#{@ar_column.name}(comparator)"]
     end
@@ -64,18 +78,6 @@ class AdminAssistant
     
     def sql_type
       @ar_column.type
-    end
-      
-    def value_for_search_object(search_params)
-      terms = search_params[@ar_column.name]
-      unless terms.blank?
-        case sql_type
-          when :boolean
-            terms.blank? ? nil : (terms == 'true')
-          else
-            terms
-        end
-      end
     end
   end
   
@@ -129,6 +131,21 @@ class AdminAssistant
     def association_foreign_key
       @belongs_to_assoc.association_foreign_key
     end
+      
+    def attributes_for_search_object(search_params)
+      atts = {}
+      if @match_text_fields_in_search
+        atts[name.to_sym] = search_params[name]
+      else
+        terms = search_params[association_foreign_key]
+        associated_id = terms.to_i unless terms.blank?
+        atts[association_foreign_key.to_sym] = associated_id
+        atts[name.to_sym] = if associated_id
+          associated_class.find associated_id
+        end
+      end
+      atts
+    end
     
     def contains?(column_name)
       column_name.to_s == name
@@ -178,6 +195,10 @@ class AdminAssistant
         end
       end
     end
+    
+    def attributes_for_search_object(search_params)
+      {}
+    end
       
     def search_view(action_view, opts={})
       View.new self, action_view
@@ -225,12 +246,48 @@ class AdminAssistant
       @belongs_to_assoc = belongs_to_assoc
     end
     
+    def add_to_query_condition(ar_query_condition, search)
+      if key_value = search.send(association_foreign_key) and
+         type_value = search.send(foreign_type_field)
+        ar_query_condition.add_condition do |subcond|
+          subcond.boolean_join = :and
+          subcond.sqls << "#{association_foreign_key} = ?"
+          subcond.bind_vars << key_value
+          subcond.sqls << "#{foreign_type_field} = ?"
+          subcond.bind_vars << type_value
+        end
+      end
+    end
+    
     def association_foreign_key
       @belongs_to_assoc.association_foreign_key
     end
     
+    def attributes_for_search_object(search_params)
+      atts = {}
+      atts[association_foreign_key.to_sym] = 
+          search_params[association_foreign_key]
+      atts[foreign_type_field.to_sym] = search_params[foreign_type_field]
+      if atts[foreign_type_field.to_sym]
+        atts[name.to_sym] = Module.const_get(
+          search_params[foreign_type_field]
+        ).find_by_id(search_params[association_foreign_key])
+      else
+        atts[name.to_sym] = nil
+      end
+      atts
+    end
+    
     def contains?(column_name)
       column_name.to_s == name
+    end
+      
+    def foreign_type_field
+      @belongs_to_assoc.options[:foreign_type]
+    end
+    
+    def match_text_fields_in_search
+      false
     end
     
     def name
@@ -255,6 +312,10 @@ class AdminAssistant
       [:name, :title, :login, :username].detect { |m|
         @associated_class.columns.any? { |column| column.name.to_s == m.to_s }
       }
+    end
+    
+    def name
+      @associated_class.name.gsub(/([A-Z])/, ' \1')[1..-1].downcase
     end
       
     def options_for_select

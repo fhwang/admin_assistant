@@ -73,8 +73,12 @@ class ARQuery
     end
     
     def add_condition(&block)
-      @children << Condition.new(@ar_query)
-      yield @children.last
+      if has_conditions?
+        @children << Condition.new(@ar_query)
+        yield @children.last
+      else
+        yield self
+      end
     end
     
     def to_conditions

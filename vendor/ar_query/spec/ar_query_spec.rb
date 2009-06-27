@@ -153,6 +153,23 @@ describe ARQuery do
     end
   end
   
+  describe 'when nesting the nested condition unnecessarily' do
+    before :all do
+      @ar_query = ARQuery.new
+      @ar_query.add_condition do |cond|
+        cond.add_condition do |subcond|
+          subcond.boolean_join = :or
+          subcond.sqls << "fname = ?"
+          subcond.bind_vars << 'Chunky'
+        end
+      end
+    end
+    
+    it 'should generate the non-nested condition in SQL' do
+      @ar_query.to_hash[:conditions].should == ["(fname = ?)", 'Chunky']
+    end
+  end
+  
   describe '#joins <<' do
     describe 'when there are no joins to start' do
       before :all do

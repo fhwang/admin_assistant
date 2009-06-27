@@ -1,0 +1,94 @@
+<div class="polymorphic">
+<%
+hidden_field_id = "search_#{column.association_foreign_key}"
+hidden_type_field_id = "search_#{column.foreign_type_field}"
+associated = record.send(column.name)
+if associated
+  associated_id = associated.id
+  associated_type = associated.class.name
+else
+  associated_id = nil
+  associated_type = nil
+end
+auth_token = if protect_against_forgery?
+  form_authenticity_token
+else
+  ''
+end
+js_args = {:autocompleteTypes => [], :idTypes => [], :selectTypes => []}
+%>
+<%= hidden_field_tag(
+  "search[#{column.association_foreign_key}]", associated_id,
+  :id => "search_#{column.association_foreign_key}"
+) %>
+<%= hidden_field_tag(
+  "search[#{column.foreign_type_field}]", associated_type,
+  :id => hidden_type_field_id
+) %>
+<%
+polymorphic_types.each do |polymorphic_type|
+  name = polymorphic_type.name.underscore.downcase
+  column_view = AdminAssistant::PolymorphicBelongsToColumn::View.new(
+    column, self
+  )
+  association_target = AdminAssistant::AssociationTarget.new(
+    polymorphic_type
+  )
+%>
+<div class="polymorphic_type">
+<% if association_target.default_name_method %>
+  <label><%= association_target.name.capitalize %></label>
+  <br />
+<%
+    if polymorphic_type.count > 15
+      clear_link_id = "clear_#{column.name}_#{name}_link"
+      text_field_id = "#{column.name}_#{name}_autocomplete_input"
+      palette_id = "#{column.name}_#{name}_autocomplete_palette"
+      js_args[:autocompleteTypes] << {
+        :clearLink => clear_link_id, :name => name, :palette => palette_id,
+        :parameters => "authenticity_token=#{auth_token}",
+        :textField => text_field_id, :type => polymorphic_type.name,
+        :url => "/#{controller.controller_path}/autocomplete_#{name}"
+      }
+      text_field_value = if associated.class == polymorphic_type
+        column_view.assoc_field_value(associated)
+      end
+  %>
+  <%= text_field_tag(text_field_id, text_field_value, :id => text_field_id) %>
+  <div id="<%= palette_id %>" class="autocomplete_palette" style="display:none"></div>
+  <div id="<%= clear_link_id %>" style="display:none; padding: 5px">
+  <%= link_to_function("Clear #{name}", "") %>
+  </div>
+<%
+    else
+      js_args[:selectTypes] << {:name => name, :type => polymorphic_type.name}
+      option_tags = "<option value=''></option>"
+      option_tags << options_for_select(
+        association_target.options_for_select,
+        (associated.id if associated.class == polymorphic_type)
+      )
+%>
+  <%= select_tag("#{column.name}_#{name}_id", option_tags) %> 
+<%
+    end
+  else
+    js_args[:idTypes] << {:name => name, :type => polymorphic_type.name}
+    %>
+  <label><%= association_target.name.capitalize %> ID</label>
+  <br />
+    <%= text_field_tag(
+      "#{column.name}_#{name}_id",
+      (associated.id if associated.class == polymorphic_type)
+    ) %>
+    <%
+  end
+%>
+</div>
+<% end %>
+<br style="clear:both" />
+</div>
+<script type="text/javascript">
+new AdminAssistant.PolymorphicFieldSearch(
+  '<%= column.name %>', <%= js_args.to_json %>
+);
+</script>

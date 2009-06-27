@@ -7,6 +7,7 @@ class AdminAssistant
         @column, @action_view, @opts = column, action_view, opts
         @boolean_labels = opts[:boolean_labels]
         @label = opts[:label]
+        @polymorphic_types = opts[:polymorphic_types]
         if respond_to?(:set_instance_variables_from_options)
           set_instance_variables_from_options(opts)
         end
@@ -386,7 +387,8 @@ class AdminAssistant
           )
         else
           form.select(
-            association_foreign_key, options_for_select, :include_blank => true
+            association_foreign_key, options_for_select,
+            :include_blank => true
           )
         end
         "<p><label>#{label}</label> <br/>#{input}</p>"
@@ -502,9 +504,19 @@ class AdminAssistant
   
   class PolymorphicBelongsToColumn < Column
     class View < AdminAssistant::Column::View
+      def assoc_field_value(assoc_value)
+        if assoc_value.respond_to?(:name_for_admin_assistant)
+          assoc_value.name_for_admin_assistant
+        elsif assoc_value
+          association_target = AssociationTarget.new assoc_value.class
+          if dnm = association_target.default_name_method
+            assoc_value.send dnm
+          end
+        end
+      end
+      
       def field_value(record)
-        assoc_value = record.send name
-        "#{assoc_value.class.name} #{assoc_value.id}"
+        record.send name
       end
     end
     
@@ -520,10 +532,35 @@ class AdminAssistant
 
     class IndexView < View
       include AdminAssistant::Column::IndexViewMethods
+      
+      def field_value(record)
+        target = record.send name
+        if target
+          str = AssociationTarget.new(target.class).name.capitalize
+          fv = assoc_field_value target
+          if fv
+            str << " '#{fv}'"
+          else
+            str << " #{target.id}"
+          end
+        end
+      end
     end
     
     class SearchView < View
       include AdminAssistant::Column::SearchViewMethods
+      
+      def html(form)
+        @action_view.send(
+          :render,
+          :file => AdminAssistant.template_file('_polymorphic_field_search'),
+          :use_full_path => false,
+          :locals => {
+            :record => @search, :column => @column,
+            :polymorphic_types => @polymorphic_types
+          }
+        )
+      end
     end
     
     class ShowView < View

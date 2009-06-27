@@ -104,7 +104,7 @@ class AdminAssistant
   end
   
   class AbstractSettings
-    attr_reader :column_names
+    attr_reader :column_names, :column_configs
     
     def initialize(admin_assistant)
       @admin_assistant = admin_assistant
@@ -124,7 +124,8 @@ class AdminAssistant
   
   class BaseSettings < AbstractSettings
     def column_config_args
-      {:boolean_labels => :accessor, :label => :accessor}
+      {:boolean_labels => :accessor, :label => :accessor,
+       :polymorphic_types => :accessor}
     end
   end
   
@@ -139,8 +140,7 @@ class AdminAssistant
     def column_config_args
       {:datetime_select_options => :accessor, :default => :block,
        :description => :accessor, :exclude_blank => :boolean,
-       :input => :accessor, :polymorphic_types => :accessor,
-       :read_only => :boolean, :write_once => :boolean,
+       :input => :accessor, :read_only => :boolean, :write_once => :boolean,
        :select_options => :accessor
       }
     end

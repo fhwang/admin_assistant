@@ -54,6 +54,11 @@ Don't edit this file: It gets re-copied every time the server starts.
   width: 500px
 }
 
+#admin_assistant.index #search_form .polymorphic .polymorphic_type {
+  float: left;
+  padding-right: 5px;
+}
+
 /***** Form stuff ************************************************************/
 
 #admin_assistant.form .column {

@@ -124,21 +124,24 @@ class AdminAssistant
     class Autocomplete < Base
       def call
         action =~ /autocomplete_(.*)/
-        column = @admin_assistant.column $1
+        associated_class = Module.const_get $1.camelize
+#p $1
+ #       column = @admin_assistant.column $1
+        target = AssociationTarget.new associated_class
         search_string = @controller.params["#{$1}_autocomplete_input"]
         opts = {
           :conditions => [
-            "LOWER(#{column.default_name_method}) like ?",
+            "LOWER(#{target.default_name_method}) like ?",
             "%#{search_string.downcase unless search_string.nil?}%"
           ],
           :limit => 10
         }
-        records = column.associated_class.find :all, opts
+        records = associated_class.find :all, opts
         render_template_file(
           'autocomplete', :layout => false,
           :locals => {
             :records => records, :prefix => $1,
-            :associated_class => column.associated_class
+            :associated_class => associated_class
           }
         )
       end

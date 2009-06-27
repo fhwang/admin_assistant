@@ -7,14 +7,8 @@ class AdminAssistant
       @params ||= {}
       @attributes = HashWithIndifferentAccess.new
       columns.each do |c|
-        if c.respond_to?(:name)
-          value = c.value_for_search_object @params
-          @attributes[c.name] = value
-          if c.respond_to?(:association_foreign_key) &&
-             !c.match_text_fields_in_search
-            fk_value = value.id if value
-            @attributes[c.association_foreign_key] = fk_value
-          end
+        c.attributes_for_search_object(@params).each do |key, value|
+          @attributes[key] = value
         end
       end
     end
@@ -53,6 +47,7 @@ class AdminAssistant
         if c.respond_to?(:name) && c.name
           opts[:boolean_labels] = @admin_assistant[c.name].boolean_labels
           opts[:label] = @admin_assistant[c.name].label
+          opts[:polymorphic_types] = @admin_assistant[c.name].polymorphic_types
         end
         c.search_view action_view, opts
       }

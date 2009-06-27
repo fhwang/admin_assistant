@@ -52,6 +52,7 @@ class AdminAssistant
   end
   
   def autocomplete_actions
+    actions_hash = {}
     if [:new, :create, :edit, :update].any? { |action|
       actions.include?(action)
     }
@@ -60,10 +61,22 @@ class AdminAssistant
       }.map { |ar_column| ar_column.name }
       accumulate_columns(column_names).select { |column|
         column.is_a?(BelongsToColumn)
-      }.map { |column|
-        "autocomplete_#{column.name}".to_sym
+      }.each { |column|
+        actions_hash["autocomplete_#{column.name}".to_sym] = true
       }
     end
+    if actions.include?(:index)
+      all_polymorphic_types = 
+          base_settings.column_configs.values.
+                                       map(&:polymorphic_types).
+                                       flatten.
+                                       compact
+      all_polymorphic_types.each do |p_type|
+        action_name = "autocomplete_#{p_type.name.underscore.downcase}".to_sym
+        actions_hash[action_name] = true
+      end
+    end
+    actions_hash.keys
   end
   
   def belongs_to_associations
@@ -97,13 +110,8 @@ class AdminAssistant
       FileColumnColumn.new name
     elsif paperclip_attachments.include?(name)
       PaperclipColumn.new name
-    elsif belongs_to_assoc = belongs_to_assoc(name)
-      BelongsToColumn.new(
-        belongs_to_assoc,
-        :match_text_fields_in_search => 
-            search_settings[name].match_text_fields_for_association?
-      )
-    elsif belongs_to_assoc = belongs_to_assoc_by_foreign_key(name)
+    elsif (belongs_to_assoc = belongs_to_assoc(name) or
+           belongs_to_assoc = belongs_to_assoc_by_foreign_key(name))
       if belongs_to_assoc.options[:polymorphic]
         PolymorphicBelongsToColumn.new belongs_to_assoc
       else
