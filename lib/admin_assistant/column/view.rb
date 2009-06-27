@@ -352,7 +352,6 @@ class AdminAssistant
             :use_full_path => false,
             :locals => {
               :form => form, :column => @column,
-              :associated_class_name => associated_class.name.underscore,
               :select_options => @select_options
             }
           )
@@ -381,7 +380,6 @@ class AdminAssistant
             :use_full_path => false,
             :locals => {
               :form => form, :column => @column,
-              :associated_class_name => associated_class.name.underscore,
               :select_options => {:include_blank => true},
               :palette_clones_input_width => false
             }

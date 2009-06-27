@@ -155,14 +155,11 @@ describe Admin::BlogPostsController do
       response.should have_tag('div[id=clear_user_link]')
       response.body.should match(
         %r|
-          var\s*user_autocompleter\s*=
-          \s*new\s*AdminAssistant.RestrictedAutocompleter\(
+          new\s*AdminAssistant.RestrictedAutocompleter\(
           \s*"user",
           \s*"blog_post_user_id",
           \s*"/admin/blog_posts/autocomplete_user",
-          \s*true,
-          \s*\options
-          \s*\)
+          [^)]*"includeBlank":\s*true
         |mx
       )
     end
@@ -795,14 +792,11 @@ describe Admin::BlogPostsController do
       response.should have_tag('div[id=clear_user_link]')
       response.body.should match(
         %r|
-          var\s*user_autocompleter\s*=
-          \s*new\s*AdminAssistant.RestrictedAutocompleter\(
+          new\s*AdminAssistant.RestrictedAutocompleter\(
           \s*"user",
           \s*"blog_post_user_id",
           \s*"/admin/blog_posts/autocomplete_user",
-          \s*true,
-          \s*\options
-          \s*\)
+          [^)]*"includeBlank":\s*true
         |mx
       )
     end
