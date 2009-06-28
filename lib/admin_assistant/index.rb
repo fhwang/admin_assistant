@@ -194,11 +194,10 @@ class AdminAssistant
           link_args = lambda.call record
           links << @action_view.link_to(*link_args)
         end
-        if m = @index.controller_methods[:extra_right_column_links_for_index]
-          link_args_ary = m.call(record) || []
-          link_args_ary.each do |link_args|
-            links << @action_view.link_to(*link_args)
-          end
+        if @action_view.respond_to?(:extra_right_column_links_for_index)
+          links << @action_view.extra_right_column_links_for_index(
+            record
+          ) || ''
         end
         links
       end

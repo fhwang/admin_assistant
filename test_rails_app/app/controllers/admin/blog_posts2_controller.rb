@@ -91,16 +91,6 @@ class Admin::BlogPosts2Controller < ApplicationController
     end
   end
   
-  def extra_right_column_links_for_index(blog_post)
-    [[
-      'New comment',
-      {
-        :controller => 'admin/comments', :action => 'new',
-        :comment => {:blog_post_id => blog_post.id}
-      }
-    ]]
-  end
-  
   # Preprocesses the 'tags' string from the form to an array of Tag objects.
   # That way admin_assistant can say
   #
