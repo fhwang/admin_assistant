@@ -263,6 +263,10 @@ describe Admin::BlogPosts2Controller do
           )
         end
       end
+      
+      it "should have a header of 'Blog posts (unpublished)'" do
+        response.should have_tag('h2', :text => 'Blog posts (unpublished)')
+      end
     end
     
     describe 'when there is one published post and one unpublished post' do
@@ -346,6 +350,10 @@ describe Admin::BlogPosts2Controller do
         'Title', '/admin/blog_posts2',
         {:sort => 'title', :sort_order => 'asc', :all => '1'}, response.body
       )
+    end
+      
+    it "should have a header of 'Blog posts (all)'" do
+      response.should have_tag('h2', :text => 'Blog posts (all)')
     end
   end
   

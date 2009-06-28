@@ -1,3 +1,4 @@
+<% index_view = @index.view(self) %>
 <div id="admin_assistant" class="index <%=
   @admin_assistant.controller_css_class(controller)
 %>">
@@ -11,7 +12,7 @@
   <%= link_to_unless_current(action, params) %>
 <% end %>
 </div>
-<h2><%= h(@admin_assistant.model_class_name.pluralize.capitalize) %></h2>
+<h2><%= h(index_view.header) %></h2>
 </div>
 
 <% form_for(
@@ -43,7 +44,6 @@
 <% end %>
 
 <% if !@index.records.empty? %>
-<% index_view = @index.view(self) %>
 <table cellspacing="0" cellpadding="0">
   <thead>
     <tr>

@@ -195,6 +195,10 @@ class AdminAssistant
       end
     end
     
+    def header(&block)
+      block ? (@header = block) : @header
+    end
+    
     def include(*associations)
       if associations.empty?
         @include

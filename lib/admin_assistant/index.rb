@@ -141,6 +141,14 @@ class AdminAssistant
         @columns
       end
       
+      def header
+        if block = @index.settings.header
+          block.call @action_view.params
+        else
+          @admin_assistant.model_class_name.pluralize.capitalize
+        end
+      end
+
       def right_column?
         update? or destroy? or show? or !right_column_lambdas.empty?
       end

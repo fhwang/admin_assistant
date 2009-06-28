@@ -7,7 +7,7 @@ class Admin::BlogPosts2Controller < ApplicationController
     # When showing the textile field, say 'Yes' and 'No' instead of 'true'
     # and 'false'
     a[:textile].boolean_labels = %w(Yes No)
-    
+        
     # For the index view:
     a.index do |index|
       # Only show these columns
@@ -26,6 +26,14 @@ class Admin::BlogPosts2Controller < ApplicationController
       index[:user].link_to_args do |blog_post|
         { :controller => 'admin/users', :action => 'edit',
           :id => blog_post.user_id }
+      end
+
+      index.header do |params|
+        if params[:all]
+          "Blog posts (all)"
+        else
+          "Blog posts (unpublished)"
+        end
       end
     end
     
