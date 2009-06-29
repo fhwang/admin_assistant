@@ -129,7 +129,8 @@ class AdminAssistant
     end
     
     def association_foreign_key
-      @belongs_to_assoc.association_foreign_key
+      @belongs_to_assoc.options[:foreign_key] ||
+          @belongs_to_assoc.association_foreign_key
     end
       
     def attributes_for_search_object(search_params)
