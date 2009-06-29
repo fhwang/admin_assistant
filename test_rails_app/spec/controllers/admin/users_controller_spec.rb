@@ -122,6 +122,14 @@ describe Admin::UsersController do
       end
     end
     
+    it 'should respect start_year and end_year parameters' do
+      response.should have_tag("select[name='user[birthday(1i)]']") do
+        (Time.now.year-100).upto(Time.now.year) do |year|
+          with_tag "option[value='#{year}']"
+        end
+      end
+    end
+    
     it 'should show a drop-down for US states' do
       response.should have_tag('select[name=?]', 'user[state]') do
         with_tag "option[value='']"

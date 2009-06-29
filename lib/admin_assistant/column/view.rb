@@ -54,6 +54,7 @@ class AdminAssistant
         @input = opts[:input]
         @description = opts[:description]
         @datetime_select_options = opts[:datetime_select_options] || {}
+        @date_select_options = opts[:date_select_options] || {}
         @file_exists_method = opts[:file_exists_method]
         @file_url_method = opts[:file_url_method]
         @polymorphic_types = opts[:polymorphic_types]
@@ -162,7 +163,9 @@ class AdminAssistant
               name, {:include_blank => true}.merge(@datetime_select_options)
             )
           when :date
-            form.date_select name, :include_blank => true
+            form.date_select(
+              name, {:include_blank => true}.merge(@date_select_options)
+            )
           when :us_state
             form.select(
               name, ordered_us_state_names_and_codes, :include_blank => true

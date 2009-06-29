@@ -19,6 +19,7 @@ class Admin::UsersController < ApplicationController
     
     a.form do |form|
       form.columns :username, :password, :birthday, :state, :tmp_avatar
+      form[:birthday].date_select_options = {:start_year => Time.now.year-100, :end_year => Time.now.year}
     end
     
     a[:tmp_avatar].label = 'Avatar'

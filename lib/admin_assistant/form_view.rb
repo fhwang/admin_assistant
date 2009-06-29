@@ -79,6 +79,8 @@ class AdminAssistant
           :description => settings[c.name.to_sym].description,
           :datetime_select_options =>
               settings[c.name.to_sym].datetime_select_options,
+          :date_select_options => 
+              settings[c.name.to_sym].date_select_options,
           :polymorphic_types => 
               @admin_assistant[c.name.to_sym].polymorphic_types,
           :select_options => settings[c.name.to_sym].select_options
