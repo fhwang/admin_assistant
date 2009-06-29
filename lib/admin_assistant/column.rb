@@ -247,8 +247,11 @@ class AdminAssistant
     end
     
     def add_to_query_condition(ar_query_condition, search)
-      if key_value = search.send(association_foreign_key) and
-         type_value = search.send(foreign_type_field)
+      kv = (key_value = search.send(association_foreign_key)) && 
+           !key_value.blank?
+      tv = (type_value = search.send(foreign_type_field)) &&
+           !type_value.blank?
+      if kv and tv
         ar_query_condition.add_condition do |subcond|
           subcond.boolean_join = :and
           subcond.sqls << "#{association_foreign_key} = ?"
@@ -268,7 +271,7 @@ class AdminAssistant
       atts[association_foreign_key.to_sym] = 
           search_params[association_foreign_key]
       atts[foreign_type_field.to_sym] = search_params[foreign_type_field]
-      if atts[foreign_type_field.to_sym]
+      if !atts[foreign_type_field.to_sym].blank?
         atts[name.to_sym] = Module.const_get(
           search_params[foreign_type_field]
         ).find_by_id(search_params[association_foreign_key])

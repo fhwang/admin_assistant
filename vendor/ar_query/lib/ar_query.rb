@@ -87,17 +87,23 @@ class ARQuery
       condition_sql_fragments = @sqls.map { |c_sql| "(#{c_sql})" }
       @children.each do |child|
         sub_conditions = child.to_conditions
-        if sub_conditions.is_a?(Array)
-          sql = sub_conditions.first
-          sub_binds = sub_conditions[1..-1]
-          condition_sql_fragments << "(#{sql})"
-          binds.concat sub_binds
-        else
-          condition_sql_fragments << "(#{sub_conditions})"
+        if sub_conditions
+          if sub_conditions.is_a?(Array)
+            sql = sub_conditions.first
+            sub_binds = sub_conditions[1..-1]
+            condition_sql_fragments << "(#{sql})"
+            binds.concat sub_binds
+          else
+            condition_sql_fragments << "(#{sub_conditions})"
+          end
         end
       end
       condition_sql = condition_sql_fragments.join(join_str)
-      binds.empty? ? condition_sql : [ condition_sql, *binds ]
+      if binds.empty?
+        condition_sql unless condition_sql == ''
+      else
+        [ condition_sql, *binds ]
+      end
     end
   
     class SQLs < Array

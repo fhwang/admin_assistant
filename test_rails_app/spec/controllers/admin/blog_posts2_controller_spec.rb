@@ -601,6 +601,22 @@ describe Admin::BlogPosts2Controller do
     end
   end
   
+  describe '#index with a blank search' do
+    before :each do
+      get(
+        :index,
+        :search => {
+          :body => '', :title => '', :textile => '', :id => '', :user_id => '',
+          '(all_or_any)' => 'all', 'id(comparator)' => ''
+        }
+      )
+    end
+    
+    it 'should be successful' do
+      response.should be_success
+    end
+  end
+  
   describe '#new' do
     before :all do
       Tag.find_or_create_by_tag 'tag_from_yesterday'

@@ -170,6 +170,19 @@ describe ARQuery do
     end
   end
   
+  describe 'when calling an empty #add_condition after already adding to condition_sqls' do
+    before :all do
+      @ar_query = ARQuery.new
+      @ar_query.condition_sqls << "published = true"
+      @ar_query.add_condition do |cond|
+      end
+    end
+    
+    it 'should not appending anything to the condition' do
+      @ar_query.to_hash[:conditions].should == '(published = true)'
+    end
+  end
+  
   describe '#joins <<' do
     describe 'when there are no joins to start' do
       before :all do

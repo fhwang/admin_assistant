@@ -5,8 +5,8 @@ describe Admin::BookmarksController do
   
   before :all do
     @user = User.find_or_create_by_username 'soren'
-    @blog_post = BlogPost.find(:first) or
-                BlogPost.create!(:title => random_word, :user => @user)
+    @blog_post = (BlogPost.find(:first) or
+                  BlogPost.create!(:title => random_word, :user => @user))
   end
   
   describe '#autocomplete_blog_post' do
@@ -419,6 +419,33 @@ describe Admin::BookmarksController do
           'tr[id=?]', "record_#{@user2_product_bookmark.id}"
         )
       end
+    end
+  end
+  
+  describe '#index with a blank search' do
+    before :all do
+      Bookmark.destroy_all
+      @blog_post_bookmark = Bookmark.create!(
+        :user => @user, :bookmarkable => @blog_post
+      )
+    end
+    
+    before :each do
+      get(
+        :index,
+        :search => {
+          :bookmarkable_type => '', :bookmarkable_id => '', :user_id => '', 
+          '(all_or_any)' => 'all'
+        }
+      )
+    end
+    
+    it 'should be successful' do
+      response.should be_success
+    end
+    
+    it 'should include the bookmarks' do
+      response.should have_tag('tr[id=?]', "record_#{@blog_post_bookmark.id}")
     end
   end
   

@@ -5,7 +5,7 @@ describe Admin::BlogPosts3Controller do
   
   before :all do
     User.destroy_all
-    @user = User.create! :username => 'soren'
+    @user = User.create! :username => 'soren', :password => 'password'
   end
   
   describe '#edit' do
