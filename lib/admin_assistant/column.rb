@@ -81,18 +81,6 @@ class AdminAssistant
     end
   end
   
-  class AdminAssistantColumn < Column
-    attr_reader :name
-    
-    def initialize(name)
-      @name = name.to_s
-    end
-    
-    def contains?(column_name)
-      column_name.to_s == @name
-    end
-  end
-  
   class BelongsToColumn < Column
     attr_reader :match_text_fields_in_search
     
@@ -296,6 +284,18 @@ class AdminAssistant
     
     def name
       @belongs_to_assoc.name.to_s
+    end
+  end
+  
+  class VirtualColumn < Column
+    attr_reader :model_class, :name
+    
+    def initialize(name, model_class)
+      @name, @model_class = name.to_s, model_class
+    end
+    
+    def contains?(column_name)
+      column_name.to_s == @name
     end
   end
   

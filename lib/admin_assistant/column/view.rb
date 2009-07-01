@@ -284,30 +284,6 @@ class AdminAssistant
       include AdminAssistant::Column::ShowViewMethods
     end
   end
-
-  class AdminAssistantColumn < Column
-    class View < AdminAssistant::Column::View
-      def value(record)
-        record.send(name) if record.respond_to?(name)
-      end
-    end
-    
-    class FormView < View
-      include AdminAssistant::Column::FormViewMethods
-    end
-
-    class IndexView < View
-      include AdminAssistant::Column::IndexViewMethods
-    end
-    
-    class SearchView < View
-      include AdminAssistant::Column::SearchViewMethods
-    end
-    
-    class ShowView < View
-      include AdminAssistant::Column::ShowViewMethods
-    end
-  end
   
   class BelongsToColumn < Column
     class View < AdminAssistant::Column::View
@@ -556,6 +532,50 @@ class AdminAssistant
           }
         )
       end
+    end
+    
+    class ShowView < View
+      include AdminAssistant::Column::ShowViewMethods
+    end
+  end
+
+  class VirtualColumn < Column
+    class View < AdminAssistant::Column::View
+      def value(record)
+        record.send(name) if record.respond_to?(name)
+      end
+    end
+    
+    class FormView < View
+      include AdminAssistant::Column::FormViewMethods
+      
+      def html(form)
+        input_name = "#{@column.model_class.name.underscore}[#{name}]"
+        if @input
+          if @input == :check_box
+            fv = value form.object
+            # Rails 2.3 wants the hidden tag to come before the checkbox, but
+            # it's the opposite for Rails 2.2 and 2.1
+            if RAILS_GEM_VERSION =~ /^2.3/
+              @action_view.send(:hidden_field_tag, input_name, '0') +
+                  @action_view.send(:check_box_tag, input_name, '1', fv)
+            else
+              @action_view.send(:check_box_tag, input_name, '1', fv) +
+                  @action_view.send(:hidden_field_tag, input_name, '0')
+            end
+          end
+        else
+          @action_view.send(:text_field_tag, input_name, string(form.object))
+        end
+      end
+    end
+
+    class IndexView < View
+      include AdminAssistant::Column::IndexViewMethods
+    end
+    
+    class SearchView < View
+      include AdminAssistant::Column::SearchViewMethods
     end
     
     class ShowView < View

@@ -32,10 +32,8 @@ class AdminAssistant
       elsif settings[column.name].write_once? &&
             @action_view.action_name == 'edit'
         column.value(@record)
-      elsif column.respond_to?(:html)
-        column.html(rails_form)
       else
-        virtual_column_html column
+        column.html(rails_form)
       end
       if ah = after_column_html(column)
         hff << ah
@@ -137,27 +135,6 @@ class AdminAssistant
     
     def title
       (@record.id ? "Edit" : "New") + " #{@admin_assistant.model_class_name}"
-    end
-    
-    def virtual_column_html(column)
-      input_name = "#{model_class.name.underscore}[#{column.name}]"
-      input_type = settings[column.name.to_sym].input
-      if input_type
-        if input_type == :check_box
-          fv = column.value @record
-          # Rails 2.3 wants the hidden tag to come before the checkbox, but
-          # it's the opposite for Rails 2.2 and 2.1
-          if RAILS_GEM_VERSION =~ /^2.3/
-            @action_view.send(:hidden_field_tag, input_name, '0') +
-                @action_view.send(:check_box_tag, input_name, '1', fv)
-          else
-            @action_view.send(:check_box_tag, input_name, '1', fv) +
-                @action_view.send(:hidden_field_tag, input_name, '0')
-          end
-        end
-      else
-        @action_view.send(:text_field_tag, input_name, column.string(@record))
-      end
     end
   end
 end

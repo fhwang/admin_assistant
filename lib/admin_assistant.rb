@@ -126,7 +126,7 @@ class AdminAssistant
     elsif (ar_column = @model_class.columns_hash[name.to_s])
       ActiveRecordColumn.new ar_column
     else
-      AdminAssistantColumn.new name
+      VirtualColumn.new name, @model_class
     end
     column
   end
