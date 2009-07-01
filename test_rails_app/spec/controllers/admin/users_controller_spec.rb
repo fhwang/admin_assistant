@@ -32,7 +32,10 @@ describe Admin::UsersController do
   
   describe '#edit' do
     before :all do
-      @user.update_attributes :has_avatar => true, :avatar_version => 9
+      @user.update_attributes(
+        :has_avatar => true, :avatar_version => 9,
+        :force_blog_posts_to_textile => true
+      )
     end
     
     before :each do
@@ -67,6 +70,14 @@ describe Admin::UsersController do
       response.should have_tag(
         "input[type=checkbox][name=?]", 'user[tmp_avatar(destroy)]'
       )
+    end
+    
+    it 'should show a drop-down for force_blog_posts_to_textile' do
+      response.should have_tag('select[name=?]', 'user[force_blog_posts_to_textile]') do
+        with_tag "option:not([selected])[value='']"
+        with_tag "option:not([selected])[value=0]", :text => 'false'
+        with_tag "option[selected=selected][value=1]", :text => 'true'
+      end
     end
   end
   
@@ -148,6 +159,14 @@ describe Admin::UsersController do
       response.body.should match(
         %r|<input[^>]*name="user\[tmp_avatar\]"[^>]*type="file"|
       )
+    end
+    
+    it 'should show a drop-down for force_blog_posts_to_textile' do
+      response.should have_tag('select[name=?]', 'user[force_blog_posts_to_textile]') do
+        with_tag "option[value='']"
+        with_tag "option:not([selected])[value=0]", :text => 'false'
+        with_tag "option:not([selected])[value=1]", :text => 'true'
+      end
     end
   end
   

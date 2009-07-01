@@ -144,25 +144,49 @@ class AdminAssistant
       include AdminAssistant::Column::FormViewMethods
       
       def html(form)
-        case @input || @column.sql_type
-          when :text
-            form.text_area name
+        input = @input || case @column.sql_type
           when :boolean
-            form.check_box name
-          when :datetime
-            form.datetime_select(
-              name, {:include_blank => true}.merge(@datetime_select_options)
-            )
+            :check_box
           when :date
+            :date_select
+          when :datetime
+            :datetime_select
+          when :text
+            :text_area
+          else
+            :text_field
+          end
+        case input
+          when :check_box
+            form.check_box name
+          when :date_select
             form.date_select(
               name, {:include_blank => true}.merge(@date_select_options)
             )
+          when :datetime_select
+            form.datetime_select(
+              name, {:include_blank => true}.merge(@datetime_select_options)
+            )
+          when :select
+            # for now only used for boolean fields
+            value = form.object.send name
+            selected = if value
+              '1'
+            elsif value == false
+              '0'
+            end
+            form.select(
+              name, [[true, '1'], [false, '0']],
+              @select_options.merge(:selected => selected)
+            )
+          when :text_area
+            form.text_area name
+          when :text_field
+            form.text_field name
           when :us_state
             form.select(
               name, ordered_us_state_names_and_codes, :include_blank => true
             )
-          else
-            form.text_field name
           end
       end
       

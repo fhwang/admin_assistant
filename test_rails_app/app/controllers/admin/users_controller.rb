@@ -18,8 +18,13 @@ class Admin::UsersController < ApplicationController
     end
     
     a.form do |form|
-      form.columns :username, :password, :birthday, :state, :tmp_avatar
-      form[:birthday].date_select_options = {:start_year => Time.now.year-100, :end_year => Time.now.year}
+      form.columns :username, :password, :birthday, :state, :tmp_avatar, 
+                   :force_blog_posts_to_textile
+      form[:birthday].date_select_options =
+          {:start_year => Time.now.year-100, :end_year => Time.now.year}
+      form[:force_blog_posts_to_textile].input = :select
+      form[:force_blog_posts_to_textile].select_options =
+          {:include_blank => true}
     end
     
     a[:tmp_avatar].label = 'Avatar'
