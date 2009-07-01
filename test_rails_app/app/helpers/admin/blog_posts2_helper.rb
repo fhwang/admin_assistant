@@ -9,7 +9,7 @@ module Admin::BlogPosts2Helper
     )
   end
   
-  def tags_value(blog_post)
+  def tags_string(blog_post)
     blog_post.tags.map { |tag| tag.tag }.join ' '
   end
 end

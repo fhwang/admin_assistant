@@ -142,9 +142,9 @@ class AdminAssistant
     def virtual_column_html(column)
       input_name = "#{model_class.name.underscore}[#{column.name}]"
       input_type = settings[column.name.to_sym].input
-      fv = column.value @record
       if input_type
         if input_type == :check_box
+          fv = column.value @record
           # Rails 2.3 wants the hidden tag to come before the checkbox, but
           # it's the opposite for Rails 2.2 and 2.1
           if RAILS_GEM_VERSION =~ /^2.3/
@@ -156,7 +156,7 @@ class AdminAssistant
           end
         end
       else
-        @action_view.send(:text_field_tag, input_name, fv)
+        @action_view.send(:text_field_tag, input_name, column.string(@record))
       end
     end
   end

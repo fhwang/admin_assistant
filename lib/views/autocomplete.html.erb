@@ -4,7 +4,7 @@ association_target = AdminAssistant::AssociationTarget.new(associated_class)
 <ul>
   <% records.each do |record| %>
     <li id="<%= prefix %><%= record.id %>"><%=
-      association_target.assoc_field_value(record)
+      association_target.assoc_value(record)
     %></li>
   <% end %>
 </ul>

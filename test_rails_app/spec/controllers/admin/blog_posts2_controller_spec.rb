@@ -617,6 +617,30 @@ describe Admin::BlogPosts2Controller do
     end
   end
   
+  describe '#index with one record with a false textile field' do
+    before :all do
+      BlogPost.destroy_all
+      @blog_post = BlogPost.create!(
+        :title => random_word, :user => @user, :textile => false
+      )
+    end
+    
+    before :each do
+      get :index
+    end
+      
+    it 'should make the textile field an Ajax toggle' do
+      toggle_div_id = "blog_post_#{@blog_post.id}_textile"
+      post_url =
+          "/admin/blog_posts2/update/#{@blog_post.id}?" +
+          CGI.escape('blog_post[textile]') + "=1&amp;from=#{toggle_div_id}"
+      response.should have_tag("div[id=?]", toggle_div_id) do
+        ajax_substr = "new Ajax.Updater('#{toggle_div_id}', '#{post_url}'"
+        with_tag("a[href=#][onclick*=?]", ajax_substr, :text => 'No')
+      end
+    end
+  end
+  
   describe '#new' do
     before :all do
       Tag.find_or_create_by_tag 'tag_from_yesterday'

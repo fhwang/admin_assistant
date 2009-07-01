@@ -304,7 +304,7 @@ class AdminAssistant
       @associated_class = associated_class
     end
     
-    def assoc_field_value(assoc_value)
+    def assoc_value(assoc_value)
       if assoc_value.respond_to?(:name_for_admin_assistant)
         assoc_value.name_for_admin_assistant
       elsif assoc_value && default_name_method

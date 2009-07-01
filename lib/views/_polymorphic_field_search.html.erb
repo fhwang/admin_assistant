@@ -51,7 +51,7 @@ polymorphic_types.each do |polymorphic_type|
         :url => "/#{controller.controller_path}/autocomplete_#{name}"
       }
       text_field_value = if associated.class == polymorphic_type
-        column_view.assoc_field_value(associated)
+        column_view.assoc_value(associated)
       end
   %>
   <%= text_field_tag(text_field_id, text_field_value, :id => text_field_id) %>

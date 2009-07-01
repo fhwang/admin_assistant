@@ -34,20 +34,20 @@ class AdminAssistant
       def sort_possible?
         @column.is_a?(ActiveRecordColumn) || @column.is_a?(BelongsToColumn)
       end
+      
+      def string(record)
+        string_method = "#{@column.name}_string"
+        if @action_view.respond_to?(string_method)
+          @action_view.send string_method, record
+        else
+          value(record).to_s
+        end
+      end
     end
     
     module FormViewMethods
       def description
         @description
-      end
-      
-      def value(record)
-        value_method = "#{@column.name}_value"
-        if @action_view.respond_to?(value_method)
-          @action_view.send value_method, record
-        else
-          field_value record
-        end
       end
       
       def set_instance_variables_from_options(opts)
@@ -84,13 +84,13 @@ class AdminAssistant
           @action_view.send html_for_index_method, record
         elsif @link_to_args
           @action_view.link_to(
-            @action_view.send(:h, value(record)),
+            @action_view.send(:h, string(record)),
             @link_to_args.call(record)
           )
         elsif ajax_toggle?
           ajax_toggle_html(record)
         else
-          @action_view.send(:h, value(record))
+          @action_view.send(:h, string(record))
         end
         html = '&nbsp;' if html.blank?
         html
@@ -112,15 +112,6 @@ class AdminAssistant
         )
       end
       
-      def value(record)
-        value_method = "#{@column.name}_value"
-        if @action_view.respond_to?(value_method)
-          @action_view.send value_method, record
-        else
-          field_value record
-        end
-      end
-      
       def set_instance_variables_from_options(opts)
         @link_to_args = opts[:link_to_args]
         @sort_order = opts[:sort_order]
@@ -137,14 +128,14 @@ class AdminAssistant
     
     module ShowViewMethods
       def html(record)
-        @action_view.send(:h, field_value(record))
+        @action_view.send(:h, value(record))
       end
     end
   end
   
   class ActiveRecordColumn < Column
     class View < AdminAssistant::Column::View
-      def field_value(record)
+      def value(record)
         record.send(name) if record.respond_to?(name)
       end
     end
@@ -222,7 +213,7 @@ class AdminAssistant
       def ajax_toggle_inner_html(record)
         div_id = ajax_toggle_div_id record
         @action_view.link_to_remote(
-          value(record),
+          string(record),
           :update => div_id,
           :url => {
             :action => 'update', :id => record.id, :from => div_id,
@@ -234,12 +225,13 @@ class AdminAssistant
         )
       end
 
-      def value(record)
-        value = super
+      def string(record)
+        value = value(record)
         if @boolean_labels
-          value = value ? @boolean_labels.first : @boolean_labels.last
+          value ? @boolean_labels.first : @boolean_labels.last
+        else
+          value.to_s
         end
-        value
       end
     end
     
@@ -295,7 +287,7 @@ class AdminAssistant
 
   class AdminAssistantColumn < Column
     class View < AdminAssistant::Column::View
-      def field_value(record)
+      def value(record)
         record.send(name) if record.respond_to?(name)
       end
     end
@@ -324,8 +316,8 @@ class AdminAssistant
         @association_target = AssociationTarget.new associated_class
       end
       
-      def assoc_field_value(assoc_value)
-        @association_target.assoc_field_value assoc_value
+      def assoc_value(assoc_value)
+        @association_target.assoc_value assoc_value
       end
       
       def associated_class
@@ -336,8 +328,8 @@ class AdminAssistant
         @column.association_foreign_key
       end
       
-      def field_value(record)
-        assoc_field_value record.send(name)
+      def value(record)
+        assoc_value record.send(name)
       end
     
       def options_for_select
@@ -507,7 +499,7 @@ class AdminAssistant
   
   class PolymorphicBelongsToColumn < Column
     class View < AdminAssistant::Column::View
-      def assoc_field_value(assoc_value)
+      def assoc_value(assoc_value)
         if assoc_value.respond_to?(:name_for_admin_assistant)
           assoc_value.name_for_admin_assistant
         elsif assoc_value
@@ -518,7 +510,7 @@ class AdminAssistant
         end
       end
       
-      def field_value(record)
+      def value(record)
         record.send name
       end
     end
@@ -536,11 +528,11 @@ class AdminAssistant
     class IndexView < View
       include AdminAssistant::Column::IndexViewMethods
       
-      def field_value(record)
+      def value(record)
         target = record.send name
         if target
           str = AssociationTarget.new(target.class).name.capitalize
-          fv = assoc_field_value target
+          fv = assoc_value target
           if fv
             str << " '#{fv}'"
           else
