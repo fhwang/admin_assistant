@@ -4,6 +4,5 @@ class Admin::BlogPostsController < ApplicationController
   # silly class method defined on application.rb, should be available here
   do_something
 
-  admin_assistant_for BlogPost do |admin|
-  end
+  admin_assistant_for BlogPost
 end
