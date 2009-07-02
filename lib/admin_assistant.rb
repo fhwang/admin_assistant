@@ -1,12 +1,10 @@
 $: << File.join(File.dirname(__FILE__), '../vendor/ar_query/lib')
-require 'admin_assistant/builder'
-require 'admin_assistant/column'
-require 'admin_assistant/column/view'
-require 'admin_assistant/form_view'
-require 'admin_assistant/helper'
-require 'admin_assistant/index'
-require 'admin_assistant/request'
-require 'admin_assistant/search'
+require 'find'
+Find.find(File.dirname(__FILE__)) do |path|
+  if path =~ %r|\.rb$| && path !~ %r|admin_assistant\.rb$|
+    require path
+  end
+end
 require 'will_paginate'
 
 class AdminAssistant
