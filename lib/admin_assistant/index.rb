@@ -141,6 +141,14 @@ class AdminAssistant
         @columns
       end
       
+      def destroy?
+        @destroy ||= @admin_assistant.destroy?
+      end
+      
+      def edit?
+        @edit ||= @admin_assistant.edit?
+      end
+      
       def header
         if block = @index.settings.header
           block.call @action_view.params
@@ -150,7 +158,7 @@ class AdminAssistant
       end
 
       def right_column?
-        update? or destroy? or show? or !right_column_lambdas.empty?
+        edit? or destroy? or show? or !right_column_lambdas.empty?
       end
       
       def right_column_lambdas
@@ -158,21 +166,9 @@ class AdminAssistant
             @admin_assistant.index_settings.right_column_links
       end
       
-      def destroy?
-        @destroy ||= @admin_assistant.destroy?
-      end
-      
-      def show?
-        @show ||= @admin_assistant.show?
-      end
-      
-      def update?
-        @update ||= @admin_assistant.update?
-      end
-      
       def right_column_links(record)
         links = ""
-        if update?
+        if edit?
           links << @action_view.link_to(
             'Edit', :action => 'edit', :id => record.id
           ) << " "
@@ -200,6 +196,10 @@ class AdminAssistant
           ) || ''
         end
         links
+      end
+      
+      def show?
+        @show ||= @admin_assistant.show?
       end
     end
   end

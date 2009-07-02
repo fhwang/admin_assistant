@@ -183,7 +183,7 @@ class AdminAssistant
       dispatch_to_request_method Request::Autocomplete, args.first
     else
       if meth.to_s =~ /(.*)\?/ && request_methods.include?($1.to_sym)
-        @actions.include?($1.to_sym)
+        @controller_class.public_instance_methods.include?($1)
       elsif @request.respond_to?(meth)
         @request.send meth, *args
       else
