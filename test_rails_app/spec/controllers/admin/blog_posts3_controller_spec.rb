@@ -65,9 +65,9 @@ describe Admin::BlogPosts3Controller do
         response.body.should match(/unpublished blog post/)
       end
       
-      it "should show 'true' from having called BlogPost#published?" do
+      it "should show 'No' from having called BlogPost#published?" do
         response.should have_tag("tr[id=record_#{@blog_post.id}]") do
-          with_tag "td", :text => 'false'
+          with_tag "td", :text => 'No'
         end
       end
     end

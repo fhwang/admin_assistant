@@ -171,15 +171,6 @@ class AdminAssistant
           :success => "$(#{div_id}).hide(); $(#{div_id}).appear()"
         )
       end
-
-      def string(record)
-        value = value(record)
-        if @boolean_labels
-          value ? @boolean_labels.first : @boolean_labels.last
-        else
-          value.to_s
-        end
-      end
     end
     
     class SearchView < View

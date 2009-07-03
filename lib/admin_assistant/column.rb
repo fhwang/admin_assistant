@@ -62,7 +62,12 @@ class AdminAssistant
         if @action_view.respond_to?(string_method)
           @action_view.send string_method, record
         else
-          value(record).to_s
+          value = value(record)
+          if @boolean_labels
+            value ? @boolean_labels.first : @boolean_labels.last
+          else
+            value.to_s
+          end
         end
       end
     end
