@@ -56,17 +56,6 @@ class AdminAssistant
     end
     
     class View < AdminAssistant::Column::View
-      def assoc_value(assoc_value)
-        if assoc_value.respond_to?(:name_for_admin_assistant)
-          assoc_value.name_for_admin_assistant
-        elsif assoc_value
-          association_target = AssociationTarget.new assoc_value.class
-          if dnm = association_target.default_name_method
-            assoc_value.send dnm
-          end
-        end
-      end
-      
       def value(record)
         record.send name
       end
@@ -86,14 +75,15 @@ class AdminAssistant
       include AdminAssistant::Column::IndexViewMethods
       
       def value(record)
-        target = record.send name
-        if target
-          str = AssociationTarget.new(target.class).name.capitalize
-          fv = assoc_value target
+        v = record.send name
+        if v
+          target = AssociationTarget.new v.class
+          str = target.name.capitalize
+          fv = target.assoc_value v
           if fv
             str << " '#{fv}'"
           else
-            str << " #{target.id}"
+            str << " #{v.id}"
           end
         end
       end

@@ -28,12 +28,7 @@ js_args = {:autocompleteTypes => [], :idTypes => [], :selectTypes => []}
 <%
 polymorphic_types.each do |polymorphic_type|
   name = polymorphic_type.name.underscore.downcase
-  column_view = AdminAssistant::PolymorphicBelongsToColumn::View.new(
-    column, self
-  )
-  association_target = AdminAssistant::AssociationTarget.new(
-    polymorphic_type
-  )
+  association_target = AdminAssistant::AssociationTarget.new polymorphic_type
 %>
 <div class="polymorphic_type">
 <% if association_target.default_name_method %>
@@ -51,7 +46,7 @@ polymorphic_types.each do |polymorphic_type|
         :url => "/#{controller.controller_path}/autocomplete_#{name}"
       }
       text_field_value = if associated.class == polymorphic_type
-        column_view.assoc_value(associated)
+        association_target.assoc_value(associated)
       end
   %>
   <%= text_field_tag(text_field_id, text_field_value, :id => text_field_id) %>
