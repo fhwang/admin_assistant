@@ -10,13 +10,16 @@ class AdminAssistant
     end
     
     def belongs_to_sort_column
-      columns.detect { |column|
-        column.is_a?(BelongsToColumn) && column.name.to_s == sort
+      @admin_assistant.accumulate_belongs_to_columns(column_names).detect { |c|
+        c.name.to_s == sort
       }
     end
     
+    def column_names
+      settings.column_names || model_class.columns.map(&:name)
+    end
+    
     def columns
-      column_names = settings.column_names || model_class.columns.map(&:name)
       @admin_assistant.accumulate_columns column_names
     end
     

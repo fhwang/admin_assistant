@@ -162,10 +162,7 @@ class AdminAssistant
     end
     
     def column_names
-      @column_names ||
-          @admin_assistant.model_class.columns.reject { |ar_column|
-            %w(id created_at updated_at).include?(ar_column.name)
-          }.map { |ar_column| ar_column.name }
+      @column_names || @admin_assistant.default_column_names
     end
   end
   

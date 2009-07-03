@@ -49,17 +49,22 @@ class AdminAssistant
     columns
   end
   
+  def default_column_names
+    model_class.columns.reject { |ar_column|
+      %w(id created_at updated_at).include?(ar_column.name)
+    }.map { |ar_column| ar_column.name }
+  end
+  
+  def accumulate_belongs_to_columns(names)
+    accumulate_columns(names).select { |column| column.is_a?(BelongsToColumn) }
+  end
+  
   def autocomplete_actions
     actions_hash = {}
     if [:new, :create, :edit, :update].any? { |action|
       actions.include?(action)
     }
-      column_names = model_class.columns.reject { |ar_column|
-        %w(id created_at updated_at).include?(ar_column.name)
-      }.map { |ar_column| ar_column.name }
-      accumulate_columns(column_names).select { |column|
-        column.is_a?(BelongsToColumn)
-      }.each { |column|
+      accumulate_belongs_to_columns(default_column_names).each { |column|
         actions_hash["autocomplete_#{column.name}".to_sym] = true
       }
     end

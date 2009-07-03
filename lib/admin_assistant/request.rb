@@ -29,50 +29,7 @@ class AdminAssistant
       end
       
       def params_for_save
-        params = {}
-        split_params = {}
-        whole_params = {}
-        destroy_params = {}
-        @controller.params[model_class_symbol].each do |k, v|
-          if k =~ /\([0-9]+i\)$/
-            split_params[k] = v
-          elsif k =~ %r|(.*)\(destroy\)|
-            destroy_params[$1] = v
-          else
-            whole_params[k] = v
-          end
-        end
-        bases = split_params.map{ |k, v| k.gsub(/\([0-9]+i\)$/, '') }.uniq
-        bases.each do |b|
-          h = {}
-          split_params.each{ |k, v| h[k] = split_params.delete(k) if k =~ /#{b}\([0-9]+i\)$/ }
-          from_form_method = "#{b}_from_form".to_sym
-          if @controller.respond_to?(from_form_method)
-            params[b] = @controller.send(from_form_method, h)
-          elsif @record.respond_to?("#{b}=")
-            params.merge! h
-          end
-        end
-        destroy_params.each do |k,v|
-          if whole_params[k].blank?
-            params[k] = nil
-            mname = "destroy_#{k}_in_attributes"
-            if @controller.respond_to?(mname)
-              @controller.send(mname, params)
-            end
-          end
-        end
-        whole_params.each do |k, v|
-          from_form_method = "#{k}_from_form".to_sym
-          if @controller.respond_to?(from_form_method)
-            params[k] = @controller.send(from_form_method, v)
-          elsif @record.respond_to?("#{k}=")
-            unless destroy_params[k] && v.blank?
-              params[k] = v
-            end
-          end
-        end
-        params
+        ParamsForSave.new(@controller, @record, model_class_symbol)
       end
       
       def redirect_after_save
@@ -122,13 +79,24 @@ class AdminAssistant
     end
     
     class Autocomplete < Base
+      def associated_class
+        @associated_class ||= Module.const_get(
+          underscored_assoc_class_name.camelize
+        )
+      end
+      
       def call
-        action =~ /autocomplete_(.*)/
-        associated_class = Module.const_get $1.camelize
-#p $1
- #       column = @admin_assistant.column $1
+        render_template_file(
+          'autocomplete', :layout => false,
+          :locals => {
+            :records => records, :prefix => underscored_assoc_class_name,
+            :associated_class => associated_class
+          }
+        )
+      end
+      
+      def records
         target = AssociationTarget.new associated_class
-        search_string = @controller.params["#{$1}_autocomplete_input"]
         opts = {
           :conditions => [
             "LOWER(#{target.default_name_method}) like ?",
@@ -136,14 +104,18 @@ class AdminAssistant
           ],
           :limit => 10
         }
-        records = associated_class.find :all, opts
-        render_template_file(
-          'autocomplete', :layout => false,
-          :locals => {
-            :records => records, :prefix => $1,
-            :associated_class => associated_class
-          }
-        )
+        associated_class.find :all, opts
+      end
+      
+      def search_string
+        @controller.params[
+          "#{underscored_assoc_class_name}_autocomplete_input"
+        ]
+      end
+      
+      def underscored_assoc_class_name
+        action =~ /autocomplete_(.*)/
+        $1
       end
     end
     
@@ -226,6 +198,82 @@ class AdminAssistant
       end
     end
     
+    class ParamsForSave < Hash
+      def initialize(controller, record, model_class_symbol)
+        super()
+        @controller, @record, @model_class_symbol =
+            controller, record, model_class_symbol
+        build_from_split_params
+        destroy_params.each do |k,v|
+          if whole_params[k].blank?
+            self[k] = nil
+            mname = "destroy_#{k}_in_attributes"
+            if controller.respond_to?(mname)
+              controller.send(mname, self)
+            end
+          end
+        end
+        build_from_whole_params
+      end
+      
+      def build_from_split_params
+        bases = split_params.map { |k, v| k.gsub(/\([0-9]+i\)$/, '') }.uniq
+        bases.each do |b|
+          h = {}
+          split_params.each { |k, v|
+            h[k] = split_params.delete(k) if k =~ /#{b}\([0-9]+i\)$/
+          }
+          from_form_method = "#{b}_from_form".to_sym
+          if @controller.respond_to?(from_form_method)
+            self[b] = @controller.send(from_form_method, h)
+          elsif @record.respond_to?("#{b}=")
+            self.merge! h
+          end
+        end
+      end
+      
+      def build_from_whole_params
+        whole_params.each do |k, v|
+          from_form_method = "#{k}_from_form".to_sym
+          if @controller.respond_to?(from_form_method)
+            self[k] = @controller.send(from_form_method, v)
+          elsif @record.respond_to?("#{k}=")
+            unless destroy_params[k] && v.blank?
+              self[k] = v
+            end
+          end
+        end
+      end
+      
+      def destroy_params
+        dp = {}
+        @controller.params[@model_class_symbol].each do |k,v|
+          if k =~ %r|(.*)\(destroy\)|
+            dp[$1] = v
+          end
+        end
+        dp
+      end
+      
+      def split_params
+        sp = {}
+        @controller.params[@model_class_symbol].each do |k,v|
+          sp[k] = v if k =~ /\([0-9]+i\)$/
+        end
+        sp
+      end
+      
+      def whole_params
+        wp = {}
+        @controller.params[@model_class_symbol].each do |k,v|
+          unless k =~ /\([0-9]+i\)$/ || k =~ %r|(.*)\(destroy\)|
+            wp[k] = v
+          end
+        end
+        wp
+      end
+    end
+    
     class Show < Base
       def call
         @record = model_class.find @controller.params[:id]
@@ -242,21 +290,8 @@ class AdminAssistant
         @record = model_class.find @controller.params[:id]
         @record.attributes = params_for_save
         if save
-          if from = @controller.params[:from]
-            from =~ /#{model_class.name.underscore}_\d+_(.*)/
-            field_name = $1
-            index = AdminAssistant::Index.new @admin_assistant
-            erb = <<-ERB
-              <%= index.view(self).columns.detect { |c| c.name == field_name }.
-                        ajax_toggle_inner_html(record) %>
-            ERB
-            @controller.send(
-              :render,
-              :inline => erb,
-              :locals => {
-                :index => index, :field_name => field_name, :record => @record
-              }
-            )
+          if @controller.params[:from]
+            render_response_to_ajax_toggle
           else
             redirect_after_save
           end
@@ -264,6 +299,23 @@ class AdminAssistant
           @controller.instance_variable_set :@record, @record
           render_form
         end
+      end
+      
+      def render_response_to_ajax_toggle
+        @controller.params[:from] =~ /#{model_class.name.underscore}_\d+_(.*)/
+        field_name = $1
+        index = AdminAssistant::Index.new @admin_assistant
+        erb = <<-ERB
+          <%= index.view(self).columns.detect { |c| c.name == field_name }.
+                    ajax_toggle_inner_html(record) %>
+        ERB
+        @controller.send(
+          :render,
+          :inline => erb,
+          :locals => {
+            :index => index, :field_name => field_name, :record => @record
+          }
+        )
       end
       
       def save
