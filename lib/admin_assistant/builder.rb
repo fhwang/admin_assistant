@@ -232,6 +232,7 @@ class AdminAssistant
       def initialize(admin_assistant)
         super
         @column_names = []
+        @default_search_includes = []
       end
       
       def column_config_args
@@ -240,6 +241,14 @@ class AdminAssistant
       
       def columns(*c)
         @column_names = c
+      end
+    
+      def default_search_includes(*includes)
+        if includes.empty?
+          @default_search_includes
+        else
+          @default_search_includes = includes
+        end
       end
     end
   end

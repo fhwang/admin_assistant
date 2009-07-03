@@ -4,6 +4,9 @@ class Admin::CommentsController < ApplicationController
   admin_assistant_for Comment do |a|
     a.form[:comment].read_only
     
-    a.index.conditions "comment like '%smart%'"
+    a.index do |index|
+      index.conditions "comment like '%smart%'"
+      index.search.default_search_includes :id
+    end
   end
 end

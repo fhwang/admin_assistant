@@ -32,6 +32,34 @@ describe Admin::CommentsController do
     end
   end
   
+  describe '#index when searching by comment' do
+    before :all do
+      @comment = Comment.create! :comment => "you think you're so smart"
+    end
+    
+    before :each do
+      get :index, :search => 'you'
+    end
+    
+    it 'should find the comment' do
+      response.body.should match(/you think you're so smart/)
+    end
+  end
+  
+  describe '#index when searching by ID' do
+    before :all do
+      @comment = Comment.create! :comment => "you think you're so smart"
+    end
+    
+    before :each do
+      get :index, :search => @comment.id.to_s
+    end
+    
+    it 'should find the comment' do
+      response.body.should match(/you think you're so smart/)
+    end
+  end
+  
   describe '#new with at least 16 blog posts and 16 users' do
     before :all do
       user = User.find_or_create_by_username 'soren'

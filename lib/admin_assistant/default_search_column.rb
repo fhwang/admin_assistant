@@ -1,14 +1,20 @@
 class AdminAssistant
   class DefaultSearchColumn < Column
-    def initialize(model_class)
+    def initialize(model_class, opts)
       @model_class = model_class
+      @fields_to_include = opts[:fields_to_include] || []
     end
     
     def add_to_query_condition(ar_query_condition, search)
       unless search.params.blank?
-        ar_query_condition.ar_query.boolean_join = :or
-        AdminAssistant.searchable_columns(@model_class).each do |column|
-          ar_query_condition.sqls << "#{column.name} like ?"
+        ar_query_condition.ar_query.boolean_join = :and
+        ar_query_condition.boolean_join = :or
+        names_to_search = AdminAssistant.searchable_columns(@model_class).map(
+          &:name
+        )
+        names_to_search.concat @fields_to_include
+        names_to_search.uniq.each do |field_name|
+          ar_query_condition.sqls << "#{field_name} like ?"
           ar_query_condition.bind_vars << "%#{search.params}%"
         end
       end

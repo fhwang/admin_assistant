@@ -33,7 +33,10 @@ class AdminAssistant
     def columns
       column_names = settings.column_names
       if column_names.empty?
-        [DefaultSearchColumn.new(@admin_assistant.model_class)]
+        [DefaultSearchColumn.new(
+          @admin_assistant.model_class,
+          :fields_to_include => settings.default_search_includes
+        )]
       else
         column_names.map { |column_name| 
           @admin_assistant.column(column_name.to_s)
