@@ -13,7 +13,7 @@ class AdminAssistant
       column_names = @admin_assistant.show_settings.column_names || 
                      @admin_assistant.model_class.columns.map(&:name)
       @admin_assistant.accumulate_columns(column_names).map { |c|
-        c.show_view @action_view
+        c.show_view @action_view, @admin_assistant
       }
     end
   end

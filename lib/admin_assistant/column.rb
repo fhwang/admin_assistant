@@ -1,36 +1,37 @@
 class AdminAssistant
   class Column
-    def form_view(action_view, opts = {})
-      view 'FormView', action_view, opts
+    def form_view(action_view, admin_assistant, opts = {})
+      view 'FormView', action_view, admin_assistant, opts
     end
     
-    def index_view(action_view, opts = {})
-      view 'IndexView', action_view, opts
+    def index_view(action_view, admin_assistant, opts = {})
+      view 'IndexView', action_view, admin_assistant, opts
     end
     
-    def search_view(action_view, opts = {})
-      view 'SearchView', action_view, opts
+    def search_view(action_view, admin_assistant, opts = {})
+      view 'SearchView', action_view, admin_assistant, opts
     end
     
-    def show_view(action_view, opts = {})
-      view 'ShowView', action_view, opts
+    def show_view(action_view, admin_assistant, opts = {})
+      view 'ShowView', action_view, admin_assistant, opts
     end
     
-    def view(view_class_name, action_view, opts)
+    def view(view_class_name, action_view, admin_assistant, opts)
       klass = self.class.const_get view_class_name
-      klass.new self, action_view, opts
+      klass.new self, action_view, admin_assistant, opts
     end
 
     class View
       attr_reader :sort_order
       
-      def initialize(column, action_view, opts = {})
+      def initialize(column, action_view, admin_assistant, opts = {})
         @column, @action_view, @opts = column, action_view, opts
-        @boolean_labels = opts[:boolean_labels]
-        @label = opts[:label]
-        @polymorphic_types = opts[:polymorphic_types]
+        base_setting = admin_assistant[name]
+        @boolean_labels = base_setting.boolean_labels
+        @label = base_setting.label
+        @polymorphic_types = base_setting.polymorphic_types
         if respond_to?(:set_instance_variables_from_options)
-          set_instance_variables_from_options(opts)
+          set_instance_variables_from_options(admin_assistant, opts)
         end
       end
       
@@ -71,15 +72,22 @@ class AdminAssistant
         @description
       end
       
-      def set_instance_variables_from_options(opts)
-        @input = opts[:input]
-        @description = opts[:description]
-        @datetime_select_options = opts[:datetime_select_options] || {}
-        @date_select_options = opts[:date_select_options] || {}
-        @file_exists_method = opts[:file_exists_method]
-        @file_url_method = opts[:file_url_method]
-        @polymorphic_types = opts[:polymorphic_types]
-        @select_options = opts[:select_options] || {}
+      def set_instance_variables_from_options(admin_assistant, opts)
+        setting = admin_assistant.form_settings[name.to_sym]
+        @input = setting.input
+        @description = setting.description
+        @datetime_select_options = setting.datetime_select_options || {}
+        @date_select_options = setting.date_select_options || {}
+        fem_name = name + '_exists?'
+        if @action_view.controller.respond_to?(fem_name)
+          @file_exists_method = @action_view.controller.method(fem_name)
+        end
+        fum_name = name + '_url'
+        if @action_view.controller.respond_to?(fum_name)
+          @file_url_method = @action_view.controller.method(fum_name)
+        end
+        @polymorphic_types = admin_assistant[name.to_sym].polymorphic_types
+        @select_options = setting.select_options || {}
         unless @select_options.has_key?(:include_blank)
           @select_options[:include_blank] = true
         end
@@ -133,16 +141,18 @@ class AdminAssistant
         )
       end
       
-      def set_instance_variables_from_options(opts)
-        @link_to_args = opts[:link_to_args]
-        @sort_order = opts[:sort_order]
-        @image_size = opts[:image_size]
-        @ajax_toggle_allowed = opts[:ajax_toggle_allowed]
+      def set_instance_variables_from_options(admin_assistant, opts)
+        index = opts[:index]
+        setting = admin_assistant.index_settings[name.to_sym]
+        @link_to_args = setting.link_to_args
+        @sort_order = index.sort_order if name == index.sort
+        @image_size = setting.image_size
+        @ajax_toggle_allowed = admin_assistant.update?
       end
     end
     
     module SearchViewMethods      
-      def set_instance_variables_from_options(opts)
+      def set_instance_variables_from_options(admin_assistant, opts)
         @search = opts[:search]
       end
     end

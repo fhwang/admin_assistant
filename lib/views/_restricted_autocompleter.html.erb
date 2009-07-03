@@ -15,12 +15,10 @@ else
   associated_id = nil
 end
 autocompleter_js_var = "#{associated_class_name}_autocompleter"
-association_target = AdminAssistant::AssociationTarget.new(
-  column.associated_class
-)
+target = AdminAssistant::AssociationTarget.new column.associated_class
 %>
 <%= text_field_tag(
-  text_field_id, association_target.assoc_value(associated),
+  text_field_id, target.assoc_value(record.send(column.name)),
   :id => text_field_id
 ) %>
 <%=

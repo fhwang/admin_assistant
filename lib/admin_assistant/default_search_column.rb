@@ -18,7 +18,7 @@ class AdminAssistant
       {}
     end
       
-    def search_view(action_view, opts={})
+    def search_view(action_view, admin_assistant, opts={})
       View.new self, action_view
     end
     

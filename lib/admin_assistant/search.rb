@@ -43,13 +43,7 @@ class AdminAssistant
     
     def column_views(action_view)
       columns.map { |c|
-        opts = {:search => self}
-        if c.respond_to?(:name) && c.name
-          opts[:boolean_labels] = @admin_assistant[c.name].boolean_labels
-          opts[:label] = @admin_assistant[c.name].label
-          opts[:polymorphic_types] = @admin_assistant[c.name].polymorphic_types
-        end
-        c.search_view action_view, opts
+        c.search_view action_view, @admin_assistant, :search => self
       }
     end
     

@@ -112,9 +112,7 @@ class AdminAssistant
     end
     
     def view(action_view)
-      @view ||= View.new(
-        self, action_view, @admin_assistant
-      )
+      @view ||= View.new(self, action_view, @admin_assistant)
     end
     
     class View
@@ -130,15 +128,7 @@ class AdminAssistant
       def columns
         unless @columns
           @columns = @index.columns.map { |c|
-            c.index_view(
-              @action_view,
-              :boolean_labels => @admin_assistant[c.name].boolean_labels,
-              :sort_order => (@index.sort_order if c.name == @index.sort),
-              :link_to_args => @index.settings[c.name.to_sym].link_to_args,
-              :label => @admin_assistant[c.name].label,
-              :image_size => @index.settings[c.name.to_sym].image_size,
-              :ajax_toggle_allowed => ajax_toggle_allowed?
-            )
+            c.index_view @action_view, @admin_assistant, :index => @index
           }
         end
         @columns

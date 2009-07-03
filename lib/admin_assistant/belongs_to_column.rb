@@ -88,7 +88,7 @@ class AdminAssistant
     end
     
     class View < AdminAssistant::Column::View
-      def initialize(column, action_view, opts = {})
+      def initialize(column, action_view, admin_assistant, opts = {})
         super
         @association_target = AssociationTarget.new associated_class
       end
