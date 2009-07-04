@@ -100,6 +100,11 @@ describe Admin::ProductsController do
     it 'should render the custom price input from _price_input.html.erb' do
       response.should have_tag("input[name=?]", 'product[price][dollars]')
     end
+    
+    it 'should show nilify links for sale_starts_at and sale_ends_at' do
+      response.body.should have_tag('a', :text => "Not on sale")
+      response.body.should have_tag('a', :text => "Sale doesn't end")
+    end
   end
   
   describe '#edit' do

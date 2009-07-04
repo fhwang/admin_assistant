@@ -8,7 +8,12 @@ class Admin::ProductsController < ApplicationController
       product.update_attribute :deleted_at, Time.now.utc
     end
 
-    a.form.columns :name, :price, :file_column_image
+    a.form do |form|
+      form.columns :name, :price, :file_column_image, :percent_off, 
+                   :sale_starts_at, :sale_ends_at
+      form[:sale_starts_at].nilify_link = 'Not on sale'
+      form[:sale_ends_at].nilify_link = "Sale doesn't end"
+    end
     
     a.index do |index|
       index.columns :id, :name, :price, :file_column_image
