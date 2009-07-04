@@ -66,6 +66,20 @@ class AdminAssistant
     class FormView < View
       include AdminAssistant::Column::FormViewMethods
       
+      def datetime_html(form)
+        opts = {:include_blank => true}.merge @datetime_select_options
+        h = form.datetime_select name, opts
+        if opts[:include_blank]
+          js_name = "#{form.object.class.name.underscore}_#{name}"
+          h << @action_view.send(
+            :link_to_function,
+            "Set \"#{label.downcase}\" to nil", 
+            "AdminAssistant.nullify_datetime_select('#{js_name}')"
+          )
+        end
+        h
+      end
+      
       def html(form)
         input = @input || case @column.sql_type
           when :boolean
@@ -87,9 +101,7 @@ class AdminAssistant
               name, {:include_blank => true}.merge(@date_select_options)
             )
           when :datetime_select
-            form.datetime_select(
-              name, {:include_blank => true}.merge(@datetime_select_options)
-            )
+            datetime_html(form)
           when :select
             # for now only used for boolean fields
             value = form.object.send name

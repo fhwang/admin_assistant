@@ -211,7 +211,6 @@ describe Admin::BlogPosts3Controller do
     it 'should have a published_at select that starts in the year 2009' do
       name = 'blog_post[published_at(1i)]'
       response.should have_tag('select[name=?]', name) do
-        with_tag "option[value='']"
         with_tag "option[value='2009']"
         with_tag "option[value='2010']"
         without_tag "option[value='2008']"
@@ -223,6 +222,12 @@ describe Admin::BlogPosts3Controller do
       response.should have_tag('select[name=?]', name) do
         with_tag "option[value=?][selected=selected]", @request_time.day
       end
+    end
+    
+    it 'should not show a nullify link for published_at' do
+      response.body.should_not have_tag(
+        'a', :text => "Set \"published at\" to nil"
+      )
     end
     
     it "should say 'New post'" do

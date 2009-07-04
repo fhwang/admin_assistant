@@ -736,6 +736,12 @@ describe Admin::BlogPostsController do
         end
       end
     end
+    
+    it 'should show a nullify link for published_at' do
+      response.body.should have_tag(
+        'a', :text => "Set \"published at\" to nil"
+      )
+    end
   end
   
   describe '#new with a preset value in the GET arguments' do

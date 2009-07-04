@@ -37,7 +37,8 @@ class Admin::BlogPosts3Controller < ApplicationController
     a.form do |form|
       form.columns_for_new  :title, :user, :published_at
       form.columns_for_edit :title, :user, :published_at, :body, :merged_into
-      form[:published_at].datetime_select_options = {:start_year => 2009}
+      form[:published_at].datetime_select_options =
+          {:include_blank => false, :start_year => 2009}
       form[:published_at].default do
         Time.now.utc
       end
