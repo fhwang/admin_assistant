@@ -3,6 +3,21 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 describe Admin::ProductsController do
   integrate_views
   
+  describe '#destroy' do
+    before :all do
+      @product = Product.find_or_create_by_name 'Chocolate bar'
+    end
+    
+    before :each do
+      post :destroy, :id => @product.id
+    end
+    
+    it 'should call the custom destroy block' do
+      @product.reload
+      @product.deleted_at.should_not be_nil
+    end
+  end
+  
   describe '#index with at least one Product' do
     before :all do
       @product = (

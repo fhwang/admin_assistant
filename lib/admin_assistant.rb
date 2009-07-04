@@ -10,7 +10,7 @@ require 'will_paginate'
 class AdminAssistant
   attr_reader   :base_settings, :form_settings, :index_settings,  :model_class,
                 :show_settings
-  attr_accessor :actions
+  attr_accessor :actions, :custom_destroy
   attr_writer   :model_class_name
   
   def self.searchable_columns(model_class)

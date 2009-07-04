@@ -146,7 +146,11 @@ class AdminAssistant
     class Destroy < Base
       def call
         @record = model_class.find @controller.params[:id]
-        @record.destroy
+        if @admin_assistant.custom_destroy
+          @admin_assistant.custom_destroy.call @record
+        else
+          @record.destroy
+        end
         @controller.send :render, :text => ''
       end
     end

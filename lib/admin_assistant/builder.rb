@@ -21,6 +21,10 @@ class AdminAssistant
         @admin_assistant.actions = a
       end
     end
+    
+    def destroy(&block)
+      @admin_assistant.custom_destroy = block
+    end
       
     def form
       f = @admin_assistant.form_settings
@@ -138,8 +142,9 @@ class AdminAssistant
     end
     
     def column_config_args
-      {:datetime_select_options => :accessor, :date_select_options => :accessor,
-       :default => :block, :description => :accessor, :exclude_blank => :boolean,
+      {:datetime_select_options => :accessor,
+       :date_select_options => :accessor, :default => :block,
+       :description => :accessor, :exclude_blank => :boolean,
        :input => :accessor, :read_only => :boolean, :write_once => :boolean,
        :select_options => :accessor
       }
