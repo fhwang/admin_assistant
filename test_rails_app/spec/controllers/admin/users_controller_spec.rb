@@ -20,6 +20,21 @@ describe Admin::UsersController do
     end
   end
   
+  describe '#create with the same username' do
+    before :each do
+      @user_count = User.count
+      post :create, :user => {:username => 'betty', :password => ''}
+    end
+    
+    it 'should not save a new user' do
+      User.count.should == @user_count
+    end
+    
+    it 'should not call after_save' do
+      response.should be_success
+    end
+  end
+  
   describe '#destroy' do
     before :each do
       post :destroy, :id => @user.id

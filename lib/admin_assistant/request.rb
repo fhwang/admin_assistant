@@ -71,7 +71,7 @@ class AdminAssistant
           @controller.send(:before_save, @record)
         end
         result = @record.save
-        if @controller.respond_to?(:after_save)
+        if result && @controller.respond_to?(:after_save)
           @controller.send(:after_save, @record)
         end
         result

@@ -33,6 +33,7 @@ class Admin::UsersController < ApplicationController
   protected
   
   def after_save(user)
+    raise unless user.id
     if user.tmp_avatar
       user.update_attribute('avatar_version', user.avatar_version + 1)
       user.save
