@@ -11,6 +11,7 @@ class Admin::ProductsController < ApplicationController
     a.form do |form|
       form.columns :name, :price, :file_column_image, :percent_off, 
                    :sale_starts_at, :sale_ends_at
+      form[:file_column_image].image_size = '100x100'
       form[:sale_starts_at].nilify_link = 'Not on sale'
       form[:sale_ends_at].nilify_link = "Sale doesn't end"
     end

@@ -133,7 +133,7 @@ describe Admin::ProductsController do
     
     it 'should show the current image' do
       response.should have_tag(
-        "img[src^=?]",
+        "img[src^=?][height=100][width=100]",
         "/product/file_column_image/#{@product.id}/ruby_throated.jpg"
       )
     end

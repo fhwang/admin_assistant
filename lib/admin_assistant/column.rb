@@ -91,6 +91,7 @@ class AdminAssistant
         if @action_view.controller.respond_to?(fum_name)
           @file_url_method = @action_view.controller.method(fum_name)
         end
+        @image_size = setting.image_size
         @nilify_link = setting.nilify_link
         @polymorphic_types = admin_assistant[name.to_sym].polymorphic_types
         @select_options = setting.select_options || {}
