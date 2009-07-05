@@ -699,8 +699,8 @@ describe Admin::BlogPosts2Controller do
     end
     
     it 'should use a textarea for the body field' do
-      response.body.should match(
-        %r|<textarea.*name="blog_post\[body\]".*>.*</textarea>|
+      response.should have_tag(
+        'textarea[name=?][cols=20][rows=40]', 'blog_post[body]'
       )
     end
     

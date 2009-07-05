@@ -54,6 +54,8 @@ class Admin::BlogPosts2Controller < ApplicationController
           "Click this and published_at will be set automatically"
         
       form[:user].select_options = {:include_blank => false}
+      
+      form[:body].text_area_options = {:cols => 20, :rows => 40}
     end
     
     # Only show some columns on the show page

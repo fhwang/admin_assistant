@@ -115,7 +115,7 @@ class AdminAssistant
               @select_options.merge(:selected => selected)
             )
           when :text_area
-            form.text_area name
+            form.text_area name, @text_area_options
           when :text_field
             form.text_field name
           when :us_state

@@ -97,6 +97,7 @@ class AdminAssistant
         unless @select_options.has_key?(:include_blank)
           @select_options[:include_blank] = true
         end
+        @text_area_options = setting.text_area_options || {}
       end
     end
     
