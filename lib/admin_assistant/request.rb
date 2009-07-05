@@ -191,7 +191,7 @@ class AdminAssistant
         @record = model_class.new
         @admin_assistant.form_settings.columns_for_new.each do |column|
           if block = @admin_assistant.form_settings[column].default
-            @record.send("#{column}=", block.call)
+            @record.send("#{column}=", block.call(@controller))
           end
         end
         if @controller.params[model_class_symbol]
