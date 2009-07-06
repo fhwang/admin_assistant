@@ -42,7 +42,7 @@ class AdminAssistant
     end
     
     def column_html_from_helper_method(column)
-      html_method = "#{column.name}_html_for_form"
+      html_method = "#{column.name}_input"
       if @action_view.respond_to?(html_method)
         @action_view.send(html_method, @record)
       end
