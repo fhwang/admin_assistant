@@ -123,7 +123,7 @@ class AdminAssistant
     class FormView < View
       include AdminAssistant::Column::FormViewMethods
       
-      def html(form)
+      def default_html(form)
         if associated_class.count > 15
           @action_view.send(
             :render,

@@ -64,7 +64,7 @@ class AdminAssistant
     class FormView < View
       include AdminAssistant::Column::FormViewMethods
       
-      def html(form)
+      def default_html(form)
         opts_for_select = @polymorphic_types.map { |t| [t.name, t.name] }
         form.select(name + '_type', opts_for_select, @select_options) + " " +
             form.text_field(name + '_id', :class => 'integer')

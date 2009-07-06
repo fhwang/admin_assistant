@@ -21,7 +21,7 @@ class AdminAssistant
     class FormView < View
       include AdminAssistant::Column::FormViewMethods
       
-      def html(form)
+      def default_html(form)
         form.file_field name
       end
     end

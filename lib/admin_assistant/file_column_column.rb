@@ -38,7 +38,7 @@ class AdminAssistant
     class FormView < View
       include AdminAssistant::Column::FormViewMethods
       
-      def html(form)
+      def default_html(form)
         if file_exists?(form.object)
           check_box_tag = @action_view.check_box_tag(
             "#{form.object.class.name.underscore}[#{name}(destroy)]"

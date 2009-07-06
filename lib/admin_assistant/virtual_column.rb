@@ -19,7 +19,7 @@ class AdminAssistant
     class FormView < View
       include AdminAssistant::Column::FormViewMethods
       
-      def html(form)
+      def default_html(form)
         input_name = "#{@column.model_class.name.underscore}[#{name}]"
         if @input
           if @input == :check_box

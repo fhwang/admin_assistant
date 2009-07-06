@@ -26,6 +26,7 @@ class AdminAssistant
       
       def initialize(column, action_view, admin_assistant, opts = {})
         @column, @action_view, @opts = column, action_view, opts
+        @model_class = admin_assistant.model_class
         base_setting = admin_assistant[name]
         @boolean_labels = base_setting.boolean_labels
         @label = base_setting.label
@@ -77,6 +78,63 @@ class AdminAssistant
         @description
       end
       
+      def after_html(record)
+        if after = render_from_custom_template("_after_#{name}_input", record)
+          after
+        else
+          helper_method = "after_#{name}_input"
+          if @action_view.respond_to?(helper_method)
+            @action_view.send(helper_method, record)
+          end
+        end
+      end
+    
+      def controller
+        @action_view.controller
+      end
+
+      def html(rails_form)
+        record = rails_form.object
+        hff = render_from_custom_template "_#{name}_input", record
+        hff ||= html_from_helper_method(record)
+        hff ||= if @read_only
+          value record
+        elsif @write_once && @action_view.action_name == 'edit'
+          value record
+        else
+          default_html rails_form
+        end
+        if ah = after_html(record)
+          hff << ah
+        end
+        hff
+      end
+    
+      def html_from_helper_method(record)
+        html_method = "#{name}_input"
+        if @action_view.respond_to?(html_method)
+          @action_view.send(html_method, record)
+        end
+      end
+      
+      def render_from_custom_template(slug, record)
+        abs_template_file = File.join(
+          RAILS_ROOT, 'app/views', controller.controller_path, 
+          "#{slug}.html.erb"
+        )
+        if File.exist?(abs_template_file)
+          template = if RAILS_GEM_VERSION == '2.1.0'
+            File.join(controller.controller_path, "#{slug}.html.erb")
+          else
+            abs_template_file
+          end
+          @action_view.render(
+            :file => template,
+            :locals => {@model_class.name.underscore.to_sym => record}
+          )
+        end
+      end
+      
       def set_instance_variables_from_options(admin_assistant, opts)
         setting = admin_assistant.form_settings[name.to_sym]
         @input = setting.input
@@ -94,11 +152,13 @@ class AdminAssistant
         @image_size = setting.image_size
         @nilify_link = setting.nilify_link
         @polymorphic_types = admin_assistant[name.to_sym].polymorphic_types
+        @read_only = setting.read_only?
         @select_options = setting.select_options || {}
         unless @select_options.has_key?(:include_blank)
           @select_options[:include_blank] = true
         end
         @text_area_options = setting.text_area_options || {}
+        @write_once = setting.write_once?
       end
     end
     

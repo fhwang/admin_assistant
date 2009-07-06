@@ -90,6 +90,11 @@ class AdminAssistant
         h
       end
       
+      def default_html(form)
+        input = @input || default_input
+        self.send("#{input}_html", form)
+      end
+      
       def default_input
         case @column.sql_type
           when :boolean
@@ -103,11 +108,6 @@ class AdminAssistant
           else
             :text_field
           end
-      end
-      
-      def html(form)
-        input = @input || default_input
-        self.send("#{input}_html", form)
       end
       
       def ordered_us_state_names_and_codes

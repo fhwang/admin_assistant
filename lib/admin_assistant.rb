@@ -8,8 +8,8 @@ end
 require 'will_paginate'
 
 class AdminAssistant
-  attr_reader   :base_settings, :form_settings, :index_settings,  :model_class,
-                :show_settings
+  attr_reader   :base_settings, :controller_class, :form_settings, 
+                :index_settings, :model_class, :show_settings
   attr_accessor :actions, :custom_destroy
   attr_writer   :model_class_name
   
