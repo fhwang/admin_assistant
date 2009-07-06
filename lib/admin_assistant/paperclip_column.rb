@@ -34,10 +34,6 @@ class AdminAssistant
       end
     end
     
-    class SearchView < View
-      include AdminAssistant::Column::SearchViewMethods
-    end
-    
     class ShowView < View
       include AdminAssistant::Column::ShowViewMethods
       

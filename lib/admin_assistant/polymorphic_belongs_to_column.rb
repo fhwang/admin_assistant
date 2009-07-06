@@ -55,13 +55,7 @@ class AdminAssistant
       @belongs_to_assoc.name.to_s
     end
     
-    class View < AdminAssistant::Column::View
-      def value(record)
-        record.send name
-      end
-    end
-    
-    class FormView < View
+    class FormView < AdminAssistant::Column::View
       include AdminAssistant::Column::FormViewMethods
       
       def default_html(form)
@@ -71,7 +65,7 @@ class AdminAssistant
       end
     end
 
-    class IndexView < View
+    class IndexView < AdminAssistant::Column::View
       include AdminAssistant::Column::IndexViewMethods
       
       def value(record)
@@ -89,7 +83,7 @@ class AdminAssistant
       end
     end
     
-    class SearchView < View
+    class SearchView < AdminAssistant::Column::View
       include AdminAssistant::Column::SearchViewMethods
       
       def html(form)
@@ -103,10 +97,6 @@ class AdminAssistant
           }
         )
       end
-    end
-    
-    class ShowView < View
-      include AdminAssistant::Column::ShowViewMethods
     end
   end
 end

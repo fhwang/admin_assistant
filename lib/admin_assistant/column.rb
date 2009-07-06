@@ -17,60 +17,12 @@ class AdminAssistant
     end
     
     def view(view_class_name, action_view, admin_assistant, opts)
-      klass = self.class.const_get view_class_name
+      klass = begin
+        self.class.const_get view_class_name
+      rescue NameError
+        AdminAssistant::Column.const_get view_class_name
+      end
       klass.new self, action_view, admin_assistant, opts
-    end
-
-    class View
-      attr_reader :sort_order
-      
-      def initialize(column, action_view, admin_assistant, opts = {})
-        @column, @action_view, @opts = column, action_view, opts
-        @model_class = admin_assistant.model_class
-        base_setting = admin_assistant[name]
-        @boolean_labels = base_setting.boolean_labels
-        @label = base_setting.label
-        @polymorphic_types = base_setting.polymorphic_types
-        if respond_to?(:set_instance_variables_from_options)
-          set_instance_variables_from_options(admin_assistant, opts)
-        end
-      end
-      
-      def label
-        if @label
-          @label
-        elsif @column.name.to_s == 'id'
-          'ID'
-        else
-          @column.name.to_s.capitalize.gsub(/_/, ' ') 
-        end
-      end
-      
-      def name
-        @column.name
-      end
-      
-      def paperclip?
-        @column.is_a?(PaperclipColumn)
-      end
-      
-      def sort_possible?
-        @column.is_a?(ActiveRecordColumn) || @column.is_a?(BelongsToColumn)
-      end
-      
-      def string(record)
-        string_method = "#{@column.name}_string"
-        if @action_view.respond_to?(string_method)
-          @action_view.send string_method, record
-        else
-          value = value(record)
-          if @boolean_labels
-            value ? @boolean_labels.first : @boolean_labels.last
-          else
-            value.to_s
-          end
-        end
-      end
     end
     
     module FormViewMethods
@@ -229,6 +181,78 @@ class AdminAssistant
       def html(record)
         @action_view.send(:h, value(record))
       end
+    end
+
+    class View
+      attr_reader :sort_order
+      
+      def initialize(column, action_view, admin_assistant, opts = {})
+        @column, @action_view, @opts = column, action_view, opts
+        @model_class = admin_assistant.model_class
+        base_setting = admin_assistant[name]
+        @boolean_labels = base_setting.boolean_labels
+        @label = base_setting.label
+        @polymorphic_types = base_setting.polymorphic_types
+        if respond_to?(:set_instance_variables_from_options)
+          set_instance_variables_from_options(admin_assistant, opts)
+        end
+      end
+      
+      def label
+        if @label
+          @label
+        elsif @column.name.to_s == 'id'
+          'ID'
+        else
+          @column.name.to_s.capitalize.gsub(/_/, ' ') 
+        end
+      end
+      
+      def name
+        @column.name
+      end
+      
+      def paperclip?
+        @column.is_a?(PaperclipColumn)
+      end
+      
+      def sort_possible?
+        @column.is_a?(ActiveRecordColumn) || @column.is_a?(BelongsToColumn)
+      end
+      
+      def string(record)
+        string_method = "#{@column.name}_string"
+        if @action_view.respond_to?(string_method)
+          @action_view.send string_method, record
+        else
+          value = value(record)
+          if @boolean_labels
+            value ? @boolean_labels.first : @boolean_labels.last
+          else
+            value.to_s
+          end
+        end
+      end
+      
+      def value(record)
+        record.send(name) if record.respond_to?(name)
+      end
+    end
+    
+    class FormView < View
+      include IndexViewMethods
+    end
+
+    class IndexView < View
+      include IndexViewMethods
+    end
+    
+    class SearchView < View
+      include SearchViewMethods
+    end
+    
+    class ShowView < View
+      include ShowViewMethods
     end
   end
   

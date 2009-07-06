@@ -10,13 +10,7 @@ class AdminAssistant
       column_name.to_s == @name
     end
     
-    class View < AdminAssistant::Column::View
-      def value(record)
-        record.send(name) if record.respond_to?(name)
-      end
-    end
-    
-    class FormView < View
+    class FormView < AdminAssistant::Column::View
       include AdminAssistant::Column::FormViewMethods
       
       def default_html(form)
@@ -38,18 +32,6 @@ class AdminAssistant
           @action_view.send(:text_field_tag, input_name, string(form.object))
         end
       end
-    end
-
-    class IndexView < View
-      include AdminAssistant::Column::IndexViewMethods
-    end
-    
-    class SearchView < View
-      include AdminAssistant::Column::SearchViewMethods
-    end
-    
-    class ShowView < View
-      include AdminAssistant::Column::ShowViewMethods
     end
   end
 end

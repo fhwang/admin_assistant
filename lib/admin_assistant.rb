@@ -1,7 +1,9 @@
 $: << File.join(File.dirname(__FILE__), '../vendor/ar_query/lib')
 require 'find'
+require 'admin_assistant/column'
 Find.find(File.dirname(__FILE__)) do |path|
-  if path =~ %r|\.rb$| && path !~ %r|admin_assistant\.rb$|
+  if path =~ %r|\.rb$| && path !~ %r|admin_assistant\.rb$| &&
+     path !~ %r|admin_assistant/column\.rb$|
     require path
   end
 end

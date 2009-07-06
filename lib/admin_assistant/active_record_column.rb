@@ -57,13 +57,7 @@ class AdminAssistant
       @ar_column.type
     end
     
-    class View < AdminAssistant::Column::View
-      def value(record)
-        record.send(name) if record.respond_to?(name)
-      end
-    end
-    
-    class FormView < View
+    class FormView < AdminAssistant::Column::View
       include AdminAssistant::Column::FormViewMethods
       
       def check_box_html(form)
@@ -163,7 +157,7 @@ class AdminAssistant
       end
     end
     
-    class IndexView < View
+    class IndexView < AdminAssistant::Column::View
       include AdminAssistant::Column::IndexViewMethods
 
       def ajax_toggle?
@@ -198,7 +192,7 @@ class AdminAssistant
       end
     end
     
-    class SearchView < View
+    class SearchView < AdminAssistant::Column::View
       include AdminAssistant::Column::SearchViewMethods
       
       def boolean_input(form)
@@ -248,10 +242,6 @@ class AdminAssistant
         end
         "<p><label>#{label}</label> <br/>#{input}</p>"
       end
-    end
-    
-    class ShowView < View
-      include AdminAssistant::Column::ShowViewMethods
     end
   end
 end
