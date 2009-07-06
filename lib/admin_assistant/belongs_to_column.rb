@@ -10,26 +10,32 @@ class AdminAssistant
     
     def add_to_query_condition(ar_query_condition, search)
       if @match_text_fields_in_search
-        if value = search.send(name)
-          ar_query_condition.ar_query.joins << name.to_sym
-          searchable_columns = AdminAssistant.searchable_columns(
-            associated_class
-          )
-          ar_query_condition.add_condition do |sub_cond|
-            sub_cond.boolean_join = :or
-            searchable_columns.each do |column|
-              sub_cond.sqls <<
-                  "#{associated_class.table_name}.#{column.name} like ?"
-              sub_cond.bind_vars << "%#{value}%"
-            end
-          end
-        end
+        add_to_query_condition_by_matching_text_fields(
+          ar_query_condition, search
+        )
       elsif value = search.send(association_foreign_key)
         ar_query_condition.sqls << "#{association_foreign_key} = ?"
         ar_query_condition.bind_vars << value
       end
     end
     
+    def add_to_query_condition_by_matching_text_fields(
+          ar_query_condition, search
+        )
+      if value = search.send(name)
+        ar_query_condition.ar_query.joins << name.to_sym
+        searchable_columns = AdminAssistant.searchable_columns associated_class
+        ar_query_condition.add_condition do |sub_cond|
+          sub_cond.boolean_join = :or
+          searchable_columns.each do |column|
+            sub_cond.sqls <<
+                "#{associated_class.table_name}.#{column.name} like ?"
+            sub_cond.bind_vars << "%#{value}%"
+          end
+        end
+      end
+    end
+
     def associated_class
       @belongs_to_assoc.klass
     end
@@ -147,16 +153,7 @@ class AdminAssistant
         input = if @column.match_text_fields_in_search
           form.text_field(name)
         elsif associated_class.count > 15
-          @action_view.send(
-            :render,
-            :file => AdminAssistant.template_file('_restricted_autocompleter'),
-            :use_full_path => false,
-            :locals => {
-              :form => form, :column => @column,
-              :select_options => {:include_blank => true},
-              :palette_clones_input_width => false
-            }
-          )
+          render_autocompleter form
         else
           form.select(
             association_foreign_key, options_for_select,
@@ -164,6 +161,19 @@ class AdminAssistant
           )
         end
         "<p><label>#{label}</label> <br/>#{input}</p>"
+      end
+      
+      def render_autocompleter(form)
+        @action_view.send(
+          :render,
+          :file => AdminAssistant.template_file('_restricted_autocompleter'),
+          :use_full_path => false,
+          :locals => {
+            :form => form, :column => @column,
+            :select_options => {:include_blank => true},
+            :palette_clones_input_width => false
+          }
+        )
       end
     end
     

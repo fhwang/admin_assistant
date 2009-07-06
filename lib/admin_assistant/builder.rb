@@ -75,26 +75,36 @@ class AdminAssistant
       @values = {}
     end
     
+    def method_missing_matching_fields_config(meth, block, *args)
+      field_type = @fields_config[meth]
+      if field_type == :accessor
+        @values[meth]
+      elsif field_type == :boolean
+        @values[meth] = true
+      elsif field_type == :block
+        if block
+          @values[meth] = block
+        else
+          @values[meth]
+        end
+      end
+    end
+    
+    def method_missing_maybe_setter(meth, *args)
+      field_name, field_type = @fields_config.detect { |fn, ft|
+        meth.to_s =~ /^#{fn}=$/
+      }
+      if field_type == :accessor
+        @values[field_name] = args.first
+      end
+    end
+    
     def method_missing(meth, *args, &block)
-      if field_type = @fields_config[meth]
-        if field_type == :accessor
-          return @values[meth]
-        elsif field_type == :boolean
-          return @values[meth] = true
-        elsif field_type == :block
-          if block
-            return @values[meth] = block
-          else
-            return @values[meth]
-          end
-        end
+      if @fields_config[meth]
+        return method_missing_matching_fields_config(meth, block, *args)
       elsif meth.to_s =~ /=$/
-        field_name, field_type = @fields_config.detect { |fn, ft|
-          meth.to_s =~ /^#{fn}=$/
-        }
-        if field_type == :accessor
-          return @values[field_name] = args.first
-        end
+        result = method_missing_maybe_setter(meth, *args)
+        return result unless result.nil?
       elsif meth.to_s =~ /\?$/
         field_name, field_type = @fields_config.detect { |fn, ft|
           meth.to_s =~ /^#{fn}\?$/

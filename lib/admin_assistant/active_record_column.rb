@@ -201,12 +201,19 @@ class AdminAssistant
     class SearchView < View
       include AdminAssistant::Column::SearchViewMethods
       
+      def boolean_input(form)
+        opts = [['', nil]]
+        if @boolean_labels
+          opts << [@boolean_labels.first, true]
+          opts << [@boolean_labels.last, false]
+        else
+          opts << ['true', true]
+          opts << ['false', false]
+        end
+        form.select(name, opts)
+      end
+      
       def comparator_html(search)
-        comparator_opts = [
-          ['greater than', '>'], ['greater than or equal to', '>='],
-          ['equal to', '='], ['less than or equal to', '<='],
-          ['less than', '<']
-        ]
         selected_comparator = @column.comparator(search) || '='
         option_tags = comparator_opts.map { |text, value|
           opt = "<option value=\"#{value}\""
@@ -220,19 +227,19 @@ class AdminAssistant
         )
       end
       
+      def comparator_opts
+        [
+          ['greater than', '>'], ['greater than or equal to', '>='],
+          ['equal to', '='], ['less than or equal to', '<='],
+          ['less than', '<']
+        ]
+      end
+      
       def html(form)
         input = ''
         case @column.sql_type
           when :boolean
-            opts = [['', nil]]
-            if @boolean_labels
-              opts << [@boolean_labels.first, true]
-              opts << [@boolean_labels.last, false]
-            else
-              opts << ['true', true]
-              opts << ['false', false]
-            end
-            input = form.select(name, opts)
+            input = boolean_input form
           else
             if @column.sql_type == :integer
               input << comparator_html(form.object) << ' '
