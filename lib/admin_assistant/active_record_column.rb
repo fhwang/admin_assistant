@@ -66,7 +66,17 @@ class AdminAssistant
     class FormView < View
       include AdminAssistant::Column::FormViewMethods
       
-      def datetime_html(form)
+      def check_box_html(form)
+        form.check_box name
+      end
+      
+      def date_select_html(form)
+        form.date_select(
+          name, {:include_blank => true}.merge(@date_select_options)
+        )
+      end
+      
+      def datetime_select_html(form)
         opts = {:include_blank => true}.merge @datetime_select_options
         h = form.datetime_select name, opts
         if opts[:include_blank]
@@ -80,8 +90,8 @@ class AdminAssistant
         h
       end
       
-      def html(form)
-        input = @input || case @column.sql_type
+      def default_input
+        case @column.sql_type
           when :boolean
             :check_box
           when :date
@@ -93,36 +103,11 @@ class AdminAssistant
           else
             :text_field
           end
-        case input
-          when :check_box
-            form.check_box name
-          when :date_select
-            form.date_select(
-              name, {:include_blank => true}.merge(@date_select_options)
-            )
-          when :datetime_select
-            datetime_html(form)
-          when :select
-            # for now only used for boolean fields
-            value = form.object.send name
-            selected = if value
-              '1'
-            elsif value == false
-              '0'
-            end
-            form.select(
-              name, [[true, '1'], [false, '0']],
-              @select_options.merge(:selected => selected)
-            )
-          when :text_area
-            form.text_area name, @text_area_options
-          when :text_field
-            form.text_field name
-          when :us_state
-            form.select(
-              name, ordered_us_state_names_and_codes, :include_blank => true
-            )
-          end
+      end
+      
+      def html(form)
+        input = @input || default_input
+        self.send("#{input}_html", form)
       end
       
       def ordered_us_state_names_and_codes
@@ -147,6 +132,34 @@ class AdminAssistant
           'Washington' => 'WA', 'West Virginia' => 'WV', 'Wisconsin' => 'WI', 
           'Wyoming' => 'WY'
         }.sort_by { |name, code| name }
+      end
+
+      def select_html(form)
+        # for now only used for boolean fields
+        value = form.object.send name
+        selected = if value
+          '1'
+        elsif value == false
+          '0'
+        end
+        form.select(
+          name, [[true, '1'], [false, '0']],
+          @select_options.merge(:selected => selected)
+        )
+      end
+      
+      def text_area_html(form)
+        form.text_area name, @text_area_options
+      end
+      
+      def text_field_html(form)
+        form.text_field name
+      end
+      
+      def us_state_html(form)
+        form.select(
+          name, ordered_us_state_names_and_codes, :include_blank => true
+        )
       end
     end
     

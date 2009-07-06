@@ -108,7 +108,7 @@ class AdminAssistant
   end
   
   class AbstractSettings
-    attr_reader :column_names, :column_configs
+    attr_reader :column_names
     
     def initialize(admin_assistant)
       @admin_assistant = admin_assistant
@@ -127,6 +127,10 @@ class AdminAssistant
   end
   
   class BaseSettings < AbstractSettings
+    def all_polymorphic_types
+      @column_configs.values.map(&:polymorphic_types).flatten.compact
+    end
+    
     def column_config_args
       {:boolean_labels => :accessor, :label => :accessor,
        :polymorphic_types => :accessor}

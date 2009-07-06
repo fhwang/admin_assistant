@@ -25,6 +25,7 @@ class AdminAssistant
 
   def initialize(controller_class, model_class)
     @controller_class, @model_class = controller_class, model_class
+    @model = Model.new model_class
     @actions = [:index, :create, :update, :show]
     @form_settings = FormSettings.new self
     @index_settings = IndexSettings.new self
@@ -49,81 +50,35 @@ class AdminAssistant
     columns
   end
   
-  def default_column_names
-    model_class.columns.reject { |ar_column|
-      %w(id created_at updated_at).include?(ar_column.name)
-    }.map { |ar_column| ar_column.name }
-  end
-  
   def accumulate_belongs_to_columns(names)
     accumulate_columns(names).select { |column| column.is_a?(BelongsToColumn) }
   end
   
   def autocomplete_actions
-    actions_hash = {}
+    ac_actions = []
     if [:new, :create, :edit, :update].any? { |action|
       actions.include?(action)
     }
       accumulate_belongs_to_columns(default_column_names).each { |column|
-        actions_hash["autocomplete_#{column.name}".to_sym] = true
+        ac_actions << "autocomplete_#{column.name}".to_sym
       }
     end
     if actions.include?(:index)
-      all_polymorphic_types = 
-          base_settings.column_configs.values.
-                                       map(&:polymorphic_types).
-                                       flatten.
-                                       compact
-      all_polymorphic_types.each do |p_type|
-        action_name = "autocomplete_#{p_type.name.underscore.downcase}".to_sym
-        actions_hash[action_name] = true
+      base_settings.all_polymorphic_types.each do |p_type|
+        ac_actions << "autocomplete_#{p_type.name.underscore.downcase}".to_sym
       end
     end
-    actions_hash.keys
-  end
-  
-  def belongs_to_associations
-    @model_class.reflect_on_all_associations.select { |assoc|
-      assoc.macro == :belongs_to
-    }
-  end
-  
-  def belongs_to_assoc(association_name)
-    belongs_to_associations.detect { |assoc|
-      assoc.name.to_s == association_name.to_s
-    }
-  end
-  
-  def belongs_to_assoc_by_foreign_key(foreign_key)
-    belongs_to_associations.detect { |assoc|
-      assoc.association_foreign_key == foreign_key
-    }
-  end
-  
-  def belongs_to_assoc_by_polymorphic_type(name)
-    if name =~ /^(.*)_type/
-      belongs_to_associations.detect { |assoc|
-        assoc.options[:polymorphic] && $1 == assoc.name.to_s
-      }
-    end
+    ac_actions.uniq
   end
   
   def column(name)
-    column = if file_columns.include?(name.to_s)
+    if file_columns.include?(name.to_s)
       FileColumnColumn.new name
     elsif paperclip_attachments.include?(name)
       PaperclipColumn.new name
     elsif (belongs_to_assoc = belongs_to_assoc(name) or
            belongs_to_assoc = belongs_to_assoc_by_foreign_key(name))
-      if belongs_to_assoc.options[:polymorphic]
-        PolymorphicBelongsToColumn.new belongs_to_assoc
-      else
-        BelongsToColumn.new(
-          belongs_to_assoc,
-          :match_text_fields_in_search => 
-              search_settings[name].match_text_fields_for_association?
-        )
-      end
+      column_based_on_belongs_to_assoc name, belongs_to_assoc
     elsif belongs_to_assoc = belongs_to_assoc_by_polymorphic_type(name)
       # skip it, actually
     elsif (ar_column = @model_class.columns_hash[name.to_s])
@@ -131,7 +86,18 @@ class AdminAssistant
     else
       VirtualColumn.new name, @model_class
     end
-    column
+  end
+  
+  def column_based_on_belongs_to_assoc(name, belongs_to_assoc)
+    if belongs_to_assoc.options[:polymorphic]
+     PolymorphicBelongsToColumn.new belongs_to_assoc
+    else
+      BelongsToColumn.new(
+        belongs_to_assoc,
+        :match_text_fields_in_search => 
+            search_settings[name].match_text_fields_for_association?
+      )
+    end
   end
   
   def controller_actions
@@ -153,44 +119,26 @@ class AdminAssistant
     @request = nil
   end
   
-  def file_columns
-    unless @file_columns
-      @file_columns = []
-      if @model_class.respond_to?(:file_column)
-        names_to_check = @model_class.columns.map &:name
-        names_to_check.concat(
-          @model_class.instance_methods.
-              select { |m| m =~ /=$/ }.
-              map { |m| m.gsub(/=/, '')}.
-              select { |m| @model_class.instance_methods.include?(m) }
-        )
-        names_to_check.uniq.each do |name|
-          suffixes = %w( relative_path dir relative_dir temp )
-          if suffixes.all? { |suffix|
-            @model_class.method_defined? "#{name}_#{suffix}".to_sym
-          }
-            @file_columns << name
-          end
-        end
-      end
-    end
-    @file_columns
-  end
-  
   def method_missing(meth, *args)
-    request_methods = [:create, :destroy, :edit, :index, :new, :update, :show]
-    if request_methods.include?(meth) and args.size == 1
-      request_class = Request.const_get meth.to_s.capitalize
-      dispatch_to_request_method request_class, args.first
-    elsif autocomplete_actions && autocomplete_actions.include?(meth)
-      dispatch_to_request_method Request::Autocomplete, args.first
+    if @model.respond_to?(meth)
+      @model.send meth, *args
     else
-      if meth.to_s =~ /(.*)\?/ && request_methods.include?($1.to_sym)
-        @controller_class.public_instance_methods.include?($1)
-      elsif @request.respond_to?(meth)
-        @request.send meth, *args
+      request_methods = [
+        :create, :destroy, :edit, :index, :new, :update, :show
+      ]
+      if request_methods.include?(meth) and args.size == 1
+        request_class = Request.const_get meth.to_s.capitalize
+        dispatch_to_request_method request_class, args.first
+      elsif autocomplete_actions && autocomplete_actions.include?(meth)
+        dispatch_to_request_method Request::Autocomplete, args.first
       else
-        super
+        if meth.to_s =~ /(.*)\?/ && request_methods.include?($1.to_sym)
+          @controller_class.public_instance_methods.include?($1)
+        elsif @request.respond_to?(meth)
+          @request.send meth, *args
+        else
+          super
+        end
       end
     end
   end
@@ -198,18 +146,6 @@ class AdminAssistant
   def model_class_name
     @model_class_name ||
         @model_class.name.gsub(/([A-Z])/, ' \1')[1..-1].downcase
-  end
-    
-  def paperclip_attachments
-    pa = []
-    if @model_class.respond_to?(:attachment_definitions)
-      if @model_class.attachment_definitions
-        pa = @model_class.attachment_definitions.map { |name, definition|
-          name
-        }
-      end
-    end
-    pa
   end
   
   def profile(msg)
@@ -246,6 +182,80 @@ class AdminAssistant
           self.class.admin_assistant.send(action, self)
         end
       end
+    end
+  end
+  
+  class Model
+    def initialize(ar_model)
+      @ar_model = ar_model
+    end
+  
+    def belongs_to_associations
+      @ar_model.reflect_on_all_associations.select { |assoc|
+        assoc.macro == :belongs_to
+      }
+    end
+    
+    def belongs_to_assoc(association_name)
+      belongs_to_associations.detect { |assoc|
+        assoc.name.to_s == association_name.to_s
+      }
+    end
+    
+    def belongs_to_assoc_by_foreign_key(foreign_key)
+      belongs_to_associations.detect { |assoc|
+        assoc.association_foreign_key == foreign_key
+      }
+    end
+    
+    def belongs_to_assoc_by_polymorphic_type(name)
+      if name =~ /^(.*)_type/
+        belongs_to_associations.detect { |assoc|
+          assoc.options[:polymorphic] && $1 == assoc.name.to_s
+        }
+      end
+    end
+    
+    def default_column_names
+      @ar_model.columns.reject { |ar_column|
+        %w(id created_at updated_at).include?(ar_column.name)
+      }.map { |ar_column| ar_column.name }
+    end
+  
+    def file_columns
+      unless @file_columns
+        @file_columns = []
+        if @ar_model.respond_to?(:file_column)
+          names_to_check = @ar_model.columns.map &:name
+          names_to_check.concat(
+            @ar_model.instance_methods.
+                select { |m| m =~ /=$/ }.
+                map { |m| m.gsub(/=/, '')}.
+                select { |m| @ar_model.instance_methods.include?(m) }
+          )
+          names_to_check.uniq.each do |name|
+            suffixes = %w( relative_path dir relative_dir temp )
+            if suffixes.all? { |suffix|
+              @ar_model.method_defined? "#{name}_#{suffix}".to_sym
+            }
+              @file_columns << name
+            end
+          end
+        end
+      end
+      @file_columns
+    end
+    
+    def paperclip_attachments
+      pa = []
+      if @ar_model.respond_to?(:attachment_definitions)
+        if @ar_model.attachment_definitions
+          pa = @ar_model.attachment_definitions.map { |name, definition|
+            name
+          }
+        end
+      end
+      pa
     end
   end
 end
