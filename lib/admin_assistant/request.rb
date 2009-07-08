@@ -9,17 +9,6 @@ class AdminAssistant
         @controller.action_name
       end
       
-      def after_form_html_template
-        File.join(
-          RAILS_ROOT, 'app/views/', @controller.controller_path, 
-          '_after_form.html.erb'
-        )
-      end
-      
-      def after_form_html_template_exists?
-        File.exist? after_form_html_template
-      end
-      
       def model_class
         @admin_assistant.model_class
       end
@@ -42,28 +31,30 @@ class AdminAssistant
         @controller.send :redirect_to, url_params
       end
       
-      def render_after_form
-        @controller.send(
-          :render_to_string,
-          :file => after_form_html_template, :layout => false
+      def after_template_file(template_name)
+        File.join(
+          RAILS_ROOT, 'app/views/', @controller.controller_path, 
+          "_after_#{template_name}.html.erb"
         )
       end
       
-      def render_form
-        html = @controller.send(
-          :render_to_string,
-          :file => AdminAssistant.template_file('form'), :layout => false
-        )
-        html << render_after_form if after_form_html_template_exists?
-        @controller.send :render, :text => html, :layout => true
+      def render_after_template_file(template_name, options_plus)
+        after_template_opts = {
+          :file => after_template_file(template_name), :layout => false
+        }.merge options_plus
+        @controller.send :render_to_string, after_template_opts
       end
-      
+
       def render_template_file(template_name = action, options_plus = {})
-        options = {
-          :file => AdminAssistant.template_file(template_name), :layout => true
-        }
-        options = options.merge options_plus
-        @controller.send(:render, options)
+        main_template_opts = {
+          :file => AdminAssistant.template_file(template_name),
+          :layout => false
+        }.merge options_plus
+        html = @controller.send :render_to_string, main_template_opts
+        if File.exist?(after_template_file(template_name))
+          html << render_after_template_file(template_name, options_plus)
+        end
+        @controller.send :render, :text => html, :layout => true
       end
       
       def save
@@ -96,6 +87,8 @@ class AdminAssistant
       end
       
       def records
+        action =~ /autocomplete_(.*)/
+        associated_class = Module.const_get $1.camelize
         target = AssociationTarget.new associated_class
         opts = {
           :conditions => [
@@ -127,7 +120,7 @@ class AdminAssistant
           redirect_after_save
         else
           @controller.instance_variable_set :@record, @record
-          render_form
+          render_template_file 'form'
         end
       end
       
@@ -159,7 +152,7 @@ class AdminAssistant
       def call
         @record = model_class.find @controller.params[:id]
         @controller.instance_variable_set :@record, @record
-        render_form
+        render_template_file 'form'
       end
     end
     
@@ -198,7 +191,7 @@ class AdminAssistant
           @record.attributes = params_for_save
         end
         @controller.instance_variable_set :@record, @record
-        render_form
+        render_template_file 'form'
       end
     end
     
@@ -301,7 +294,7 @@ class AdminAssistant
           end
         else
           @controller.instance_variable_set :@record, @record
-          render_form
+          render_template_file 'form'
         end
       end
       

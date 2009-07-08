@@ -267,6 +267,12 @@ describe Admin::BlogPosts2Controller do
       it "should have a header of 'Blog posts (unpublished)'" do
         response.should have_tag('h2', :text => 'Blog posts (unpublished)')
       end
+      
+      it 'should render custom HTML after the index' do
+        response.should have_tag(
+          '#after_index', :text => 'Custom HTML rendered after the index'
+        )
+      end
     end
     
     describe 'when there is one published post and one unpublished post' do
