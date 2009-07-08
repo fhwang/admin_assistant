@@ -90,14 +90,15 @@ class AdminAssistant
         action =~ /autocomplete_(.*)/
         associated_class = Module.const_get $1.camelize
         target = AssociationTarget.new associated_class
-        opts = {
+        field = target.default_name_method
+        associated_class.find(
+          :all,
           :conditions => [
-            "LOWER(#{target.default_name_method}) like ?",
+            "LOWER(#{field}) like ?",
             "%#{search_string.downcase unless search_string.nil?}%"
           ],
-          :limit => 10
-        }
-        associated_class.find :all, opts
+          :limit => 10, :order => "length(#{field}), lower(#{field})"
+        )
       end
       
       def search_string

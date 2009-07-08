@@ -15,6 +15,7 @@ describe Admin::BlogPostsController do
       1.upto(11) do |i|
         User.create! :username => "Bob #{i}"
       end
+      User.create! :username => 'Bob'
     end
     
     describe 'with no matches' do
@@ -41,13 +42,17 @@ describe Admin::BlogPostsController do
       end
     end
     
-    describe 'with 11 matches' do
+    describe 'with 12 matches' do
       before :each do
         get :autocomplete_user, :user_autocomplete_input => 'Bob'
       end
       
       it 'should return a max of ten users' do
         response.should have_tag('ul > li', :count => 10)
+      end
+      
+      it 'should make sure the shortest matches are included in the results' do
+        response.should have_tag('ul > li', :text => 'Bob')
       end
     end
   end

@@ -14,7 +14,7 @@ belongs_to_associations = {
 }
 has_many_associations = {BlogPost => [Tag]}
 [Tag, User, Product, BlogPost, Comment].each do |model_class|
-if model_class == BlogPost
+if model_class == User
   string_text_columns = model_class.columns.select { |c|
     [:string, :text].include?(c.type)
   }
