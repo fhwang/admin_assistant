@@ -27,6 +27,10 @@ describe Admin::BlogPostsController do
         response.should have_tag('ul')
         response.should_not have_tag('ul > li')
       end
+      
+      it 'should not render the admin layout' do
+        response.should_not have_tag('head > title')
+      end
     end
     
     describe 'with two matches' do

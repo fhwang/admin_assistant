@@ -54,7 +54,10 @@ class AdminAssistant
         if File.exist?(after_template_file(template_name))
           html << render_after_template_file(template_name, options_plus)
         end
-        @controller.send :render, :text => html, :layout => true
+        render_as_text_opts = {
+          :text => html, :layout => true
+        }.merge(options_plus)
+        @controller.send :render, render_as_text_opts
       end
       
       def save
