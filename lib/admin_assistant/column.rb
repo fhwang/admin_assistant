@@ -173,6 +173,10 @@ class AdminAssistant
     
     module SearchViewMethods      
       def set_instance_variables_from_options(admin_assistant, opts)
+        setting = admin_assistant.search_settings[name.to_sym]
+        unless setting.comparators == false
+          @comparators = :all
+        end
         @search = opts[:search]
       end
     end

@@ -27,6 +27,7 @@ class Admin::BlogPosts3Controller < ApplicationController
       # Extended search configuration
       index.search do |search|
         search.columns :id, :title, :body, :textile, :user
+        search[:id].comparators = false
         search[:user].match_text_fields_for_association
       end
       

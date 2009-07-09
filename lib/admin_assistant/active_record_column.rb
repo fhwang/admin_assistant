@@ -235,7 +235,7 @@ class AdminAssistant
           when :boolean
             input = boolean_input form
           else
-            if @column.sql_type == :integer
+            if @column.sql_type == :integer && @comparators == :all
               input << comparator_html(form.object) << ' '
             end
             input << form.text_field(name)

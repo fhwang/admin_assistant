@@ -70,6 +70,12 @@ describe Admin::BlogPosts3Controller do
           with_tag "td", :text => 'No'
         end
       end
+    
+      it 'should not have a comparator for the ID search field' do
+        response.should have_tag('form[id=search_form][method=get]') do
+          without_tag("select[name=?]", "search[id(comparator)]")
+        end
+      end
     end
     
     describe 'with 26 unpublished blog posts' do
