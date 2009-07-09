@@ -171,7 +171,9 @@ class AdminAssistant
             'Delete',
             :url => {:action => 'destroy', :id => record.id},
             :confirm => 'Are you sure?',
-            :success => "Effect.Fade('record_#{record.id}')"
+            :success =>
+                "Effect.Fade('#{@admin_assistant.model_class.name.underscore}_#{record.id}')",
+            :method => :delete
           ) << ' '
         end
         if show?

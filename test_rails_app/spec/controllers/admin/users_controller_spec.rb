@@ -103,7 +103,12 @@ describe Admin::UsersController do
     
     it 'should show a Delete link and a link to the profile page' do
       response.should have_tag('td') do
-        with_tag("a[href=#][onclick*='new Ajax.Request']", :text => 'Delete')
+        with_tag(
+          "a[href=#][onclick*=?][onclick*=?][onclick*=?]",
+          "new Ajax.Request", "method:'delete'",
+          "Effect.Fade('user_#{@user.id}')",
+          :text => 'Delete'
+        )
         with_tag(
           "a[href=?]",
           "/admin/blog_posts/new?blog_post%5Buser_id%5D=#{@user.id}",
