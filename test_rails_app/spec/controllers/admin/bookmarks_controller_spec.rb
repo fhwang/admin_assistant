@@ -114,23 +114,25 @@ describe Admin::BookmarksController do
       
       it "should show bookmarkable fields, using the target's default name method if it can find one" do
         response.should have_tag(
-          'tr[id=?]', "record_#{@blog_post_bookmark.id}"
+          'tr[id=?]', "bookmark_#{@blog_post_bookmark.id}"
         ) do
           with_tag(
             'td', :text => "Blog post '#{@blog_post.title}'"
           )
         end
         response.should have_tag(
-          'tr[id=?]', "record_#{@comment_bookmark.id}"
+          'tr[id=?]', "bookmark_#{@comment_bookmark.id}"
         ) do
           with_tag 'td', :text => "Comment #{@comment.id}"
         end
         response.should have_tag(
-          'tr[id=?]', "record_#{@product_bookmark.id}"
+          'tr[id=?]', "bookmark_#{@product_bookmark.id}"
         ) do
           with_tag 'td', :text => "Product '#{@product.name}'"
         end
-        response.should have_tag('tr[id=?]', "record_#{@user_bookmark.id}") do
+        response.should have_tag(
+          'tr[id=?]', "bookmark_#{@user_bookmark.id}"
+        ) do
           with_tag 'td', :text => "User '#{@user.username}'"
         end
       end
@@ -195,13 +197,13 @@ describe Admin::BookmarksController do
       
       it 'should only show bookmarks of that blog post' do
         response.should have_tag(
-          'tr[id=?]', "record_#{@blog_post_bookmark.id}"
+          'tr[id=?]', "bookmark_#{@blog_post_bookmark.id}"
         )
         excluded_bookmarks = [
           @comment_bookmark, @product_bookmark, @user_bookmark
         ]
         excluded_bookmarks.each do |bookmark|
-          response.should_not have_tag('tr[id=?]', "record_#{bookmark.id}")
+          response.should_not have_tag('tr[id=?]', "bookmark_#{bookmark.id}")
         end
       end
     end
@@ -263,13 +265,13 @@ describe Admin::BookmarksController do
       
       it 'should show only bookmarks of that product' do
         response.should have_tag(
-          'tr[id=?]', "record_#{@product_bookmark.id}"
+          'tr[id=?]', "bookmark_#{@product_bookmark.id}"
         )
         excluded_bookmarks = [
           @blog_post_bookmark, @comment_bookmark, @user_bookmark
         ]
         excluded_bookmarks.each do |bookmark|
-          response.should_not have_tag('tr[id=?]', "record_#{bookmark.id}")
+          response.should_not have_tag('tr[id=?]', "bookmark_#{bookmark.id}")
         end
       end
       
@@ -335,13 +337,13 @@ describe Admin::BookmarksController do
       
       it 'should show only bookmarks of that comment' do
         response.should have_tag(
-          'tr[id=?]', "record_#{@comment_bookmark.id}"
+          'tr[id=?]', "bookmark_#{@comment_bookmark.id}"
         )
         excluded_bookmarks = [
           @blog_post_bookmark, @product_bookmark, @user_bookmark
         ]
         excluded_bookmarks.each do |bookmark|
-          response.should_not have_tag('tr[id=?]', "record_#{bookmark.id}")
+          response.should_not have_tag('tr[id=?]', "bookmark_#{bookmark.id}")
         end
       end
       
@@ -392,31 +394,31 @@ describe Admin::BookmarksController do
       
       it 'should include bookmarks of the blog post' do
         response.should have_tag(
-          'tr[id=?]', "record_#{@user_blog_post_bookmark.id}"
+          'tr[id=?]', "bookmark_#{@user_blog_post_bookmark.id}"
         )
         response.should have_tag(
-          'tr[id=?]', "record_#{@user2_blog_post_bookmark.id}"
+          'tr[id=?]', "bookmark_#{@user2_blog_post_bookmark.id}"
         )
       end
       
       it 'should exclude bookmarks of other blog posts by other users' do
         response.should_not have_tag(
-          'tr[id=?]', "record_#{@user2_blog_post2_bookmark.id}"
+          'tr[id=?]', "bookmark_#{@user2_blog_post2_bookmark.id}"
         )
       end
       
       it 'should include bookmarks from the user' do
         response.should have_tag(
-          'tr[id=?]', "record_#{@user_blog_post_bookmark.id}"
+          'tr[id=?]', "bookmark_#{@user_blog_post_bookmark.id}"
         )
         response.should have_tag(
-          'tr[id=?]', "record_#{@user_blog_post2_bookmark.id}"
+          'tr[id=?]', "bookmark_#{@user_blog_post2_bookmark.id}"
         )
       end
       
       it 'should exclude bookmarks of other bookmarkable types by other users' do
         response.should_not have_tag(
-          'tr[id=?]', "record_#{@user2_product_bookmark.id}"
+          'tr[id=?]', "bookmark_#{@user2_product_bookmark.id}"
         )
       end
     end
@@ -445,7 +447,9 @@ describe Admin::BookmarksController do
     end
     
     it 'should include the bookmarks' do
-      response.should have_tag('tr[id=?]', "record_#{@blog_post_bookmark.id}")
+      response.should have_tag(
+        'tr[id=?]', "bookmark_#{@blog_post_bookmark.id}"
+      )
     end
   end
   

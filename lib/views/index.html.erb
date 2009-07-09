@@ -62,7 +62,9 @@
   </thead>
   <tbody>
   <% @index.records.each do |record| %>
-    <tr class="<%= cycle('odd', 'even') %>" id="record_<%= record.id %>">
+    <tr class="<%= cycle('odd', 'even') %>" id="<%= 
+      @admin_assistant.model_class.name.underscore
+    %>_<%= record.id %>">
       <% @index.view(self).columns.each do |column| %>
         <% td_class = column.td_css_class %>
         <td<%= " class=\"#{td_class}\"" if td_class %>><%=
