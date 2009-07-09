@@ -327,6 +327,14 @@ describe Admin::BlogPostsController do
           without_tag('form[method=get][action=/admin/blog_posts]')
         end
       end
+      
+      it 'should have a tbody with the ID blog_posts_index_tbody' do
+        response.should have_tag('tbody[id=blog_posts_index_tbody]')
+      end
+      
+      it 'should have a tr with the ID based on @blog_post.id' do
+        response.should have_tag("tr[id=blog_post_#{@blog_post.id}]")
+      end
     end
     
     describe 'when there is one record that somehow has a nil User' do
