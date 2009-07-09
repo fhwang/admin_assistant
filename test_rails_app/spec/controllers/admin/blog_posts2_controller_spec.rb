@@ -273,6 +273,12 @@ describe Admin::BlogPosts2Controller do
           '#after_index', :text => 'Custom HTML rendered after the index'
         )
       end
+      
+      it 'should render custom HTML before the index' do
+        response.should have_tag(
+          '#before_index', :text => 'Custom HTML rendered before the index'
+        )
+      end
     end
     
     describe 'when there is one published post and one unpublished post' do

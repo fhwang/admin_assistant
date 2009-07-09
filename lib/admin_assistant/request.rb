@@ -38,26 +38,39 @@ class AdminAssistant
         )
       end
       
-      def render_after_template_file(template_name, options_plus)
-        after_template_opts = {
-          :file => after_template_file(template_name), :layout => false
-        }.merge options_plus
-        @controller.send :render_to_string, after_template_opts
+      def before_template_file(template_name)
+        File.join(
+          RAILS_ROOT, 'app/views/', @controller.controller_path, 
+          "_before_#{template_name}.html.erb"
+        )
       end
 
       def render_template_file(template_name = action, options_plus = {})
-        main_template_opts = {
-          :file => AdminAssistant.template_file(template_name),
-          :layout => false
-        }.merge options_plus
-        html = @controller.send :render_to_string, main_template_opts
+        html = ''
+        if File.exist?(before_template_file(template_name))
+          html << render_to_string(
+            before_template_file(template_name), options_plus
+          )
+        end
+        html << render_to_string(
+          AdminAssistant.template_file(template_name), options_plus
+        )
         if File.exist?(after_template_file(template_name))
-          html << render_after_template_file(template_name, options_plus)
+          html << render_to_string(
+            after_template_file(template_name), options_plus
+          )
         end
         render_as_text_opts = {
           :text => html, :layout => true
         }.merge(options_plus)
         @controller.send :render, render_as_text_opts
+      end
+      
+      def render_to_string(template_file, options_plus)
+        after_template_opts = {
+          :file => template_file, :layout => false
+        }.merge options_plus
+        @controller.send :render_to_string, after_template_opts
       end
       
       def save
