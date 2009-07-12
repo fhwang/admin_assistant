@@ -3,7 +3,7 @@ layout: api
 title:  Form
 ---
 
-![form](/img/user-form.png)
+![form](../img/user-form.png)
 
 Form configuration affects both creating new records and updating existing records. Most of its customization happens through the form builder object:
 

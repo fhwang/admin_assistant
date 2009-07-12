@@ -13,5 +13,4 @@ Show configuration affects what is displayed in a show page, e.g. `/admin/blog_p
       aa.show.columns :user, :title, :body
     end
 
-Shows only these columns in the show page..
-
+Shows only these columns in the show page.

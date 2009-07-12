@@ -2,7 +2,7 @@
 layout:   default
 ---
 
-admin\_assistant is a Rails plugin that automates a lot of features typically needed in admin controllers. It is written and maintained by [Francis Hwang][fhwang]. 
+admin\_assistant is a Rails plugin that automates a lot of features typically needed in admin controllers. It is written and maintained by [Francis Hwang][fhwang].
 
 admin\_assistant is in beta, meaning that it is stable, and being used in production sites, but there may be small API changes in the future.
 

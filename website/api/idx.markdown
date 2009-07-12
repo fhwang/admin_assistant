@@ -3,7 +3,7 @@ layout: api
 title:  Index
 ---
 
-![index](/img/blog_posts-index.png)
+![index](../img/blog_posts-index.png)
 
 The index is the action that lets you view all records, with pagination and sorting. To customize it by getting the index builder inside of your admin\_assistant config:
 

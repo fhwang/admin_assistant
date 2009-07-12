@@ -39,5 +39,5 @@ Depending on the model you're using, you might notice a few things:
 * There is no `destroy` action out of the box. This is intended as a safe default, but you can add it if you like.
 * If you have more than 10 pages of a given model, the pagination at the bottom includes a jump form to let you automatically jump to a page you enter.
 
-For more, check out the [API reference](/api/).
+For more, check out the [API reference](./api/).
 

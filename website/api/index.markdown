@@ -6,12 +6,12 @@ layout: api
 
 The API reference is broken down into a few sections:
 
-* [Core](/api/core.html): Settings that apply to an admin controller in general.
-* [Destroy](/api/destroy.html): Settings that apply to destroying records. Note that `destroy` is turned off by default. To turn it on, use the core [actions](/api/core.html#builder_actions) method.
-* [Form](/api/form.html): Settings that apply to creating or updating records.
-* [Index](/api/idx.html): Settings that apply to the index view, which you use to view records, paginate, and sort.
-* [Search](/api/search.html): Settings that apply to how searches work.
-* [Show](/api/show.html): Settings that apply to how the show view.
+* [Core](./core.html): Settings that apply to an admin controller in general.
+* [Destroy](./destroy.html): Settings that apply to destroying records. Note that `destroy` is turned off by default. To turn it on, use the core [actions](./core.html#builder_actions) method.
+* [Form](./form.html): Settings that apply to creating or updating records.
+* [Index](./idx.html): Settings that apply to the index view, which you use to view records, paginate, and sort.
+* [Search](./search.html): Settings that apply to how searches work.
+* [Show](./show.html): Settings that apply to how the show view.
 
 
 ### Configuration overview
