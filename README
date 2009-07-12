@@ -1,7 +1,7 @@
 admin_assistant
 ===============
 
-Wiki: http://wiki.github.com/fhwang/admin_assistant
+Documentation: http://fhwang.github.com/admin_assistant/
 Google Group: http://groups.google.com/group/admin_assistant
 
 admin_assistant is a Rails plugin that automates a lot of features typically
@@ -14,33 +14,5 @@ needed in admin interfaces. Current features include:
   new columns to your admin controllers is easy
 * Simple handling of belongs_to association via drop-down selects
 * Built-in support for Paperclip and FileColumn
-
-I'm following a few design principles in building this:
-
-* admin_assistant's specs are written through an actual Rails app: I believe
-  this is the only sensible way to test a Rails plugin that deals with lots of 
-  controller actions and views.
-* admin_assistant will support multiple versions of Rails, so I'm experimenting
-  with a spec suite that can be run against all versions with one Rake task.
-* admin_assistant will be severely hookable. If you're copying and pasting
-  something out of vendor/plugins/admin_assistant, that's a design flaw.
-* admin_assistant will be minimally invasive to the rest of the Rails app. It
-  does not require that you add strange one-off methods to an important model
-  just to do something in an admin controller. And I'll try to avoid doing
-  anything silly like alias_method_chaining anything on ActionController::Base.
-* admin_assistant will have some safe defaults, including turning off the
-  destroy action by default, and not filling in dates and times with the
-  current date or time (which is almost always useless).
-  
-There are also some features I'm skimping on right now:
-
-* Super-pretty CSS: Because I suck at CSS. Submissions of themes are welcome
-  though.
-* Super-fancy Ajax: Because I think it's easy to do this wrong. But there will
-  be some Ajax at some point I spose.
-
-Basically, this plugin should act like a really great administrative assistant
-in your office. It tries to be extremely helpful, but it won't get underfoot or 
-tell you how to do your job.
 
 Copyright (c) 2009 Francis Hwang, released under the MIT license
