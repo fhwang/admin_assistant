@@ -91,6 +91,9 @@
   <% end %>
 <% end %>
 </div>
-<%= @index.records.empty? ? 'No' : @index.records.total_entries %> <%= @admin_assistant.model_class_name %><%= 's' unless @index.records.total_entries == 1 %> found
+<%= @index.records.empty? ? 'No' : @index.records.total_entries %> <%=
+  name = @admin_assistant.model_class_name
+  @index.records.total_entries == 1 ? name : name.pluralize
+%> found
 </div>
 </div>

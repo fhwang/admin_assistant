@@ -200,7 +200,8 @@ class AdminAssistant
     end
     
     def column_config_args
-      {:image_size => :accessor, :link_to_args => :block}
+      {:image_size => :accessor, :link_to_args => :block,
+       :sort_by => :accessor}
     end
     
     def conditions(str = nil, &block)

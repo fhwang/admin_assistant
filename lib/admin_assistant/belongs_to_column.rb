@@ -5,6 +5,7 @@ class AdminAssistant
     def initialize(belongs_to_assoc, opts)
       @belongs_to_assoc = belongs_to_assoc
       @match_text_fields_in_search = opts[:match_text_fields_in_search]
+      @sort_by = opts[:sort_by]
       @association_target = AssociationTarget.new associated_class
     end
     
@@ -73,11 +74,12 @@ class AdminAssistant
     end
     
     def order_sql_field
-      sql = "#{@belongs_to_assoc.table_name}. "
-      sql << if default_name_method
-        default_name_method.to_s
+      if @sort_by
+        "#{@belongs_to_assoc.table_name}.#{@sort_by}"
+      elsif default_name_method
+        "#{@belongs_to_assoc.table_name}.#{default_name_method.to_s}"
       else
-        @belongs_to_assoc.association_foreign_key
+        "#{@belongs_to_assoc.active_record.table_name}.#{@belongs_to_assoc.association_foreign_key}"
       end
     end
       

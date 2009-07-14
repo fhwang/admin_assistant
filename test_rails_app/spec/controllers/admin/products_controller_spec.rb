@@ -87,6 +87,35 @@ describe Admin::ProductsController do
     end
   end
   
+  describe '#index sort by product category' do
+    before :all do
+      Product.destroy_all
+      diamond_cat = ProductCategory.create! :category_name => 'diamond'
+      @diamond = Product.create!(
+        :name => 'Diamond', :price => 200_000, :product_category => diamond_cat
+      )
+      choc_cat = ProductCategory.create! :category_name => 'chocolate'
+      @chocolate = Product.create!(
+        :name => 'Chocolate bar', :price => 200, :product_category => choc_cat
+      )
+      diamond_cat.id.should be < choc_cat.id
+    end
+    
+    before :each do
+      get :index, :sort_order => "asc", :sort => "product_category"
+    end
+    
+    it 'should be a success' do
+      response.should be_success
+    end
+    
+    it 'should order by product_category_id' do
+      response.body.should match(
+        %r|product_#{@diamond.id}.*product_#{@chocolate.id}|m
+      )
+    end
+  end
+  
   describe '#new' do
     before :each do
       get :new

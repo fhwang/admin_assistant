@@ -97,7 +97,8 @@ class AdminAssistant
       BelongsToColumn.new(
         belongs_to_assoc,
         :match_text_fields_in_search => 
-            search_settings[name].match_text_fields_for_association?
+            search_settings[name].match_text_fields_for_association?,
+        :sort_by => index_settings[name].sort_by
       )
     end
   end

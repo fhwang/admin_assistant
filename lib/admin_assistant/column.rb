@@ -284,10 +284,13 @@ class AdminAssistant
     end
       
     def options_for_select
-      @associated_class.
-          find(:all).
-          sort_by { |model| model.send(default_name_method) }.
-          map { |model| [model.send(default_name_method), model.id] }
+      records = @associated_class.find(:all)
+      if default_name_method
+        records.sort_by { |model| model.send(default_name_method) }.
+                map { |model| [model.send(default_name_method), model.id] }
+      else
+        records.map &:id
+      end
     end
   end
 end

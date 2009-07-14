@@ -17,7 +17,7 @@ class Admin::ProductsController < ApplicationController
     end
     
     a.index do |index|
-      index.columns :id, :name, :price, :file_column_image
+      index.columns :id, :name, :price, :file_column_image, :product_category
       index.conditions 'deleted_at is null'
       index.search :name, :price
     end
