@@ -76,6 +76,12 @@ describe Admin::BlogPosts3Controller do
           without_tag("select[name=?]", "search[id(comparator)]")
         end
       end
+      
+      it 'should have a blank checkbox for the body search field' do
+        response.should have_tag('form[id=search_form][method=get]') do
+          with_tag("input[type=checkbox][name=?]", "search[body(blank)]")
+        end
+      end
     end
     
     describe 'with 26 unpublished blog posts' do
@@ -200,6 +206,50 @@ describe Admin::BlogPosts3Controller do
       
       it 'should sort by username' do
         response.body.should match(%r|AARDVARKS!!!!!1.*Wanna go climbing|m)
+      end
+    end
+  end
+  
+  describe '#index when search for a blank body' do
+    before :all do
+      BlogPost.destroy_all
+      @nil_body_post = BlogPost.create!(
+        :title => "nil", :user => @user, :body => nil
+      )
+      @empty_string_body_post = BlogPost.create!(
+        :title => "empty string", :user => @user, :body => ''
+      )
+      @non_blank_body_post = BlogPost.create!(
+        :title => "non-blank", :user => @user, :body => 'foo'
+      )
+    end
+    
+    before :each do
+      get :index, :search => {"body(blank)" => true}
+    end
+    
+    it 'should retrieve a blog post with a nil body' do
+      response.should have_tag("tr[id=?]", "blog_post_#{@nil_body_post.id}")
+    end
+    
+    it 'should retrieve a blog post with a space-only string body' do
+      response.should have_tag(
+        "tr[id=?]", "blog_post_#{@empty_string_body_post.id}"
+      )
+    end
+    
+    it 'should not retrieve a blog post with a non-blank body' do
+      response.should_not have_tag(
+        "tr[id=?]", "blog_post_#{@non_blank_body_post.id}"
+      )
+    end
+      
+    it 'should have a checked blank checkbox for the body search field' do
+      response.should have_tag('form[id=search_form][method=get]') do
+        with_tag(
+          "input[type=checkbox][checked=checked][name=?]", 
+          "search[body(blank)]"
+        )
       end
     end
   end

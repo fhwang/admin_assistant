@@ -18,15 +18,7 @@ class AdminAssistant
         if @input
           if @input == :check_box
             fv = value form.object
-            # Rails 2.3 wants the hidden tag to come before the checkbox, but
-            # it's the opposite for Rails 2.2 and 2.1
-            if RAILS_GEM_VERSION =~ /^2.3/
-              @action_view.send(:hidden_field_tag, input_name, '0') +
-                  @action_view.send(:check_box_tag, input_name, '1', fv)
-            else
-              @action_view.send(:check_box_tag, input_name, '1', fv) +
-                  @action_view.send(:hidden_field_tag, input_name, '0')
-            end
+            check_box_and_hidden_tags(input_name, fv)
           end
         else
           @action_view.send(:text_field_tag, input_name, string(form.object))

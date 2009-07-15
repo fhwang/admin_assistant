@@ -5,24 +5,32 @@ class AdminAssistant
     end
     
     def add_to_query_condition(ar_query_condition, search)
-      value_for_query =
-          attributes_for_search_object(search.params).values.first
-      unless value_for_query.nil?
-        comp = comparator(search)
-        unless %w(< <= = >= >).include?(comp)
-          comp = nil
+      if blank?(search)
+        ar_query_condition.add_condition do |sub_cond|
+          sub_cond.boolean_join = :or
+          sub_cond.sqls << "#{name} is null"
+          sub_cond.sqls << "#{name} = ''"
         end
-        if comp
-          ar_query_condition.sqls << "#{name} #{comp} ?"
-          ar_query_condition.bind_vars << value_for_query
-        else
-          case sql_type
-            when :boolean
-              ar_query_condition.sqls << "#{name} = ?"
-              ar_query_condition.bind_vars << value_for_query
-            else
-              ar_query_condition.sqls << "#{name} like ?"
-              ar_query_condition.bind_vars << "%#{value_for_query}%"
+      else
+        value_for_query =
+            attributes_for_search_object(search.params).values.first
+        unless value_for_query.nil?
+          comp = comparator(search)
+          unless %w(< <= = >= >).include?(comp)
+            comp = nil
+          end
+          if comp
+            ar_query_condition.sqls << "#{name} #{comp} ?"
+            ar_query_condition.bind_vars << value_for_query
+          else
+            case sql_type
+              when :boolean
+                ar_query_condition.sqls << "#{name} = ?"
+                ar_query_condition.bind_vars << value_for_query
+              else
+                ar_query_condition.sqls << "#{name} like ?"
+                ar_query_condition.bind_vars << "%#{value_for_query}%"
+            end
           end
         end
       end
@@ -39,6 +47,10 @@ class AdminAssistant
         end
       end
       {name => value}
+    end
+    
+    def blank?(search)
+      search.params["#{@ar_column.name}(blank)"]
     end
       
     def comparator(search)
@@ -237,6 +249,10 @@ class AdminAssistant
           else
             if @column.sql_type == :integer && @comparators == :all
               input << comparator_html(form.object) << ' '
+            elsif @blank_checkbox
+              input << check_box_and_hidden_tags(
+                "search[#{name}(blank)]", @column.blank?(form.object)
+              )
             end
             input << form.text_field(name)
         end

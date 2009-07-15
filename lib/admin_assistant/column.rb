@@ -178,6 +178,11 @@ class AdminAssistant
           @comparators = :all
         end
         @search = opts[:search]
+        @blank_checkbox = if setting.blank_checkbox.nil?
+          true
+        else
+          setting.blank_checkbox
+        end
       end
     end
     
@@ -199,6 +204,18 @@ class AdminAssistant
         @polymorphic_types = base_setting.polymorphic_types
         if respond_to?(:set_instance_variables_from_options)
           set_instance_variables_from_options(admin_assistant, opts)
+        end
+      end
+      
+      def check_box_and_hidden_tags(input_name, value)
+        # Rails 2.3 wants the hidden tag to come before the checkbox, but it's
+        # the opposite for Rails 2.2 and 2.1
+        if RAILS_GEM_VERSION =~ /^2.3/
+          @action_view.send(:hidden_field_tag, input_name, '0') +
+              @action_view.send(:check_box_tag, input_name, '1', value)
+        else
+          @action_view.send(:check_box_tag, input_name, '1', value) +
+              @action_view.send(:hidden_field_tag, input_name, '0')
         end
       end
       
