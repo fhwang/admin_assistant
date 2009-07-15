@@ -1,8 +1,8 @@
 <% index_view = @index.view(self) %>
-<div id="admin_assistant" class="index <%=
+<div class="admin_assistant index <%=
   @admin_assistant.controller_css_class(controller)
 %>">
-<div id="aa_header">
+<div class="aa_header">
 <div class="actions">
 <%= link_to_function('Search', 'AdminAssistant.show_search_form()') %>
 <%= link_to(
@@ -60,7 +60,7 @@
     <% if index_view.right_column? %><th></th><% end %>
     </tr>
   </thead>
-  <tbody id="<%= @admin_assistant.model_class.name.underscore.pluralize %>_index_tbody">
+  <tbody class="<%= @admin_assistant.model_class.name.underscore.pluralize %>_index_tbody">
   <% @index.records.each do |record| %>
     <tr class="<%= cycle('odd', 'even') %>" id="<%= 
       @admin_assistant.model_class.name.underscore
@@ -79,7 +79,7 @@
   </tbody>
 </table>
 <% end %>
-<div id="aa_footer">
+<div class="aa_footer">
 <div class="pagination">
   <div class="links">
     <%= will_paginate @index.records, :container => false %>

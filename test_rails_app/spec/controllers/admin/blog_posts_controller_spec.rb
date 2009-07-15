@@ -303,7 +303,7 @@ describe Admin::BlogPostsController do
       
       it 'should say how many records are found' do
         response.should have_tag(
-          'div#aa_footer', :text => '1 blog post found'
+          'div.aa_footer', :text => '1 blog post found'
         )
       end
       
@@ -328,8 +328,8 @@ describe Admin::BlogPostsController do
         end
       end
       
-      it 'should have a tbody with the ID blog_posts_index_tbody' do
-        response.should have_tag('tbody[id=blog_posts_index_tbody]')
+      it 'should have a tbody with the class blog_posts_index_tbody' do
+        response.should have_tag('tbody.blog_posts_index_tbody')
       end
       
       it 'should have a tr with the ID based on @blog_post.id' do

@@ -2,117 +2,117 @@
 Don't edit this file: It gets re-copied every time the server starts.
 ******************************************************************************/
 
-#admin_assistant { font-family: "Verdana","Arial", sans-serif }
-#admin_assistant h2 { font-size: large; font-weight: bold }
-#admin_assistant .actions {
+.admin_assistant { font-family: "Verdana","Arial", sans-serif }
+.admin_assistant h2 { font-size: large; font-weight: bold }
+.admin_assistant .actions {
   position: absolute; right: 5px; top: 5px; text-align: right
 }
-#admin_assistant #aa_header { position: relative }
+.admin_assistant .aa_header { position: relative }
 
 /***** Index stuff ***********************************************************/
 
-#admin_assistant.index table {
+.admin_assistant.index table {
   width: 100%; margin: 0px 0px 10px 0px; padding: 0px
 }
-#admin_assistant.index th {
+.admin_assistant.index th {
   background: #666; color: white; padding: 5px 20px 5px 5px
 }
-#admin_assistant.index th a {
+.admin_assistant.index th a {
   color: white
 }
-#admin_assistant.index th.sort.asc {
+.admin_assistant.index th.sort.asc {
   background: #000 url(/images/admin_assistant/sort-asc.png) no-repeat right
 }
-#admin_assistant.index th.sort.desc {
+.admin_assistant.index th.sort.desc {
   background: #000 url(/images/admin_assistant/sort-desc.png) no-repeat right
 }
-#admin_assistant.index td {
+.admin_assistant.index td {
   background: white;
   border-bottom: 1px solid #ccc;
   border-right: 1px solid #ccc;
   padding: 5px
 }
-#admin_assistant td.actions {
+.admin_assistant td.actions {
   position: relative; text-align: left
 }
-#admin_assistant.index tbody tr td:first-child {
+.admin_assistant.index tbody tr td:first-child {
   border-left: 1px solid #ccc;
 }
-#admin_assistant.index tbody tr.even td {
+.admin_assistant.index tbody tr.even td {
   background: #eee;
 }
 
-#admin_assistant.index tbody tr td.sort {
+.admin_assistant.index tbody tr td.sort {
   background: #ddd
 }
-#admin_assistant.index tbody tr.even td.sort {
+.admin_assistant.index tbody tr.even td.sort {
   background: #ccc
 }
 
 /***** Search stuff ***********************************************************/
-#admin_assistant.index #search_form .autocomplete_palette {
+.admin_assistant.index #search_form .autocomplete_palette {
   width: 500px
 }
 
-#admin_assistant.index #search_form .polymorphic .polymorphic_type {
+.admin_assistant.index #search_form .polymorphic .polymorphic_type {
   float: left;
   padding-right: 5px;
 }
 
 /***** Form stuff ************************************************************/
 
-#admin_assistant.form .column {
+.admin_assistant.form .column {
   margin-bottom: 10px;
 }
 
-#admin_assistant.form .column .description {
+.admin_assistant.form .column .description {
   font-size: small;
 }
 
-#admin_assistant.form input {
+.admin_assistant.form input {
   font-size: large
 }
 
-#admin_assistant.form input[type=text] {
+.admin_assistant.form input[type=text] {
   width: 100%
 }
 
-#admin_assistant.form input[type=text].integer {
+.admin_assistant.form input[type=text].integer {
   width: 50px
 }
 
-#admin_assistant.form select {
+.admin_assistant.form select {
   font-size: large
 }
 
-#admin_assistant.form textarea {
+.admin_assistant.form textarea {
   width: 100%;
   font-size: large
 }
 
 
-#admin_assistant .autocomplete_palette {
+.admin_assistant .autocomplete_palette {
   background: white;
   color: #000;
   border: 1px solid #2b303d;
 }
 
-#admin_assistant .autocomplete_palette ul li {
+.admin_assistant .autocomplete_palette ul li {
 	padding: 1px 5px;
 }
 
-#admin_assistant .autocomplete_palette ul li:hover,
-#admin_assistant .autocomplete_palette ul li.selected {
+.admin_assistant .autocomplete_palette ul li:hover,
+.admin_assistant .autocomplete_palette ul li.selected {
 	background: #66aaff;
 }
 
 
 /***** Show stuff ************************************************************/
-#admin_assistant.show .column {
+.admin_assistant.show .column {
   margin-bottom: 10px;
 }
 
-#admin_assistant.show label {
+.admin_assistant.show label {
   font-size: small;
 }
 

@@ -2,22 +2,22 @@
 Don't edit this file: It gets re-copied every time the server starts.
 ******************************************************************************/
 
-#admin_assistant {
+.admin_assistant {
   font-family: "Arial", sans-serif;
   margin: 9px 0
 }
-#admin_assistant #aa_header {
+.admin_assistant .aa_header {
   position: relative;
   padding-bottom: 5px;
 }
-#admin_assistant #aa_header h2 {
+.admin_assistant .aa_header h2 {
   font-size: 160%;
   font-weight: bold;
   color: #555;
   padding: 2px 0;
   margin: 0;
 }
-#admin_assistant #aa_header .actions {
+.admin_assistant .aa_header .actions {
   position: absolute;
   right: 5px;
   top: 5px;
@@ -26,21 +26,21 @@ Don't edit this file: It gets re-copied every time the server starts.
   letter-spacing: -1px;
   font-weight: bold;
 }
-#admin_assistant #aa_header .actions a {
+.admin_assistant .aa_header .actions a {
   color: #0066CC
 }
-#admin_assistant a {
+.admin_assistant a {
   text-decoration: none;
 }
 
 /***** Index stuff ***********************************************************/
 
-#admin_assistant.index table {
+.admin_assistant.index table {
   font-family: "Verdana", "Arial", sans-serif;
   font-size: 11px;
   width: 100%; margin: 0px 0px 3px 0px; padding: 0px
 }
-#admin_assistant.index th {
+.admin_assistant.index th {
   background: #555;
   color: white;
   padding: 2px 15px 5px 4px;
@@ -48,58 +48,58 @@ Don't edit this file: It gets re-copied every time the server starts.
   font-weight: bold;
   font-family: Arial, sans-serif;
 }
-#admin_assistant.index th a {
+.admin_assistant.index th a {
   color: white;
   text-decoration: none;
 }
-#admin_assistant.index th.sort.asc {
+.admin_assistant.index th.sort.asc {
   background: #333 url(/images/admin_assistant/sort-asc.png) no-repeat right
 }
-#admin_assistant.index th.sort.desc {
+.admin_assistant.index th.sort.desc {
   background: #333 url(/images/admin_assistant/sort-desc.png) no-repeat right
 }
-#admin_assistant.index td {
+.admin_assistant.index td {
   background: #E6F2FF;
   color: #333;
   border-bottom: 1px solid #ccc;
   border-right: 1px solid #ccc;
   padding: 5px
 }
-#admin_assistant td.actions {
+.admin_assistant td.actions {
   position: relative;
   text-align: left;
   font-weight: bold;
   letter-spacing: -1px;
 }
-#admin_assistant.index tbody tr td:first-child {
+.admin_assistant.index tbody tr td:first-child {
   border-left: 1px solid #ccc;
 }
-#admin_assistant.index tbody tr.even td {
+.admin_assistant.index tbody tr.even td {
   background: #fff;
 }
 
-#admin_assistant.index tbody tr td.sort {
+.admin_assistant.index tbody tr td.sort {
   background: #B9DCFF
 }
-#admin_assistant.index tbody tr.even td.sort {
+.admin_assistant.index tbody tr.even td.sort {
   background: #E6F2FF
 }
-#admin_assistant.index #aa_footer {
+.admin_assistant.index .aa_footer {
   font-family: arial, sans-serif;
   font-size: 12px;
   font-weight: bold;
 }
-#admin_assistant.index #aa_footer .pagination {
+.admin_assistant.index .aa_footer .pagination {
   float: right;
 }
-#admin_assistant.index #aa_footer .pagination .links {
+.admin_assistant.index .aa_footer .pagination .links {
   float: left;
 }
-#admin_assistant.index #aa_footer .pagination form {
+.admin_assistant.index .aa_footer .pagination form {
   margin-left: 5px;
   float: left;
 }
-#admin_assistant.index #search_form {
+.admin_assistant.index #search_form {
   background-color: #DAFFCD;
   border: 1px solid #7FCF00;
   padding: 4px;
@@ -110,57 +110,57 @@ Don't edit this file: It gets re-copied every time the server starts.
 
 /***** Form stuff ************************************************************/
 
-#admin_assistant.form {
+.admin_assistant.form {
   background: #DAFFCD;
   border: 1px solid #7FCF00;
   padding: 4px;
 }
 
-#admin_assistant.form #aa_header h2 {
+.admin_assistant.form .aa_header h2 {
   color: #1F7F00;
   font-size: 16px;
   letter-spacing: -1px;
   padding: 2px;
 }
 
-#admin_assistant.form form {
+.admin_assistant.form form {
   margin-top: 20px;
   padding: 0px 5px;
 }
 
-#admin_assistant.form .column {
+.admin_assistant.form .column {
   margin-bottom: 10px;
 }
 
-#admin_assistant.form label {
+.admin_assistant.form label {
   font-size: 11px;
 }
 
-#admin_assistant.form input[type=text] {
+.admin_assistant.form input[type=text] {
   width: 100%
 }
 
-#admin_assistant.form input[type=text].integer {
+.admin_assistant.form input[type=text].integer {
   width: 50px
 }
 
-#admin_assistant.form input, #admin_assistant.form select, #admin_assistant.form textarea {
+.admin_assistant.form input, .admin_assistant.form select, .admin_assistant.form textarea {
   font-size: 16px;
   font-weight: bold;
   letter-spacing: -1px;
 }
 
-#admin_assistant.form textarea {
+.admin_assistant.form textarea {
   width: 100%;
 }
 
-#admin_assistant.form .errorExplanation {
+.admin_assistant.form .errorExplanation {
   background: #FFCCCC;
   border: 1px solid #FF6666;
   margin: 2px 0;
 }
 
-#admin_assistant.form .errorExplanation h2 {
+.admin_assistant.form .errorExplanation h2 {
   background: #FF6666;
   color: #333333;
   font-family: Verdana;
@@ -169,20 +169,20 @@ Don't edit this file: It gets re-copied every time the server starts.
   margin: 0;
 }
 
-#admin_assistant.form .errorExplanation p {
+.admin_assistant.form .errorExplanation p {
   font-family: Verdana;
   font-size: 11px;
   margin: 0;
   padding: 2px 5px;
 }
 
-#admin_assistant.form .errorExplanation ul {
+.admin_assistant.form .errorExplanation ul {
   list-style: none outside disc;
   margin: 0;
   padding: 0 2px 4px 25px;
 }
 
-#admin_assistant.form .errorExplanation ul li {
+.admin_assistant.form .errorExplanation ul li {
   font-family: Verdana;
   font-size: 11px;
   letter-spacing: -1px;
@@ -191,28 +191,28 @@ Don't edit this file: It gets re-copied every time the server starts.
   font-weight: bold;
 }
 
-#admin_assistant .autocomplete_palette {
+.admin_assistant .autocomplete_palette {
   background: white;
   color: #000;
   border: 1px solid #2b303d;
 }
 
-#admin_assistant .autocomplete_palette ul li {
+.admin_assistant .autocomplete_palette ul li {
 	padding: 1px 5px;
 }
 
-#admin_assistant .autocomplete_palette ul li:hover,
-#admin_assistant .autocomplete_palette ul li.selected {
+.admin_assistant .autocomplete_palette ul li:hover,
+.admin_assistant .autocomplete_palette ul li.selected {
 	background: #66aaff;
 }
 
 
 /***** Show stuff ************************************************************/
-#admin_assistant.show .column {
+.admin_assistant.show .column {
   margin-bottom: 10px;
 }
 
-#admin_assistant.show label {
+.admin_assistant.show label {
   font-size: small;
 }
 

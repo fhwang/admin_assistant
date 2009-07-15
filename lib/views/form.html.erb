@@ -1,11 +1,11 @@
 <%
 form_view = AdminAssistant::FormView.new(@record, @admin_assistant, self)
 %>
-<div id="admin_assistant" class="form <%=
+<div class="admin_assistant form <%=
   @admin_assistant.controller_css_class(controller)
 %>">
   <% id = nil unless defined?(id) %>
-  <div id="aa_header">
+  <div class="aa_header">
     <h2><%= h(form_view.title) %></h2>
     <div class="actions">
     <%= link_to('Back to index', :action => 'index') %>
