@@ -25,7 +25,7 @@ class AdminAssistant
         )
       if value = search.send(name)
         ar_query_condition.ar_query.joins << name.to_sym
-        searchable_columns = AdminAssistant.searchable_columns associated_class
+        searchable_columns = Model.new(associated_class).searchable_columns
         ar_query_condition.add_condition do |sub_cond|
           sub_cond.boolean_join = :or
           searchable_columns.each do |column|

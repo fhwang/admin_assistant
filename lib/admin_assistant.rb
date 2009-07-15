@@ -14,12 +14,6 @@ class AdminAssistant
                 :index_settings, :model_class, :show_settings
   attr_accessor :actions, :custom_destroy
   attr_writer   :model_class_name
-  
-  def self.searchable_columns(model_class)
-    model_class.columns.select { |column|
-      [:string, :text].include?(column.type)
-    }
-  end
 
   def self.template_file(template_name)
     "#{File.dirname(__FILE__)}/views/#{template_name}.html.erb"
@@ -259,6 +253,12 @@ class AdminAssistant
         end
       end
       pa
+    end
+  
+    def searchable_columns
+      @ar_model.columns.select { |column|
+        [:string, :text].include?(column.type)
+      }
     end
   end
 end

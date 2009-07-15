@@ -9,7 +9,7 @@ class AdminAssistant
       unless search.params.blank?
         ar_query_condition.ar_query.boolean_join = :and
         ar_query_condition.boolean_join = :or
-        names_to_search = AdminAssistant.searchable_columns(@model_class).map(
+        names_to_search = Model.new(@model_class).searchable_columns.map(
           &:name
         )
         names_to_search.concat @fields_to_include
