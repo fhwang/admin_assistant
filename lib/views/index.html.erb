@@ -60,7 +60,7 @@
     <% if index_view.right_column? %><th></th><% end %>
     </tr>
   </thead>
-  <tbody class="<%= @admin_assistant.model_class.name.underscore.pluralize %>_index_tbody">
+  <tbody id="<%= @admin_assistant.model_class.name.underscore.pluralize %>_index_tbody">
   <% @index.records.each do |record| %>
     <tr class="<%= cycle('odd', 'even') %>" id="<%= 
       @admin_assistant.model_class.name.underscore
