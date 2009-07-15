@@ -23,7 +23,7 @@ class AdminAssistant
     def add_to_query_condition_by_matching_text_fields(
           ar_query_condition, search
         )
-      if value = search.send(name)
+      if (value = search.send(name)) and !value.blank?
         ar_query_condition.ar_query.joins << name.to_sym
         searchable_columns = Model.new(associated_class).searchable_columns
         ar_query_condition.add_condition do |sub_cond|

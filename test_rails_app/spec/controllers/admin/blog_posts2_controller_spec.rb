@@ -279,6 +279,12 @@ describe Admin::BlogPosts2Controller do
           '#before_index', :text => 'Custom HTML rendered before the index'
         )
       end
+      
+      it 'should not have a blank checkbox for the body search field' do
+        response.should have_tag('form[id=search_form][method=get]') do
+          without_tag("input[type=checkbox][name=?]", "search[body(blank)]")
+        end
+      end
     end
     
     describe 'when there is one published post and one unpublished post' do

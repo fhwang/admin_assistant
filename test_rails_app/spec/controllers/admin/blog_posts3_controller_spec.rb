@@ -225,7 +225,11 @@ describe Admin::BlogPosts3Controller do
     end
     
     before :each do
-      get :index, :search => {"body(blank)" => true}
+      get :index,
+          :search => {
+            "body(blank)" => '1', :user => '', :body => '', :title => '', 
+            :textile => '', :id => '', '(all_or_any)' => 'all'
+          }
     end
     
     it 'should retrieve a blog post with a nil body' do

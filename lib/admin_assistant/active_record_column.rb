@@ -249,12 +249,14 @@ class AdminAssistant
           else
             if @column.sql_type == :integer && @comparators == :all
               input << comparator_html(form.object) << ' '
-            elsif @blank_checkbox
+            end
+            input << form.text_field(name)
+            if @blank_checkbox
               input << check_box_and_hidden_tags(
                 "search[#{name}(blank)]", @column.blank?(form.object)
               )
+              input << "is blank"
             end
-            input << form.text_field(name)
         end
         "<p><label>#{label}</label> <br/>#{input}</p>"
       end

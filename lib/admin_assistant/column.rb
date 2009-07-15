@@ -178,11 +178,7 @@ class AdminAssistant
           @comparators = :all
         end
         @search = opts[:search]
-        @blank_checkbox = if setting.blank_checkbox.nil?
-          true
-        else
-          setting.blank_checkbox
-        end
+        @blank_checkbox = setting.blank_checkbox
       end
     end
     
