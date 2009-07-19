@@ -86,6 +86,16 @@ describe Admin::BlogPosts3Controller do
       it 'should render extra action links in order' do
         response.body.should match(/Short title.*Blank body/m)
       end
+      
+      it 'should have a trinary select for the has_short_title search field' do
+        response.should have_tag('form[id=search_form][method=get]') do
+          with_tag('select[name=?]', 'search[has_short_title]') do
+            with_tag("option[value='']", :text => '')
+            with_tag("option[value='true']", :text => 'Yes')
+            with_tag("option[value='false']", :text => 'No')
+          end
+        end
+      end
     end
     
     describe 'with 26 unpublished blog posts' do
@@ -258,6 +268,80 @@ describe Admin::BlogPosts3Controller do
           "input[type=checkbox][checked=checked][name=?]", 
           "search[body(blank)]"
         )
+      end
+    end
+  end
+  
+  describe '#index when searching and there are blog posts with varying title lengths' do
+    before :all do
+      BlogPost.destroy_all
+      @bp1 = BlogPost.create!(
+        :title => 'short', :body => 'foobar', :user => @user
+      )
+      @bp2 = BlogPost.create!(
+        :title => "longer title", :body => 'foobar', :user => @user
+      )
+    end
+    
+    describe 'when searching for short-titled blog posts' do
+      before :each do
+        get :index, :search => {:has_short_title => 'true'}
+      end
+      
+      it 'should return a short-titled blog post' do
+        response.should have_tag('td', :text => 'short')
+      end
+      
+      it 'should not return a longer-title blog post' do
+        response.should_not have_tag('td', :text => 'longer title')
+      end
+      
+      it "should pre-select 'true' in the has_short_title search field" do
+        response.should have_tag('form[id=search_form][method=get]') do
+          with_tag('select[name=?]', 'search[has_short_title]') do
+            with_tag("option[value='']", :text => '')
+            with_tag("option[value='true'][selected=selected]", :text => 'Yes')
+            with_tag("option[value='false']", :text => 'No')
+          end
+        end
+      end
+    end
+    
+    describe 'when searching for long-titled blog posts' do
+      before :each do
+        get :index, :search => {:has_short_title => 'false'}
+      end
+
+      it 'should not return a short-titled blog post' do
+        response.should_not have_tag('td', :text => 'short')
+      end
+      
+      it 'should return a longer-title blog post' do
+        response.should have_tag('td', :text => 'longer title')
+      end
+      
+      it "should pre-select 'false' in the has_short_title search field" do
+        response.should have_tag('form[id=search_form][method=get]') do
+          with_tag('select[name=?]', 'search[has_short_title]') do
+            with_tag("option[value='']", :text => '')
+            with_tag("option[value='true']", :text => 'Yes')
+            with_tag("option[value='false'][selected=selected]", :text => 'No')
+          end
+        end
+      end
+    end
+    
+    describe 'when searching for blog posts of any title-length' do
+      before :each do
+        get :index, :search => {:body => 'foobar'}
+      end
+      
+      it 'should return a short-titled blog post' do
+        response.should have_tag('td', :text => 'short')
+      end
+      
+      it 'should return a longer-title blog post' do
+        response.should have_tag('td', :text => 'longer title')
       end
     end
   end

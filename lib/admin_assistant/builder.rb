@@ -259,6 +259,7 @@ class AdminAssistant
       
       def column_config_args
         {:blank_checkbox => :accessor, :comparators => :accessor,
+         :conditions => :block, :field_type => :accessor,
          :match_text_fields_for_association => :boolean}
       end
       

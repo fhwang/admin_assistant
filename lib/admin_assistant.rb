@@ -80,7 +80,7 @@ class AdminAssistant
     elsif (ar_column = @model_class.columns_hash[name.to_s])
       ActiveRecordColumn.new ar_column
     else
-      VirtualColumn.new name, @model_class
+      VirtualColumn.new name, @model_class, self
     end
   end
   

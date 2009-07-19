@@ -4,6 +4,7 @@ class Admin::BlogPosts3Controller < ApplicationController
   admin_assistant_for BlogPost do |a|
     a.model_class_name = 'post'
     
+    a[:has_short_title].boolean_labels = %w(Yes No)
     a[:published?].boolean_labels = %w(Yes No)
 
     a.index do |index|
@@ -34,8 +35,16 @@ class Admin::BlogPosts3Controller < ApplicationController
       
       # Extended search configuration
       index.search do |search|
-        search.columns :id, :title, :body, :textile, :user
+        search.columns :id, :title, :body, :textile, :user, :has_short_title
         search[:body].blank_checkbox = true
+        search[:has_short_title].field_type = :boolean
+        search[:has_short_title].conditions do |has_short_title|
+          if has_short_title
+            "length(title) < 10"
+          elsif has_short_title == false
+            "length(title) >= 10"
+          end
+        end
         search[:id].comparators = false
         search[:user].match_text_fields_for_association
       end
