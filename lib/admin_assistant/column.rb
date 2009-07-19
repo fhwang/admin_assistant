@@ -127,16 +127,16 @@ class AdminAssistant
     end
     
     module IndexViewMethods
-      def ajax_toggle?
-        false
-      end
-
       def header_css_class
         "sort #{sort_order}" if sort_order
       end
       
       def td_css_class
         'sort' if sort_order
+      end
+      
+      def unconfigured_html(record)
+        @action_view.send(:h, string(record))
       end
       
       def html(record)
@@ -148,10 +148,8 @@ class AdminAssistant
             @action_view.send(:h, string(record)),
             @link_to_args.call(record)
           )
-        elsif ajax_toggle?
-          ajax_toggle_html(record)
         else
-          @action_view.send(:h, string(record))
+          unconfigured_html(record)
         end
         html = '&nbsp;' if html.blank?
         html

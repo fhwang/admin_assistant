@@ -193,6 +193,14 @@ class AdminAssistant
           :success => "$(#{div_id}).hide(); $(#{div_id}).appear()"
         )
       end
+      
+      def unconfigured_html(record)
+        if ajax_toggle?
+          ajax_toggle_html(record)
+        else
+          @action_view.send(:h, string(record))
+        end
+      end
     end
     
     class SearchView < AdminAssistant::Column::View
