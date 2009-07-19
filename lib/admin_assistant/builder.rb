@@ -192,7 +192,7 @@ class AdminAssistant
     
     def initialize(admin_assistant)
       super
-      @actions = {}
+      @actions = ActiveSupport::OrderedHash.new
       @right_column_links = []
       @search_fields = []
       @search_settings = SearchSettings.new @admin_assistant

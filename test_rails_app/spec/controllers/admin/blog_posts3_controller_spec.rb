@@ -82,6 +82,10 @@ describe Admin::BlogPosts3Controller do
           with_tag("input[type=checkbox][name=?]", "search[body(blank)]")
         end
       end
+      
+      it 'should render extra action links in order' do
+        response.body.should match(/Short title.*Blank body/m)
+      end
     end
     
     describe 'with 26 unpublished blog posts' do

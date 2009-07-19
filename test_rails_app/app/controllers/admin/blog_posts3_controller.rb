@@ -14,14 +14,22 @@ class Admin::BlogPosts3Controller < ApplicationController
         25
       end
       
-      # Add the link 'All' to the top-right corner
       index.actions['All'] = {:all => '1'}
+      index.actions['Short title'] = {:short_title => '1'}
+      index.actions['Blank body'] = {:blank_body => '1'}
       
       # By default, only show unpublished blog posts unless params[:all] is
       # passed in. This needs to work with or without use of the field search
       # feature
       index.conditions do |params|
-        "published_at is null" unless params[:all]
+        if params[:all]
+        elsif params[:blank_body]
+          "(body is null or body = '')"
+        elsif params[:short_title]
+          "length(title) < 10"
+        else
+          'published_at is null'
+        end
       end
       
       # Extended search configuration
