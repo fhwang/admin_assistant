@@ -12,8 +12,7 @@ class AdminAssistant
           sub_cond.sqls << "#{name} = ''"
         end
       else
-        value_for_query =
-            attributes_for_search_object(search.params).values.first
+        value_for_query = search.send(@ar_column.name)
         unless value_for_query.nil?
           comp = comparator(search)
           unless %w(< <= = >= >).include?(comp)
