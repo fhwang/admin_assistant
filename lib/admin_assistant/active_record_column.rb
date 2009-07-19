@@ -23,7 +23,7 @@ class AdminAssistant
             ar_query_condition.sqls << "#{name} #{comp} ?"
             ar_query_condition.bind_vars << value_for_query
           else
-            case sql_type
+            case field_type
               when :boolean
                 ar_query_condition.sqls << "#{name} = ?"
                 ar_query_condition.bind_vars << value_for_query
@@ -39,7 +39,7 @@ class AdminAssistant
     def attributes_for_search_object(search_params)
       terms = search_params[@ar_column.name]
       value = unless terms.blank?
-        case sql_type
+        case field_type
           when :boolean
             terms.blank? ? nil : (terms == 'true')
           else
@@ -49,24 +49,16 @@ class AdminAssistant
       {name => value}
     end
     
-    def blank?(search)
-      search.params["#{@ar_column.name}(blank)"]
-    end
-      
-    def comparator(search)
-      search.params["#{@ar_column.name}(comparator)"]
-    end
-    
     def contains?(column_name)
       column_name.to_s == @ar_column.name
     end
     
-    def name
-      @ar_column.name
+    def field_type
+      @ar_column.type
     end
     
-    def sql_type
-      @ar_column.type
+    def name
+      @ar_column.name
     end
     
     class FormView < AdminAssistant::Column::View
@@ -102,7 +94,7 @@ class AdminAssistant
       end
       
       def default_input
-        case @column.sql_type
+        case @column.field_type
           when :boolean
             :check_box
           when :date
@@ -173,7 +165,7 @@ class AdminAssistant
       include AdminAssistant::Column::IndexViewMethods
 
       def ajax_toggle?
-        @column.sql_type == :boolean && @ajax_toggle_allowed
+        @column.field_type == :boolean && @ajax_toggle_allowed
       end
       
       def ajax_toggle_div_id(record)
@@ -205,61 +197,7 @@ class AdminAssistant
     end
     
     class SearchView < AdminAssistant::Column::View
-      include AdminAssistant::Column::SearchViewMethods
-      
-      def boolean_input(form)
-        opts = [['', nil]]
-        if @boolean_labels
-          opts << [@boolean_labels.first, true]
-          opts << [@boolean_labels.last, false]
-        else
-          opts << ['true', true]
-          opts << ['false', false]
-        end
-        form.select(name, opts)
-      end
-      
-      def comparator_html(search)
-        selected_comparator = @column.comparator(search) || '='
-        option_tags = comparator_opts.map { |text, value|
-          opt = "<option value=\"#{value}\""
-          if selected_comparator == value
-            opt << " selected=\"selected\""
-          end
-          opt << ">#{text}</option>"
-        }.join("\n")
-        @action_view.select_tag(
-          "search[#{name}(comparator)]", option_tags
-        )
-      end
-      
-      def comparator_opts
-        [
-          ['greater than', '>'], ['greater than or equal to', '>='],
-          ['equal to', '='], ['less than or equal to', '<='],
-          ['less than', '<']
-        ]
-      end
-      
-      def html(form)
-        input = ''
-        case @column.sql_type
-          when :boolean
-            input = boolean_input form
-          else
-            if @column.sql_type == :integer && @comparators == :all
-              input << comparator_html(form.object) << ' '
-            end
-            input << form.text_field(name)
-            if @blank_checkbox
-              input << check_box_and_hidden_tags(
-                "search[#{name}(blank)]", @column.blank?(form.object)
-              )
-              input << "is blank"
-            end
-        end
-        "<p><label>#{label}</label> <br/>#{input}</p>"
-      end
+      include AdminAssistant::Column::SimpleColumnSearchViewMethods
     end
   end
 end

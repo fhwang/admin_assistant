@@ -1,5 +1,13 @@
 class AdminAssistant
   class Column
+    def blank?(search)
+      search.params["#{name}(blank)"]
+    end
+
+    def comparator(search)
+      search.params["#{name}(comparator)"]
+    end
+    
     def form_view(action_view, admin_assistant, opts = {})
       view 'FormView', action_view, admin_assistant, opts
     end
@@ -179,6 +187,64 @@ class AdminAssistant
         end
         @search = opts[:search]
         @blank_checkbox = setting.blank_checkbox
+      end
+    end
+    
+    module SimpleColumnSearchViewMethods
+      include SearchViewMethods
+      
+      def boolean_input(form)
+        opts = [['', nil]]
+        if @boolean_labels
+          opts << [@boolean_labels.first, true]
+          opts << [@boolean_labels.last, false]
+        else
+          opts << ['true', true]
+          opts << ['false', false]
+        end
+        form.select(name, opts)
+      end
+      
+      def comparator_html(search)
+        selected_comparator = @column.comparator(search) || '='
+        option_tags = comparator_opts.map { |text, value|
+          opt = "<option value=\"#{value}\""
+          if selected_comparator == value
+            opt << " selected=\"selected\""
+          end
+          opt << ">#{text}</option>"
+        }.join("\n")
+        @action_view.select_tag(
+          "search[#{name}(comparator)]", option_tags
+        )
+      end
+      
+      def comparator_opts
+        [
+          ['greater than', '>'], ['greater than or equal to', '>='],
+          ['equal to', '='], ['less than or equal to', '<='],
+          ['less than', '<']
+        ]
+      end
+      
+      def html(form)
+        input = ''
+        case @column.field_type
+          when :boolean
+            input = boolean_input form
+          else
+            if @column.field_type == :integer && @comparators == :all
+              input << comparator_html(form.object) << ' '
+            end
+            input << form.text_field(name)
+            if @blank_checkbox
+              input << check_box_and_hidden_tags(
+                "search[#{name}(blank)]", @column.blank?(form.object)
+              )
+              input << "is blank"
+            end
+        end
+        "<p><label>#{label}</label> <br/>#{input}</p>"
       end
     end
     
