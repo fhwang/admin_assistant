@@ -178,9 +178,13 @@ describe Admin::BlogPosts3Controller do
       end
       
       before :each do
-        get :index, :search => {
-          :body => "", :textile => "", :id => "", :user => 'ny'
-        }
+        get(
+          :index,
+          :search => {
+            :body => "", :textile => "", :id => "", :user => 'ny',
+            :has_short_title => ''
+          }
+        )
         response.should be_success
       end
       
@@ -239,11 +243,14 @@ describe Admin::BlogPosts3Controller do
     end
     
     before :each do
-      get :index,
-          :search => {
-            "body(blank)" => '1', :user => '', :body => '', :title => '', 
-            :textile => '', :id => '', '(all_or_any)' => 'all'
-          }
+      get(
+        :index,
+        :search => {
+          "body(blank)" => '1', :user => '', :body => '', :title => '', 
+          :textile => '', :id => '', '(all_or_any)' => 'all',
+          :has_short_title => ''
+        }
+      )
     end
     
     it 'should retrieve a blog post with a nil body' do
@@ -285,7 +292,13 @@ describe Admin::BlogPosts3Controller do
     
     describe 'when searching for short-titled blog posts' do
       before :each do
-        get :index, :search => {:has_short_title => 'true'}
+        get(
+          :index,
+          :search => {
+            :body => "", :textile => "", :id => "", :user => '', 
+            :has_short_title => 'true'
+          }
+        )
       end
       
       it 'should return a short-titled blog post' do
@@ -309,7 +322,13 @@ describe Admin::BlogPosts3Controller do
     
     describe 'when searching for long-titled blog posts' do
       before :each do
-        get :index, :search => {:has_short_title => 'false'}
+        get(
+          :index,
+          :search => {
+            :body => "", :textile => "", :id => "", :user => '', 
+            :has_short_title => 'false'
+          }
+        )
       end
 
       it 'should not return a short-titled blog post' do
@@ -333,7 +352,13 @@ describe Admin::BlogPosts3Controller do
     
     describe 'when searching for blog posts of any title-length' do
       before :each do
-        get :index, :search => {:body => 'foobar'}
+        get(
+          :index,
+          :search => {
+            :body => 'foobar', :textile => "", :id => "", :user => '',
+            :has_short_title => ''
+          }
+        )
       end
       
       it 'should return a short-titled blog post' do

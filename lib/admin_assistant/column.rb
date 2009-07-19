@@ -24,6 +24,10 @@ class AdminAssistant
       view 'ShowView', action_view, admin_assistant, opts
     end
     
+    def verify_for_search
+      # nothing here, maybe implemented in subclasses
+    end
+    
     def view(view_class_name, action_view, admin_assistant, opts)
       klass = begin
         self.class.const_get view_class_name

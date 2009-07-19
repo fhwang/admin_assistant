@@ -32,6 +32,12 @@ class AdminAssistant
       @search_settings.field_type
     end
     
+    def verify_for_search
+      unless @search_settings.conditions
+        raise "Virtual search column #{@name.to_sym.inspect} needs a conditions block"
+      end
+    end
+    
     class FormView < AdminAssistant::Column::View
       include AdminAssistant::Column::FormViewMethods
       

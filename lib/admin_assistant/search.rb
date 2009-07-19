@@ -7,6 +7,7 @@ class AdminAssistant
       @params ||= {}
       @attributes = HashWithIndifferentAccess.new
       columns.each do |c|
+        c.verify_for_search
         c.attributes_for_search_object(@params).each do |key, value|
           @attributes[key] = value
         end
