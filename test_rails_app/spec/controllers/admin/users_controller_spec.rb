@@ -118,6 +118,22 @@ describe Admin::UsersController do
     end
   end
   
+  describe '#index with a user with an avatar' do
+    before :all do
+      @user.update_attributes :has_avatar => true, :avatar_version => 9
+    end
+    
+    before :each do
+      get :index
+    end
+    
+    it 'should show the avatar image in the avatar column' do
+      response.should have_tag(
+        'img[src=?]', "http://my-image-server.com/users/#{@user.id}.jpg?v=9"
+      )
+    end
+  end
+  
   describe '#new' do
     before :each do
       get :new

@@ -4,12 +4,10 @@ class Admin::UsersController < ApplicationController
   admin_assistant_for User do |a|
     a.actions << :destroy
     
-    # If you're in a hurry you don't have to send this to the form builder
-    # object 
     a[:state].input = :us_state
     
     a.index do |index|
-      # Add a right column link
+      index.columns :id, :username, :password, :tmp_avatar
       index.right_column_links << lambda { |user|
         [ "New blog post",
           { :controller => '/admin/blog_posts', :action => 'new',
@@ -54,13 +52,5 @@ class Admin::UsersController < ApplicationController
   
   def destroy_tmp_avatar_in_attributes(attributes)
     attributes[:has_avatar] = false
-  end
-  
-  def tmp_avatar_exists?(user)
-    user.has_avatar?
-  end
-  
-  def tmp_avatar_url(user)
-    "http://my-image-server.com/users/#{user.id}.jpg?v=#{user.avatar_version}"
   end
 end

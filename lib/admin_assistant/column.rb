@@ -105,13 +105,9 @@ class AdminAssistant
         @description = setting.description
         @datetime_select_options = setting.datetime_select_options || {}
         @date_select_options = setting.date_select_options || {}
-        fem_name = name + '_exists?'
-        if @action_view.controller.respond_to?(fem_name)
-          @file_exists_method = @action_view.controller.method(fem_name)
-        end
         fum_name = name + '_url'
-        if @action_view.controller.respond_to?(fum_name)
-          @file_url_method = @action_view.controller.method(fum_name)
+        if @action_view.respond_to?(fum_name)
+          @file_url_method = @action_view.method(fum_name)
         end
         @image_size = setting.image_size
         @nilify_link = setting.nilify_link
@@ -264,6 +260,10 @@ class AdminAssistant
         @model_class = admin_assistant.model_class
         base_setting = admin_assistant[name]
         @boolean_labels = base_setting.boolean_labels
+        fem_name = name + '_exists?'
+        if @action_view.respond_to?(fem_name)
+          @file_exists_method = @action_view.method(fem_name)
+        end
         @label = base_setting.label
         @polymorphic_types = base_setting.polymorphic_types
         if respond_to?(:set_instance_variables_from_options)

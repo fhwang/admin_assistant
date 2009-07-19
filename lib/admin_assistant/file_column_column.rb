@@ -57,7 +57,7 @@ class AdminAssistant
     class IndexView < View
       include AdminAssistant::Column::IndexViewMethods
       
-      def html(record)
+      def unconfigured_html(record)
         image_html(record) if file_exists?(record)
       end
     end
