@@ -754,10 +754,8 @@ describe Admin::BlogPostsController do
       end
     end
     
-    it 'should show a nilify link for published_at' do
-      response.body.should have_tag(
-        'a', :text => "Set \"published at\" to nil"
-      )
+    it 'should show a clear link for published_at' do
+      response.body.should have_tag('a', :text => "Clear")
     end
   end
   

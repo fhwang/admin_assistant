@@ -109,7 +109,7 @@ class AdminAssistant
       
       def set_instance_variables_from_options(admin_assistant, opts)
         setting = admin_assistant.form_settings[name.to_sym]
-        @input = setting.input
+        @clear_link = setting.clear_link
         @description = setting.description
         @datetime_select_options = setting.datetime_select_options || {}
         @date_select_options = setting.date_select_options || {}
@@ -118,7 +118,7 @@ class AdminAssistant
           @file_url_method = @action_view.method(fum_name)
         end
         @image_size = setting.image_size
-        @nilify_link = setting.nilify_link
+        @input = setting.input
         @polymorphic_types = admin_assistant[name.to_sym].polymorphic_types
         @read_only = setting.read_only?
         @select_options = setting.select_options || {}

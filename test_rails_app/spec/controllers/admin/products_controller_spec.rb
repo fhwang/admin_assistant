@@ -130,7 +130,7 @@ describe Admin::ProductsController do
       response.should have_tag("input[name=?]", 'product[price][dollars]')
     end
     
-    it 'should show nilify links for sale_starts_at and sale_ends_at' do
+    it 'should show clear links for sale_starts_at and sale_ends_at' do
       response.body.should have_tag('a', :text => "Not on sale")
       response.body.should have_tag('a', :text => "Sale doesn't end")
     end

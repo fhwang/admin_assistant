@@ -78,10 +78,10 @@ class AdminAssistant
         h = form.datetime_select name, opts
         if opts[:include_blank]
           js_name = "#{form.object.class.name.underscore}_#{name}"
-          name = @nilify_link || "Set \"#{label.downcase}\" to nil"
+          name = @clear_link || "Clear"
           h << @action_view.send(
             :link_to_function, name,
-            "AdminAssistant.nilify_datetime_select('#{js_name}')"
+            "AdminAssistant.clear_datetime_select('#{js_name}')"
           )
         end
         h

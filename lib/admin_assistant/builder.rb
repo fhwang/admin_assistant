@@ -156,13 +156,12 @@ class AdminAssistant
     end
     
     def column_config_args
-      {:datetime_select_options => :accessor,
+      {:clear_link => :accessor, :datetime_select_options => :accessor,
        :date_select_options => :accessor, :default => :block,
        :description => :accessor, :exclude_blank => :boolean,
        :image_size => :accessor, :input => :accessor,
-       :nilify_link => :accessor, :read_only => :boolean,
-       :select_options => :accessor, :text_area_options => :accessor,
-       :write_once => :boolean
+       :read_only => :boolean, :select_options => :accessor,
+       :text_area_options => :accessor, :write_once => :boolean
       }
     end
     
