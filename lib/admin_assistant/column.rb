@@ -42,13 +42,14 @@ class AdminAssistant
         @description
       end
       
-      def after_html(record)
-        if after = render_from_custom_template("_after_#{name}_input", record)
+      def after_html(rails_form)
+        after = render_from_custom_template("_after_#{name}_input", rails_form)
+        if after
           after
         else
           helper_method = "after_#{name}_input"
           if @action_view.respond_to?(helper_method)
-            @action_view.send(helper_method, record)
+            @action_view.send(helper_method, rails_form.object)
           end
         end
       end
@@ -59,7 +60,7 @@ class AdminAssistant
 
       def html(rails_form)
         record = rails_form.object
-        hff = render_from_custom_template "_#{name}_input", record
+        hff = render_from_custom_template "_#{name}_input", rails_form
         hff ||= html_from_helper_method(record)
         hff ||= if @read_only
           value record
@@ -68,7 +69,7 @@ class AdminAssistant
         else
           default_html rails_form
         end
-        if ah = after_html(record)
+        if ah = after_html(rails_form)
           hff << ah
         end
         hff
@@ -81,7 +82,7 @@ class AdminAssistant
         end
       end
       
-      def render_from_custom_template(slug, record)
+      def render_from_custom_template(slug, rails_form)
         abs_template_file = File.join(
           RAILS_ROOT, 'app/views', controller.controller_path, 
           "#{slug}.html.erb"
@@ -92,9 +93,16 @@ class AdminAssistant
           else
             abs_template_file
           end
+          varname = @model_class.name.underscore
+          @action_view.instance_variable_set(
+            "@#{varname}".to_sym, rails_form.object
+          )
           @action_view.render(
             :file => template,
-            :locals => {@model_class.name.underscore.to_sym => record}
+            :locals => {
+              varname.to_sym => rails_form.object,
+              :form => rails_form
+            }
           )
         end
       end
