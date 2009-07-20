@@ -309,8 +309,9 @@ class AdminAssistant
         @column.is_a?(PaperclipColumn)
       end
       
-      def sort_possible?
-        @column.is_a?(ActiveRecordColumn) || @column.is_a?(BelongsToColumn)
+      def sort_possible?(total_entries)
+        @column.is_a?(ActiveRecordColumn) ||
+            (@column.is_a?(BelongsToColumn) && total_entries < 100_000)
       end
       
       def string(record)

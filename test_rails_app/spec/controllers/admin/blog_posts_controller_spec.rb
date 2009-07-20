@@ -686,6 +686,30 @@ describe Admin::BlogPostsController do
     end
   end
   
+  describe '#index with 100_000 records' do
+    before :all do
+      BlogPost.count.upto(25) do |i|
+        BlogPost.create!(
+          :title => "title -#{i}-", :body => "body -#{i}-", :user => @user
+        )
+      end
+      records = BlogPost.paginate(:per_page => 25, :page => 1)
+      records.total_entries = 100_000
+      BlogPost.should_receive(:paginate).and_return(records)
+    end
+    
+    before :each do
+      get :index
+    end
+    
+    it 'should not offer a link to sort by user' do
+      assert_no_a_tag_with_get_args(
+        'User', '/admin/blog_posts', {:sort => 'user', :sort_order => 'asc'},
+        response.body
+      )
+    end
+  end
+  
   describe '#new' do
     before :each do
       @alfie = User.create! :username => 'alfie'

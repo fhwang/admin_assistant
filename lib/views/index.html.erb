@@ -50,7 +50,7 @@
     <% index_view.columns.each do |column| %>
       <% th_class = column.header_css_class %>
       <th<%= " class=\"#{th_class}\"" if th_class %>><%=
-        if column.sort_possible?
+        if column.sort_possible?(@index.records.total_entries)
           link_to(h(column.label), column.next_sort_params)
         else
           h(column.label)
