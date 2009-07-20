@@ -20,22 +20,19 @@ h1 a:hover {
 
 code {
   background: #ffd;
-  border: #ff9 1px solid;
+  border: #ff6 1px solid;
   font-size: large;
 }
 
 pre {
   background: #ffd;
-  border: #ff9 1px solid;
+  border: #ff6 1px solid;
   padding: 5px;
   font-size: large;
 }
 
 pre code {
   border: none;
-  /*
-  padding: 3px;
-  */
 }
 
 #body {
@@ -51,7 +48,7 @@ pre code {
 #page_header .nav {
   width: 900px;
   margin: auto;
-  padding-bottom: 10px
+  padding-bottom: 10px;
 }
 
 #page_header .nav a, #page_header .nav a:visited {

@@ -13,6 +13,7 @@ admin\_assistant is being used on the following sites:
 
 * [boundlessny.com](http://www.boundlessny.com/) by [Michael Celona][mcelona]
 * [casahelga.com](http://casahelga.com) by [Alex Farrill][afarrill]
+* [fhwang.net](http://fhwang.net) by [Francis Hwang][fhwang]
 * [sling.com](http://www.sling.com) by [Diversion Media](http://www.diversionmedia.com/)
 * [stockblotter.com](http://stockblotter.com) by [Alex Farrill][afarrill]
 

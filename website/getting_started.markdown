@@ -30,7 +30,7 @@ title:  Getting started
 
 That's it for the basic version. You should now be able to go to /admin/blog\_posts in your app and search, paginate, create, and edit blog posts.
 
-![index](/img/blog_posts-index.png)
+![index](../img/blog_posts-index.png)
 
 Depending on the model you're using, you might notice a few things:
 
