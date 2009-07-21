@@ -1,7 +1,7 @@
 class AdminAssistant
   class Column
     def blank?(search)
-      search.params["#{name}(blank)"]
+      search.params["#{name}(blank)"] == '1'
     end
 
     def comparator(search)

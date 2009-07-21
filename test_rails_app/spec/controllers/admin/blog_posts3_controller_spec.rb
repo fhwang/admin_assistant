@@ -295,8 +295,8 @@ describe Admin::BlogPosts3Controller do
         get(
           :index,
           :search => {
-            :body => "", :textile => "", :id => "", :user => '', 
-            :has_short_title => 'true'
+            :body => "", "body(blank)" => '0', :textile => "", :id => "",
+            :user => '', :has_short_title => 'true'
           }
         )
       end
@@ -325,8 +325,8 @@ describe Admin::BlogPosts3Controller do
         get(
           :index,
           :search => {
-            :body => "", :textile => "", :id => "", :user => '', 
-            :has_short_title => 'false'
+            :body => "", "body(blank)" => '0', :textile => "", :id => "",
+            :user => '', :has_short_title => 'false'
           }
         )
       end
@@ -355,8 +355,8 @@ describe Admin::BlogPosts3Controller do
         get(
           :index,
           :search => {
-            :body => 'foobar', :textile => "", :id => "", :user => '',
-            :has_short_title => ''
+            :body => 'foobar', "body(blank)" => '0', :textile => "", :id => "",
+            :user => '', :has_short_title => ''
           }
         )
       end
