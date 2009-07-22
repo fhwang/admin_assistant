@@ -41,7 +41,8 @@ class AdminAssistant
     end
     
     def show
-      @admin_assistant.show_settings
+      s = @admin_assistant.show_settings
+      block_given? ? yield(s) : s
     end
     
     class ColumnConfigLookup
@@ -277,8 +278,14 @@ class AdminAssistant
   end
   
   class ShowSettings < AbstractSettings
+    attr_reader :model_class_name_block
+    
     def column_config_args
       {}
+    end
+    
+    def model_class_name(&block)
+      @model_class_name_block = block
     end
   end
 end

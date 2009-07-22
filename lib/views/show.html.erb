@@ -3,7 +3,7 @@
 %>">
   <div class="aa_header">
     <h2><%=
-      h("#{@admin_assistant.model_class_name.capitalize} #{@record.id}")
+      h("#{request.model_class_name(@record).capitalize} #{@record.id}")
     %></h2>
     <%= link_to 'Edit', :action => 'edit', :id => @record.id %>
   </div>

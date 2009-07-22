@@ -40,4 +40,44 @@ describe Admin::BlogPostsReadOnlyController do
       )
     end
   end
+  
+  describe '#show for a published blog post' do
+    before :all do
+      @blog_post = BlogPost.create!(
+        :title => 'published', :user => @user, :published_at => Time.now.utc
+      )
+    end
+    
+    before :each do
+      get :show, :id => @blog_post.id
+    end
+    
+    it 'should not show textile' do
+      response.body.should_not match(/Textile/)
+    end
+    
+    it 'should use the block for the title' do
+      response.should have_tag(
+        'h2', :text => "Published blog post #{@blog_post.id}"
+      )
+    end
+  end
+  
+  describe '#show for an unpublished blog post' do
+    before :all do
+      @blog_post = BlogPost.create!(
+        :title => 'unpublished', :user_id => @user.id, :published_at => nil
+      )
+    end
+    
+    before :each do
+      get :show, :id => @blog_post.id
+    end
+    
+    it 'should use the block for the title' do
+      response.should have_tag(
+        'h2', :text => "Unpublished blog post #{@blog_post.id}"
+      )
+    end
+  end
 end
