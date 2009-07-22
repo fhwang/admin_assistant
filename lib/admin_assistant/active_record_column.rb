@@ -5,11 +5,12 @@ class AdminAssistant
     end
     
     def add_to_query_condition(ar_query_condition, search)
+      table_name = search.model_class.table_name
       if blank?(search)
         ar_query_condition.add_condition do |sub_cond|
           sub_cond.boolean_join = :or
-          sub_cond.sqls << "#{name} is null"
-          sub_cond.sqls << "#{name} = ''"
+          sub_cond.sqls << "#{table_name}.#{name} is null"
+          sub_cond.sqls << "#{table_name}.#{name} = ''"
         end
       else
         value_for_query = search.send(@ar_column.name)
@@ -19,15 +20,15 @@ class AdminAssistant
             comp = nil
           end
           if comp
-            ar_query_condition.sqls << "#{name} #{comp} ?"
+            ar_query_condition.sqls << "#{table_name}.#{name} #{comp} ?"
             ar_query_condition.bind_vars << value_for_query
           else
             case field_type
-              when :boolean
-                ar_query_condition.sqls << "#{name} = ?"
+              when :boolean, :integer
+                ar_query_condition.sqls << "#{table_name}.#{name} = ?"
                 ar_query_condition.bind_vars << value_for_query
               else
-                ar_query_condition.sqls << "#{name} like ?"
+                ar_query_condition.sqls << "#{table_name}.#{name} like ?"
                 ar_query_condition.bind_vars << "%#{value_for_query}%"
             end
           end

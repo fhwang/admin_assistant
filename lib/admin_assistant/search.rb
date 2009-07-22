@@ -52,6 +52,7 @@ class AdminAssistant
     end
     
     def id
+      @attributes[:id] if @attributes.has_key?(:id)
     end
     
     def match_all_conditions?
@@ -68,6 +69,10 @@ class AdminAssistant
       else
         super
       end
+    end
+    
+    def model_class
+      @admin_assistant.model_class
     end
   
     def settings

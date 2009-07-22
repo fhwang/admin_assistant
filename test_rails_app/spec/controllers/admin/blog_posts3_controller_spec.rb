@@ -371,6 +371,36 @@ describe Admin::BlogPosts3Controller do
     end
   end
   
+  describe '#index when searching by ID' do
+    before :all do
+      BlogPost.destroy_all
+      @blog_post1 = BlogPost.create! :title => random_word, :user => @user
+      blog_post2 = BlogPost.create! :title => random_word, :user => @user
+      BlogPost.update_all(
+        "id = #{@blog_post1.id * 10}", "id = #{blog_post2.id}"
+      )
+      @blog_post2 = BlogPost.find(@blog_post1.id * 10)
+    end
+    
+    before :each do
+      get(
+        :index,
+        :search => {
+          :body => '', "body(blank)" => '0', :textile => "",
+          :id => @blog_post1.id.to_s, :user => '', :has_short_title => ''
+        }
+      )
+    end
+    
+    it 'should match the record with that ID' do
+      response.should have_tag("tr[id=?]", "blog_post_#{@blog_post1.id}")
+    end
+    
+    it 'should not match a record with an ID that has the ID as a substring' do
+      response.should_not have_tag("tr[id=?]", "blog_post_#{@blog_post2.id}")
+    end
+  end
+  
   describe '#new' do
     before :each do
       @request_time = Time.now.utc
