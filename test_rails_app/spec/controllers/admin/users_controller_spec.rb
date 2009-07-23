@@ -208,12 +208,20 @@ describe Admin::UsersController do
   
   describe '#update' do
     before :each do
-      post :update, :id => @user.id, :user => {:username => 'bettie'}
+      post(
+        :update,
+        :id => @user.id,
+        :user => {:username => 'bettie', :force_blog_posts_to_textile => ''}
+      )
+      @user.reload
     end
     
     it 'should not assign a new random password' do
-      @user.reload
       @user.password.should == 'crocker'
+    end
+    
+    it 'should know the difference between nil and false for force_blog_posts_to_textile' do
+      @user.force_blog_posts_to_textile.should be_nil
     end
   end
   

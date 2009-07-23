@@ -128,6 +128,16 @@ class AdminAssistant
             self[k] = @controller.send(from_form_method, v)
           elsif @record.respond_to?("#{k}=")
             unless destroy_params[k] && v.blank?
+              column = @record.class.columns.detect { |c| c.name == k }
+              if column && column.type == :boolean
+                if v == '1'
+                  v = true
+                elsif v == '0'
+                 v = false
+                else
+                 v = nil
+               end
+              end
               self[k] = v
             end
           end
