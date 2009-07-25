@@ -233,7 +233,7 @@ describe Admin::BlogPostsController do
       
       it 'should use the default admin_assistant CSS' do
         response.should have_tag(
-          'link[href^=/stylesheets/admin_assistant_default.css]'
+          'link[href^=/stylesheets/admin_assistant/default.css]'
         )
       end
     end

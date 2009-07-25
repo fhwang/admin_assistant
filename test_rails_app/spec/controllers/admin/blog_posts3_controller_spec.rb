@@ -39,7 +39,7 @@ describe Admin::BlogPosts3Controller do
 
       it 'should use the activescaffold-themed CSS' do
         response.should have_tag(
-          'link[href^=/stylesheets/admin_assistant_activescaffold.css]'
+          'link[href^=/stylesheets/admin_assistant/activescaffold.css]'
         )
       end
       

@@ -53,10 +53,10 @@ Don't edit this file: It gets re-copied every time the server starts.
   text-decoration: none;
 }
 .admin_assistant.index th.sort.asc {
-  background: #333 url(/images/admin_assistant/sort-asc.png) no-repeat right
+  background: #333 url(../../images/admin_assistant/sort-asc.png) no-repeat right
 }
 .admin_assistant.index th.sort.desc {
-  background: #333 url(/images/admin_assistant/sort-desc.png) no-repeat right
+  background: #333 url(../../images/admin_assistant/sort-desc.png) no-repeat right
 }
 .admin_assistant.index td {
   background: #E6F2FF;
