@@ -30,7 +30,7 @@ class AdminAssistant
           sub_cond.boolean_join = :or
           searchable_columns.each do |column|
             sub_cond.sqls <<
-                "#{associated_class.table_name}.#{column.name} like ?"
+                "LOWER(#{associated_class.table_name}.#{column.name}) like LOWER(?)"
             sub_cond.bind_vars << "%#{value}%"
           end
         end

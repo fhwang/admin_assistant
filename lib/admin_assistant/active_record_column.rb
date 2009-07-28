@@ -28,7 +28,7 @@ class AdminAssistant
                 ar_query_condition.sqls << "#{table_name}.#{name} = ?"
                 ar_query_condition.bind_vars << value_for_query
               else
-                ar_query_condition.sqls << "#{table_name}.#{name} like ?"
+                ar_query_condition.sqls << "LOWER(#{table_name}.#{name}) like LOWER(?)"
                 ar_query_condition.bind_vars << "%#{value_for_query}%"
             end
           end

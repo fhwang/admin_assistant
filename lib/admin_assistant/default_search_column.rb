@@ -14,7 +14,7 @@ class AdminAssistant
         )
         names_to_search.concat @fields_to_include
         names_to_search.uniq.each do |field_name|
-          ar_query_condition.sqls << "#{field_name} like ?"
+          ar_query_condition.sqls << "LOWER(#{field_name}) like LOWER(?)"
           ar_query_condition.bind_vars << "%#{search.params}%"
         end
       end
