@@ -14,7 +14,7 @@ In addition, this test suite can be run against multiple versions of Rails, maki
 
 ### Wide support of Rails versions
 
-admin\_assistant currently supports four versions of Rails: 2.1.0, 2.1.2, 2.2.2, and 2.3.2. We offer this support by writing a test suite that can be run with different versions of Rails. After all, it doesn't make any sense to release a plugin intended for other programmers' convenience, and then tell them to drop everything and spend the next two weeks upgrading their whole app.
+admin\_assistant currently supports five versions of Rails: 2.1.0, 2.1.2, 2.2.2, 2.3.2, and 2.3.3. We offer this support by writing a test suite that can be run with different versions of Rails. After all, it doesn't make any sense to release a plugin intended for other programmers' convenience, and then tell them to drop everything and spend the next two weeks upgrading their whole app.
 
 
 ### Deeply customizable API

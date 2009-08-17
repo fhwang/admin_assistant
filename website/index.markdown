@@ -6,7 +6,7 @@ admin\_assistant is a Rails plugin that automates a lot of features typically ne
 
 admin\_assistant is in beta, meaning that it is stable, and being used in production sites, but there may be small API changes in the future.
 
-It currently supports Rails 2.1.0, 2.1.2, 2.2.2, and 2.3.2. There are no plans to support Rails 2.0 or earlier.
+It currently supports Rails 2.1.0, 2.1.2, 2.2.2, 2.3.2, and 2.3.3. There are no plans to support Rails 2.0 or earlier.
 
 
 ## Features
@@ -19,6 +19,11 @@ It currently supports Rails 2.1.0, 2.1.2, 2.2.2, and 2.3.2. There are no plans t
 * Built-in widgets for handling polymorphic belongs-to associations.
 * Built-in support for images with either [Paperclip](http://thoughtbot.com/projects/paperclip) or [FileColumn](http://www.kanthak.net/opensource/file_column/).
 * Heavily hookable interface allows customization of columns, search parameters, form inputs, parameter handling, and model creation.
+
+
+## Still not convinced?
+
+Check out our [screenshots](/screenshots.html), [who's using admin\_assistant](/community.html#whos_using), or our [design principles](/design_principles.html).
 
 
 ## Installation
