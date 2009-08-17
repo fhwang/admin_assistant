@@ -23,7 +23,7 @@ It currently supports Rails 2.1.0, 2.1.2, 2.2.2, 2.3.2, and 2.3.3. There are no 
 
 ## Still not convinced?
 
-Check out our [screenshots](/screenshots.html), [who's using admin\_assistant](/community.html#whos_using), or our [design principles](/design_principles.html).
+Check out our [screenshots](./screenshots.html), [who's using admin\_assistant](./community.html#whos_using), or our [design principles](./design_principles.html).
 
 
 ## Installation
