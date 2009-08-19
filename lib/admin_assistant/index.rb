@@ -56,7 +56,7 @@ class AdminAssistant
       unless @records
         ar_query = ARQuery.new(
           :order => order_sql, :include => find_include,
-          :per_page => 25, :page => @url_params[:page]
+          :per_page => per_page, :page => @url_params[:page]
         )
         if @controller_methods[:conditions_for_index]
           sql = @controller_methods[:conditions_for_index].call
@@ -109,6 +109,10 @@ class AdminAssistant
     
     def sort_order
       @url_params[:sort_order] || 'asc'
+    end
+    
+    def per_page
+      settings.per_page
     end
     
     def view(action_view)

@@ -38,6 +38,12 @@ It can also be a block that will be passed the params hash:
 
 This can also be accomplished with a protected controller method `conditions_for_index`; see below.
 
+#### per\_page
+
+    index.per_page 100
+
+By default, 25 rows per page will be shown. Set per\_page to set it to another number.
+
 #### columns
 
     index.columns :user, :title

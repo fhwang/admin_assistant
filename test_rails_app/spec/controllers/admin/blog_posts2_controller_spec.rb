@@ -658,7 +658,30 @@ describe Admin::BlogPosts2Controller do
       end
     end
   end
-  
+    
+  describe '#index with 11 blog posts' do
+    before :all do
+      BlogPost.destroy_all
+      1.upto(11) do |i|
+        BlogPost.create!(
+          :title => "--post #{i}--", :user => @user
+        )
+      end
+    end
+    
+    before :each do
+      get :index
+    end
+    
+    it 'should show link to page 2' do
+      response.should have_tag("a[href=/admin/blog_posts2?page=2]")
+    end
+    
+    it 'should say 11 blog posts found' do
+      response.body.should match(/11 blog posts found/)
+    end
+  end
+
   describe '#new' do
     before :all do
       Tag.find_or_create_by_tag 'tag_from_yesterday'

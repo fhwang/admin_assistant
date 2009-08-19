@@ -197,6 +197,7 @@ class AdminAssistant
       @search_fields = []
       @search_settings = SearchSettings.new @admin_assistant
       @sort_by = "#{admin_assistant.model_class.table_name}.id desc"
+      @per_page = 25
     end
     
     def column_config_args
@@ -223,6 +224,14 @@ class AdminAssistant
         @include
       else
         @include = associations
+      end
+    end
+    
+    def per_page(*args)
+      if args.empty?
+        @per_page
+      else
+        @per_page = args.first
       end
     end
     

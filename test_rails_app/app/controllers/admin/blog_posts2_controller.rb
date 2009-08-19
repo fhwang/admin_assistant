@@ -19,6 +19,9 @@ class Admin::BlogPosts2Controller < ApplicationController
       # Sort by published_at descending, then updated_at descending
       index.sort_by "published_at desc, updated_at desc"
       
+      # Show only 10 blog posts per page
+      index.per_page 10
+      
       # Let's have specific fields for searching
       index.search :id, :title, :body, :textile, :user
       
