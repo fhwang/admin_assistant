@@ -16,8 +16,11 @@ class Admin::UsersController < ApplicationController
     end
     
     a.form do |form|
-      form.columns :username, :password, :birthday, :state, :tmp_avatar, 
-                   :force_blog_posts_to_textile
+      form.columns :username, :password, :admin_level, :birthday, :state,
+                   :tmp_avatar, :force_blog_posts_to_textile
+      form[:admin_level].input = :select
+      form[:admin_level].select_choices = %w(normal admin superuser)
+      form[:admin_level].select_options = {:include_blank => false}
       form[:birthday].date_select_options =
           {:start_year => Time.now.year-100, :end_year => Time.now.year}
       form[:force_blog_posts_to_textile].input = :select

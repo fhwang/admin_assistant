@@ -204,6 +204,15 @@ describe Admin::UsersController do
         with_tag "option:not([selected])[value=1]", :text => 'true'
       end
     end
+    
+    it 'should show a select for admin_level' do
+      response.should have_tag("select[name=?]", "user[admin_level]") do
+        without_tag "option[value='']"
+        with_tag "option[value=normal][selected=selected]"
+        with_tag "option[value=admin]"
+        with_tag "option[value=superuser]"
+      end
+    end
   end
   
   describe '#update' do

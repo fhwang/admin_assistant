@@ -133,17 +133,20 @@ class AdminAssistant
       end
 
       def select_html(form)
-        # for now only used for boolean fields
-        value = form.object.send name
-        selected = if value
-          '1'
-        elsif value == false
-          '0'
+        if @select_choices
+          form.select name, @select_choices, @select_options
+        else
+          value = form.object.send name
+          selected = if value
+            '1'
+          elsif value == false
+            '0'
+          end
+          form.select(
+            name, [[true, '1'], [false, '0']],
+            @select_options.merge(:selected => selected)
+          )
         end
-        form.select(
-          name, [[true, '1'], [false, '0']],
-          @select_options.merge(:selected => selected)
-        )
       end
       
       def text_area_html(form)

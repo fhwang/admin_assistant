@@ -121,6 +121,7 @@ class AdminAssistant
         @input = setting.input
         @polymorphic_types = admin_assistant[name.to_sym].polymorphic_types
         @read_only = setting.read_only?
+        @select_choices = setting.select_choices
         @select_options = setting.select_options || {}
         unless @select_options.has_key?(:include_blank)
           @select_options[:include_blank] = true

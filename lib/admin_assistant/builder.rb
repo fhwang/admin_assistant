@@ -161,8 +161,9 @@ class AdminAssistant
        :date_select_options => :accessor, :default => :block,
        :description => :accessor, :exclude_blank => :boolean,
        :image_size => :accessor, :input => :accessor,
-       :read_only => :boolean, :select_options => :accessor,
-       :text_area_options => :accessor, :write_once => :boolean
+       :read_only => :boolean, :select_choices => :accessor,
+       :select_options => :accessor, :text_area_options => :accessor,
+       :write_once => :boolean
       }
     end
     
