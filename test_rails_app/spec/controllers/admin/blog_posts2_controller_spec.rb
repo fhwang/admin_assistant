@@ -285,6 +285,11 @@ describe Admin::BlogPosts2Controller do
           without_tag("input[type=checkbox][name=?]", "search[body(blank)]")
         end
       end
+      
+      it 'should output ivar set by index_before_render controller hook' do
+        assigns(:var_set_by_before_render_for_index_hook).should_not be_nil
+        response.body.should match(/Confirmed that we have some records/)
+      end
     end
     
     describe 'when there is one published post and one unpublished post' do
@@ -309,6 +314,7 @@ describe Admin::BlogPosts2Controller do
         response.body.should_not match(/--published--/)
       end
     end
+
   end
   
   describe '#index when there is 1 blog post and 16 Users' do

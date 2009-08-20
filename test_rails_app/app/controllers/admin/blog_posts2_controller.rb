@@ -81,6 +81,13 @@ class Admin::BlogPosts2Controller < ApplicationController
     end
   end
   
+  # This is run in the controller context, just before render is called
+  def before_render_for_index
+    if @index.records.any?
+      @var_set_by_before_render_for_index_hook = 'Confirmed that we have some records'
+    end
+  end
+  
   # By default, only show unpublished blog posts unless params[:all] is
   # passed in
   def conditions_for_index

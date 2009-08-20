@@ -15,6 +15,9 @@ class AdminAssistant
           @admin_assistant, @controller.params, controller_methods
         )
         @controller.instance_variable_set :@index, index
+        if @controller.respond_to?(:before_render_for_index)
+          @controller.send :before_render_for_index
+        end
         render_template_file
       end
       
