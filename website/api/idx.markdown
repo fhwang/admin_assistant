@@ -181,7 +181,39 @@ By default, there are two links on the right-hand side of the row for each model
     end
 
 Also see the builder method [right\_column\_links](#builder_right_column_links).
-    
+
+#### link\_to\_new\_in\_index?
+
+The link to create a new record will be shown on the index view if there is a 'new' action for the controller (whether via admin\_assistant or otherwise). If you don't want the link generated, define a helper method like this:
+
+    def link_to_new_in_index?
+      false
+    end
+
+#### link\_to\_edit\_in\_index?
+
+The edit link in the right column of each row will be shown if there is a 'edit' action for the controller (whether via admin\_assistant or otherwise). If you don't want the link generated, define a helper method like this:
+
+    def link_to_edit_in_index?(blog_post)
+      false
+    end
+
+#### link\_to\_delete\_in\_index?
+
+The delete link in the right column of each row will be shown if there is a 'destroy' action for the controller (whether via admin\_assistant or otherwise). If you don't want the link generated, define a helper method like this:
+
+    def link_to_delete_in_index?(blog_post)
+      false
+    end
+
+#### link\_to\_show\_in\_index?
+
+The show link in the right column of each row will be shown if there is a 'show' action for the controller (whether via admin\_assistant or otherwise). If you don't want the link generated, define a helper method like this:
+
+    def link_to_show_in_index?(blog_post)
+      false
+    end
+
 ### Partials
 
 #### \_after\_index.html.erb

@@ -146,6 +146,10 @@ class AdminAssistant
         @edit ||= @admin_assistant.edit?
       end
       
+      def new?
+        @edit ||= @admin_assistant.edit?
+      end
+      
       def header
         if block = @index.settings.header
           block.call @action_view.params
@@ -165,12 +169,12 @@ class AdminAssistant
       
       def right_column_links(record)
         links = ""
-        if edit?
+        if render_edit_link?(record)
           links << @action_view.link_to(
             'Edit', :action => 'edit', :id => record.id
           ) << " "
         end
-        if destroy?
+        if render_delete_link?(record)
           links << @action_view.link_to_remote(
             'Delete',
             :url => {:action => 'destroy', :id => record.id},
@@ -180,7 +184,7 @@ class AdminAssistant
             :method => :delete
           ) << ' '
         end
-        if show?
+        if render_show_link?(record)
           links << @action_view.link_to(
             'Show', :action => 'show', :id => record.id
           ) << ' '
@@ -195,6 +199,26 @@ class AdminAssistant
           ) || ''
         end
         links
+      end
+      
+      def render_new_link?
+        return false if @action_view.respond_to?(:link_to_new_in_index?) && !@action_view.link_to_new_in_index?
+        new?
+      end
+      
+      def render_edit_link?(record)
+        return false if @action_view.respond_to?(:link_to_edit_in_index?) && !@action_view.link_to_edit_in_index?(record)
+        edit?
+      end
+      
+      def render_delete_link?(record)
+        return false if @action_view.respond_to?(:link_to_delete_in_index?) && !@action_view.link_to_delete_in_index?(record)
+        destroy?
+      end
+      
+      def render_show_link?(record)
+        return false if @action_view.respond_to?(:link_to_show_in_index?) && !@action_view.link_to_show_in_index?(record)
+        show?
       end
       
       def show?
