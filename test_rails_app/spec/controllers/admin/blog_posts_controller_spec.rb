@@ -748,6 +748,13 @@ describe Admin::BlogPostsController do
         response.should have_tag('label', field_name)
       end
     end
+
+    it 'should set the for attribute of the labels' do
+      field_names = ['Title', 'Body']
+      field_names.each do |field_name|
+        response.should have_tag("label[for=blog_post_#{field_name.downcase}]")
+      end
+    end
     
     it "should use a checkbox for the boolean field 'textile'" do
       response.body.should match(

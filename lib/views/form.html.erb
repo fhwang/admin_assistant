@@ -21,7 +21,7 @@ form_view = AdminAssistant::FormView.new(@record, @admin_assistant, self)
 
     <% form_view.columns.each do |column| %>
       <div class="column">
-      <label><%= h(column.label) %></label>
+      <label for="<%= column.field_id %>"><%= h(column.label) %></label>
       <% if column.description %>
         <p class="description"><%= h(column.description) %></p>
       <% end %>

@@ -89,6 +89,10 @@ class AdminAssistant
         end
       end
       
+      def field_id
+        "#{@model_class.name.underscore}_#{name}"
+      end
+      
       def render_from_custom_template(slug, rails_form)
         if File.exist?(custom_template_file_path(slug))
           varname = @model_class.name.underscore
