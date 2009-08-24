@@ -242,6 +242,14 @@ class AdminAssistant
         links
       end
       
+      def tr_css_classes(record)
+        css_classes = [@action_view.cycle('odd', 'even')]
+        if @action_view.respond_to?(:tr_css_class_for_index)
+          css_classes << @action_view.tr_css_class_for_index(record)
+        end
+        css_classes.join(' ')
+      end
+      
       def render_new_link?
         return false if @action_view.respond_to?(:link_to_new_in_index?) && !@action_view.link_to_new_in_index?
         new?

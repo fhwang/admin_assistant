@@ -126,7 +126,7 @@ class AdminAssistant
       def header_css_class
         "sort #{sort_order}" if sort_order
       end
-      
+            
       def html(record)
         html_for_index_method = "#{name}_html_for_index"
         html = if @action_view.respond_to?(html_for_index_method)
@@ -169,8 +169,14 @@ class AdminAssistant
             admin_assistant.update? && setting.ajax_toggle != false
       end
       
-      def td_css_class
-        'sort' if sort_order
+      def td_css_classes(column, record)
+        css_classes = []
+        css_classes << 'sort' if sort_order
+        td_css_class_for_index_method = "#{name}_td_css_class_for_index"
+        if @action_view.respond_to?(td_css_class_for_index_method)
+          css_classes << @action_view.send(td_css_class_for_index_method, record)
+        end
+        css_classes.reject{ |c| c.blank? }.join(' ')
       end
       
       def unconfigured_html(record)

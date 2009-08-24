@@ -213,6 +213,22 @@ The show link in the right column of each row will be shown if there is a 'show'
     def link_to_show_in_index?(blog_post)
       false
     end
+    
+#### \[column\]\_td\_css\_class\_for\_index
+
+To add a css class to a table cell, define a helper method based on the name of the column:
+
+    def user_td_css_class_for_index(blog_post)
+      'custom_td_css_class'
+    end
+
+#### tr\_css\_class\_for\_index
+
+To add a css class to a table row, define a helper method like so:
+
+    def tr_css_class_for_index(blog_post)
+      'custom_tr_css_class'
+    end
 
 ### Partials
 

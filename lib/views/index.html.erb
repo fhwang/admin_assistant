@@ -62,12 +62,12 @@
   </thead>
   <tbody id="<%= @admin_assistant.model_class.name.underscore.pluralize %>_index_tbody">
   <% @index.records.each do |record| %>
-    <tr class="<%= cycle('odd', 'even') %>" id="<%= 
+    <tr class="<%= index_view.tr_css_classes(record) %>" id="<%= 
       @admin_assistant.model_class.name.underscore
     %>_<%= record.id %>">
-      <% @index.view(self).columns.each do |column| %>
-        <% td_class = column.td_css_class %>
-        <td<%= " class=\"#{td_class}\"" if td_class %>><%=
+      <% index_view.columns.each do |column| %>
+        <% td_class = column.td_css_classes(column, record) %>
+        <td<%= " class=\"#{td_class}\"" unless td_class.blank? %>><%=
           column.html(record)
         %></td>
       <% end %>

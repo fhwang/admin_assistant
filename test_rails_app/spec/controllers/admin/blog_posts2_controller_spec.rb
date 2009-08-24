@@ -686,6 +686,14 @@ describe Admin::BlogPosts2Controller do
     it 'should say 11 blog posts found' do
       response.body.should match(/11 blog posts found/)
     end
+
+    it 'should mark the table rows with custom CSS class' do
+      response.should have_tag('tr[class~="custom_tr_css_class"]')
+    end
+
+    it 'should mark the user cells with custom CSS class' do
+      response.should have_tag('td[class~="custom_td_css_class"]', :text => @user.username)
+    end
   end
 
   describe '#new' do
