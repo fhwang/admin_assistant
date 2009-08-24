@@ -89,5 +89,11 @@ describe Admin::BlogPostsCustomNewAndEditController do
       response.should_not have_tag("td.actions a[href=/admin/blog_posts_custom_new_and_edit/show/#{@blog_post.id}]", 'Show')
     end
     
+    it 'should not have a search link' do
+      response.should_not have_tag(
+        "a", 'Search'
+      )
+    end
+    
   end
 end

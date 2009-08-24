@@ -4,7 +4,7 @@
 %>">
 <div class="aa_header">
 <div class="actions">
-<%= link_to_function('Search', 'AdminAssistant.show_search_form()') %>
+<%= link_to_function('Search', 'AdminAssistant.show_search_form()') if index_view.render_search_link? %>
 <%= link_to(
   "New #{@admin_assistant.model_class_name}", @admin_assistant.url_params(:new)
 ) if index_view.render_new_link? %>

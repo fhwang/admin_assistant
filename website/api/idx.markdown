@@ -190,6 +190,14 @@ The link to create a new record will be shown on the index view if there is a 'n
       false
     end
 
+#### link\_to\_search\_in\_index?
+
+The link to the search form will be shown unless it is prevented using a define a helper method like this:
+
+    def link_to_search_in_index?
+      false
+    end
+
 #### link\_to\_edit\_in\_index?
 
 The edit link in the right column of each row will be shown if there is a 'edit' action for the controller (whether via admin\_assistant or otherwise). If you don't want the link generated, define a helper method like this:

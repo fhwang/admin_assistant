@@ -255,6 +255,11 @@ class AdminAssistant
         new?
       end
       
+      def render_search_link?
+        return false if @action_view.respond_to?(:link_to_search_in_index?) && !@action_view.link_to_search_in_index?
+        true
+      end
+      
       def render_edit_link?(record)
         return false if @action_view.respond_to?(:link_to_edit_in_index?) && !@action_view.link_to_edit_in_index?(record)
         edit?
