@@ -1,3 +1,6 @@
+unless defined?(TEST_RAILS_APP_SPEC_TASK_LOADED)
+  TEST_RAILS_APP_SPEC_TASK_LOADED = true
+
 rspec_gem_dir = nil
 Dir["#{RAILS_ROOT}/vendor/gems/*"].each do |subdir|
   rspec_gem_dir = subdir if subdir.gsub("#{RAILS_ROOT}/vendor/gems/","") =~ /^(\w+-)?rspec-(\d+)/ && File.exist?("#{subdir}/lib/spec/rake/spectask.rb")
@@ -155,4 +158,6 @@ rescue MissingSourceFile
 
 MSG
 end
+
+end # unless defined?(TEST_RAILS_APP_SPEC_TASK_LOADED)
 
