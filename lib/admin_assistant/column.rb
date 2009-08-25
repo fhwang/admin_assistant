@@ -115,23 +115,17 @@ class AdminAssistant
       
       def set_instance_variables_from_options(admin_assistant, opts)
         setting = admin_assistant.form_settings[name.to_sym]
-        ivars = %w(clear_link description image_size input select_choices)
+        ivars = %w(
+          clear_link datetime_select_options date_select_options description
+          image_size input select_choices select_options text_area_options
+        )
         ivars.each do |ivar|
           instance_variable_set "@#{ivar}".to_sym, setting.send(ivar)
         end
-        @datetime_select_options = setting.datetime_select_options || {}
-        @date_select_options = setting.date_select_options || {}
-        fum_name = name + '_url'
-        if @action_view.respond_to?(fum_name)
-          @file_url_method = @action_view.method(fum_name)
+        if @action_view.respond_to?(name + '_url')
+          @file_url_method = @action_view.method(name + '_url')
         end
-        @polymorphic_types = admin_assistant[name.to_sym].polymorphic_types
         @read_only = setting.read_only?
-        @select_options = setting.select_options || {}
-        unless @select_options.has_key?(:include_blank)
-          @select_options[:include_blank] = true
-        end
-        @text_area_options = setting.text_area_options || {}
         @write_once = setting.write_once?
       end
     end
@@ -241,20 +235,19 @@ class AdminAssistant
       
       def html(form)
         input = ''
-        case @column.field_type
-          when :boolean
-            input = boolean_input form
-          else
-            if @column.field_type == :integer && @comparators == :all
-              input << comparator_html(form.object) << ' '
-            end
-            input << form.text_field(name)
-            if @blank_checkbox
-              input << check_box_and_hidden_tags(
-                "search[#{name}(blank)]", @column.blank?(form.object)
-              )
-              input << "is blank"
-            end
+        if @column.field_type == :boolean
+          input = boolean_input form
+        else
+          if @column.field_type == :integer && @comparators == :all
+            input << comparator_html(form.object) << ' '
+          end
+          input << form.text_field(name)
+          if @blank_checkbox
+            input << check_box_and_hidden_tags(
+              "search[#{name}(blank)]", @column.blank?(form.object)
+            )
+            input << "is blank"
+          end
         end
         "<p><label>#{label}</label> <br/>#{input}</p>"
       end

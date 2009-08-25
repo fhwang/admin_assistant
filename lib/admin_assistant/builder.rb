@@ -59,7 +59,7 @@ class AdminAssistant
           match = $1.to_sym
         end
         setting = @settingses.detect { |setting|
-          setting.column_config_args.keys.include?(match)
+          setting.column_config_fields.keys.include?(match)
         }
         if setting
           setting[@column_name].send(meth, *args)
@@ -71,15 +71,25 @@ class AdminAssistant
   end
   
   class ColumnConfig
-    def initialize(fields_config)
-      @fields_config = fields_config
+    def initialize(fields)
+      @fields = {}
+      fields.each do |fn, value|
+        @fields[fn] = value.is_a?(Array) ? value : [value, nil]
+      end
       @values = {}
     end
     
     def method_missing_matching_fields_config(meth, block, *args)
-      field_type = @fields_config[meth]
+      field_type = @fields[meth].first
       if field_type == :accessor
-        @values[meth]
+        default_val_or_proc = @fields[meth].last
+        if default_val_or_proc.respond_to?(:call)
+          default_val_or_proc.call @values[meth]
+        elsif @values[meth].nil?
+          default_val_or_proc
+        else
+          @values[meth]
+        end
       elsif field_type == :boolean
         @values[meth] = true
       elsif field_type == :block
@@ -92,8 +102,8 @@ class AdminAssistant
     end
     
     def find_field_from_method(meth, target_field_type, &block)
-      @fields_config.detect { |fn, ft|
-        meth.to_s =~ block.call(fn) && ft == target_field_type
+      @fields.detect { |fn, tuple|
+        meth.to_s =~ block.call(fn) && tuple.first == target_field_type
       }.first
     end
     
@@ -103,7 +113,7 @@ class AdminAssistant
     end
     
     def method_missing(meth, *args, &block)
-      if @fields_config[meth]
+      if @fields[meth]
         return method_missing_matching_fields_config(meth, block, *args)
       elsif meth.to_s =~ /=$/
         result = method_missing_maybe_setter(meth, *args)
@@ -124,7 +134,7 @@ class AdminAssistant
     def initialize(admin_assistant)
       @admin_assistant = admin_assistant
       @column_configs = HashWithIndifferentAccess.new { |h, k|
-        h[k] = ColumnConfig.new(column_config_args)
+        h[k] = ColumnConfig.new(column_config_fields)
       }
     end
     
@@ -142,7 +152,7 @@ class AdminAssistant
       @column_configs.values.map(&:polymorphic_types).flatten.compact
     end
     
-    def column_config_args
+    def column_config_fields
       {:boolean_labels => :accessor, :label => :accessor,
        :polymorphic_types => :accessor}
     end
@@ -156,14 +166,24 @@ class AdminAssistant
       @submit_buttons = []
     end
     
-    def column_config_args
-      {:clear_link => :accessor, :datetime_select_options => :accessor,
-       :date_select_options => :accessor, :default => :block,
+    def column_config_fields
+      {:clear_link => :accessor,
+       :datetime_select_options => [:accessor, {}],
+       :date_select_options => [:accessor, {}], :default => :block,
        :description => :accessor, :exclude_blank => :boolean,
        :image_size => :accessor, :input => :accessor,
        :read_only => :boolean, :select_choices => :accessor,
-       :select_options => :accessor, :text_area_options => :accessor,
-       :write_once => :boolean
+       :select_options => [
+        :accessor,
+        Proc.new { |v|
+          v ||= {}
+          unless v.has_key?(:include_blank)
+            v[:include_blank] = true
+          end
+          v
+        }
+       ],
+       :text_area_options => [:accessor, {}], :write_once => :boolean
       }
     end
     
@@ -201,7 +221,7 @@ class AdminAssistant
       @per_page = 25
     end
     
-    def column_config_args
+    def column_config_fields
       {:image_size => :accessor, :link_to_args => :block,
        :sort_by => :accessor}
     end
@@ -267,7 +287,7 @@ class AdminAssistant
         @default_search_includes = []
       end
       
-      def column_config_args
+      def column_config_fields
         {:blank_checkbox => :accessor, :comparators => :accessor,
          :conditions => :block, :field_type => :accessor,
          :match_text_fields_for_association => :boolean}
@@ -290,7 +310,7 @@ class AdminAssistant
   class ShowSettings < AbstractSettings
     attr_reader :model_class_name_block
     
-    def column_config_args
+    def column_config_fields
       {}
     end
     
