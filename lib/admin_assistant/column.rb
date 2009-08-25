@@ -38,10 +38,6 @@ class AdminAssistant
     end
     
     module FormViewMethods
-      def description
-        @description
-      end
-      
       def after_html(rails_form)
         after = render_from_custom_template("_after_#{name}_input", rails_form)
         if after
@@ -56,6 +52,25 @@ class AdminAssistant
     
       def controller
         @action_view.controller
+      end
+      
+      def custom_template_file_path(slug)
+        File.join(
+          RAILS_ROOT, 'app/views', controller.controller_path, 
+          "#{slug}.html.erb"
+        )
+      end
+      
+      def description
+        @description
+      end
+      
+      def file_option_for_custom_template_render(slug)
+        if RAILS_GEM_VERSION == '2.1.0'
+          File.join(controller.controller_path, "#{slug}.html.erb")
+        else
+          custom_template_file_path slug
+        end
       end
 
       def html(rails_form)
@@ -83,22 +98,13 @@ class AdminAssistant
       end
       
       def render_from_custom_template(slug, rails_form)
-        abs_template_file = File.join(
-          RAILS_ROOT, 'app/views', controller.controller_path, 
-          "#{slug}.html.erb"
-        )
-        if File.exist?(abs_template_file)
-          template = if RAILS_GEM_VERSION == '2.1.0'
-            File.join(controller.controller_path, "#{slug}.html.erb")
-          else
-            abs_template_file
-          end
+        if File.exist?(custom_template_file_path(slug))
           varname = @model_class.name.underscore
           @action_view.instance_variable_set(
             "@#{varname}".to_sym, rails_form.object
           )
           @action_view.render(
-            :file => template,
+            :file => file_option_for_custom_template_render(slug),
             :locals => {
               varname.to_sym => rails_form.object,
               :form => rails_form
@@ -109,19 +115,18 @@ class AdminAssistant
       
       def set_instance_variables_from_options(admin_assistant, opts)
         setting = admin_assistant.form_settings[name.to_sym]
-        @clear_link = setting.clear_link
-        @description = setting.description
+        ivars = %w(clear_link description image_size input select_choices)
+        ivars.each do |ivar|
+          instance_variable_set "@#{ivar}".to_sym, setting.send(ivar)
+        end
         @datetime_select_options = setting.datetime_select_options || {}
         @date_select_options = setting.date_select_options || {}
         fum_name = name + '_url'
         if @action_view.respond_to?(fum_name)
           @file_url_method = @action_view.method(fum_name)
         end
-        @image_size = setting.image_size
-        @input = setting.input
         @polymorphic_types = admin_assistant[name.to_sym].polymorphic_types
         @read_only = setting.read_only?
-        @select_choices = setting.select_choices
         @select_options = setting.select_options || {}
         unless @select_options.has_key?(:include_blank)
           @select_options[:include_blank] = true
@@ -335,7 +340,7 @@ class AdminAssistant
     end
     
     class FormView < View
-      include IndexViewMethods
+      include FormViewMethods
     end
 
     class IndexView < View
