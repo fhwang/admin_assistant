@@ -34,7 +34,7 @@ class AdminAssistant
   end
     
   def accumulate_columns(names)
-    columns = paperclip_attachments.map { |paperclip_attachment|
+    columns = @model.paperclip_attachments.map { |paperclip_attachment|
       PaperclipColumn.new paperclip_attachment
     }
     names.each do |column_name|
@@ -55,7 +55,8 @@ class AdminAssistant
     if [:new, :create, :edit, :update].any? { |action|
       actions.include?(action)
     }
-      accumulate_belongs_to_columns(default_column_names).each { |column|
+      defaults = @model.default_column_names
+      accumulate_belongs_to_columns(defaults).each { |column|
         ac_actions << "autocomplete_#{column.name}".to_sym
       }
     end
@@ -68,14 +69,14 @@ class AdminAssistant
   end
   
   def column(name)
-    if file_columns.include?(name.to_s)
+    if @model.file_columns.include?(name.to_s)
       FileColumnColumn.new name
-    elsif paperclip_attachments.include?(name)
+    elsif @model.paperclip_attachments.include?(name)
       PaperclipColumn.new name
-    elsif (belongs_to_assoc = belongs_to_assoc(name) or
-           belongs_to_assoc = belongs_to_assoc_by_foreign_key(name))
+    elsif (belongs_to_assoc = @model.belongs_to_assoc(name) or
+           belongs_to_assoc = @model.belongs_to_assoc_by_foreign_key(name))
       column_based_on_belongs_to_assoc name, belongs_to_assoc
-    elsif belongs_to_assoc = belongs_to_assoc_by_polymorphic_type(name)
+    elsif belongs_to_assoc = @model.belongs_to_assoc_by_polymorphic_type(name)
       # skip it, actually
     elsif (ar_column = @model_class.columns_hash[name.to_s])
       ActiveRecordColumn.new ar_column
@@ -109,6 +110,14 @@ class AdminAssistant
     controller.controller_path.gsub(%r|/|, '_')
   end
   
+  def crudful_request_methods
+    [:create, :destroy, :edit, :index, :new, :update, :show]
+  end
+  
+  def default_column_names
+    @model.default_column_names
+  end
+  
   def dispatch_to_request_method(request_class, controller)
     controller.instance_variable_set :@admin_assistant, self
     @request = request_class.new(self, controller)
@@ -116,26 +125,23 @@ class AdminAssistant
     @request = nil
   end
   
+  def file_columns
+    @model.file_columns
+  end
+  
   def method_missing(meth, *args)
-    if @model.respond_to?(meth)
-      @model.send meth, *args
+    if crudful_request_methods.include?(meth) and args.size == 1
+      request_class = Request.const_get meth.to_s.capitalize
+      dispatch_to_request_method request_class, args.first
+    elsif autocomplete_actions && autocomplete_actions.include?(meth)
+      dispatch_to_request_method Request::Autocomplete, args.first
     else
-      request_methods = [
-        :create, :destroy, :edit, :index, :new, :update, :show
-      ]
-      if request_methods.include?(meth) and args.size == 1
-        request_class = Request.const_get meth.to_s.capitalize
-        dispatch_to_request_method request_class, args.first
-      elsif autocomplete_actions && autocomplete_actions.include?(meth)
-        dispatch_to_request_method Request::Autocomplete, args.first
+      if meth.to_s =~ /(.*)\?/ && crudful_request_methods.include?($1.to_sym)
+        @controller_class.public_instance_methods.include?($1)
+      elsif @request.respond_to?(meth)
+        @request.send meth, *args
       else
-        if meth.to_s =~ /(.*)\?/ && request_methods.include?($1.to_sym)
-          @controller_class.public_instance_methods.include?($1)
-        elsif @request.respond_to?(meth)
-          @request.send meth, *args
-        else
-          super
-        end
+        super
       end
     end
   end
@@ -143,6 +149,10 @@ class AdminAssistant
   def model_class_name
     @model_class_name ||
         @model_class.name.gsub(/([A-Z])/, ' \1')[1..-1].downcase
+  end
+  
+  def paperclip_attachments
+    @model.paperclip_attachments
   end
   
   def profile(msg)
@@ -218,26 +228,24 @@ class AdminAssistant
         %w(id created_at updated_at).include?(ar_column.name)
       }.map { |ar_column| ar_column.name }
     end
+    
+    def accessors
+      @ar_model.instance_methods.
+          select { |m| m =~ /=$/ }.
+          map { |m| m.gsub(/=/, '')}.
+          select { |m| @ar_model.instance_methods.include?(m) }
+    end
   
     def file_columns
       unless @file_columns
         @file_columns = []
         if @ar_model.respond_to?(:file_column)
-          names_to_check = @ar_model.columns.map &:name
-          names_to_check.concat(
-            @ar_model.instance_methods.
-                select { |m| m =~ /=$/ }.
-                map { |m| m.gsub(/=/, '')}.
-                select { |m| @ar_model.instance_methods.include?(m) }
-          )
-          names_to_check.uniq.each do |name|
-            suffixes = %w( relative_path dir relative_dir temp )
-            if suffixes.all? { |suffix|
+          names_to_check = @ar_model.columns.map(&:name).concat(accessors).uniq
+          @file_columns = names_to_check.select { |name|
+            %w( relative_path dir relative_dir temp ).all? { |suffix|
               @ar_model.method_defined? "#{name}_#{suffix}".to_sym
             }
-              @file_columns << name
-            end
-          end
+          }
         end
       end
       @file_columns

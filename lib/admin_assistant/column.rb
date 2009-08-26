@@ -199,6 +199,12 @@ class AdminAssistant
     module SimpleColumnSearchViewMethods
       include SearchViewMethods
       
+      def blank_checkbox_html(form)
+        check_box_and_hidden_tags(
+          "search[#{name}(blank)]", @column.blank?(form.object)
+        ) + "is blank"
+      end
+      
       def boolean_input(form)
         opts = [['', nil]]
         if @boolean_labels
@@ -242,12 +248,7 @@ class AdminAssistant
             input << comparator_html(form.object) << ' '
           end
           input << form.text_field(name)
-          if @blank_checkbox
-            input << check_box_and_hidden_tags(
-              "search[#{name}(blank)]", @column.blank?(form.object)
-            )
-            input << "is blank"
-          end
+          input << blank_checkbox_html(form) if @blank_checkbox
         end
         "<p><label>#{label}</label> <br/>#{input}</p>"
       end

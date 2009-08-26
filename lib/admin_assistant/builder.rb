@@ -85,19 +85,13 @@ class AdminAssistant
         default_val_or_proc = @fields[meth].last
         if default_val_or_proc.respond_to?(:call)
           default_val_or_proc.call @values[meth]
-        elsif @values[meth].nil?
-          default_val_or_proc
         else
-          @values[meth]
+          @values[meth].nil? ? default_val_or_proc : @values[meth]
         end
       elsif field_type == :boolean
         @values[meth] = true
       elsif field_type == :block
-        if block
-          @values[meth] = block
-        else
-          @values[meth]
-        end
+        block ? (@values[meth] = block) : @values[meth]
       end
     end
     
