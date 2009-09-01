@@ -27,6 +27,7 @@ class AdminAssistant
             :destination_after_save, @record, @controller.params
           )
         end
+        url_params ||= @controller.params[:referer] if @controller.params[:referer]
         url_params ||= {:action => 'index'}
         @controller.send :redirect_to, url_params
       end

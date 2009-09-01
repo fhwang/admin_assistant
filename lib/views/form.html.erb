@@ -15,6 +15,10 @@ form_view = AdminAssistant::FormView.new(@record, @admin_assistant, self)
     <%= error_messages_for 'record' %>
   <% end %>
   <% form_for(@record, form_view.form_for_args) do |rails_form| %>
+    <%  if request.referer %>
+      <%= hidden_field_tag 'referer', request.referer%>
+    <% end %>
+
     <% form_view.columns.each do |column| %>
       <div class="column">
       <label><%= h(column.label) %></label>
