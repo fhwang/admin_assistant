@@ -86,7 +86,7 @@ describe Admin::BlogPostsController do
         @blog_post.published_at.should be_nil
       end
     end
-    
+
     describe 'when there are validation errors' do
       before :each do
         post :create, :blog_post => {:title => ''}
@@ -116,7 +116,7 @@ describe Admin::BlogPostsController do
   end
   
   describe '#edit' do
-    before :all do
+     before :all do
       @blog_post = BlogPost.create! :title => random_word, :user => @user
     end
     
@@ -138,7 +138,17 @@ describe Admin::BlogPostsController do
       response.should have_tag("a[href=/admin/blog_posts]", 'Back to index')
     end
   end
-  
+
+  describe '#edit when there is a referer value on the request' do
+    it 'should have the referer hidden input value' do
+      blog_post = BlogPost.create! :title => random_word, :user => @user
+      referer_page = 'referer_page'
+      @request.env['HTTP_REFERER'] = referer_page
+      get :edit, :id => blog_post.id
+      response.should have_tag("input#referer[value=#{referer_page}]")
+    end
+  end
+
   describe '#edit when there are more than 15 users' do
     before :all do
       @blog_post = BlogPost.create! :title => random_word, :user => @user
@@ -146,7 +156,7 @@ describe Admin::BlogPostsController do
         User.create! :username => "--user #{i}--"
       end
     end
-    
+
     before :each do
       get :edit, :id => @blog_post.id
     end
@@ -905,6 +915,15 @@ describe Admin::BlogPostsController do
         response.should have_tag("a[href=/admin/blog_posts]", 'Back to index')
       end
     end
+
+    describe 'on handling the referer param' do
+      it 'should redirect to the referer when there is a referer on the form submit' do
+        referer_url = 'http://foo.com'
+        post :update, :id => @blog_post.id, :blog_post => {:title => 'foo'}, :referer => referer_url
+        response.should redirect_to(referer_url)
+      end
+    end
+
   end
   
   describe '#update as Ajax toggle' do
@@ -943,4 +962,5 @@ describe Admin::BlogPostsController do
       response.should_not have_tag('title', :text => 'Admin')
     end
   end
+
 end
