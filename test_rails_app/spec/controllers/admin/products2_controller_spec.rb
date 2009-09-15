@@ -40,5 +40,9 @@ describe Admin::Products2Controller do
         %r|product_#{@chocolate.id}.*product_#{@diamond.id}|m
       )
     end
+    
+    it "should show ProductCategory#category_name because it's defined a #name_for_admin_assistant method" do
+      response.should have_tag('td', :text => 'chocolate')
+    end
   end
 end
