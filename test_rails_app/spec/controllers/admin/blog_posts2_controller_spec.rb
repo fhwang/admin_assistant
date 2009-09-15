@@ -706,7 +706,7 @@ describe Admin::BlogPosts2Controller do
     end
     
     it "should show a checkbox for the 'publish' virtual field" do
-      if %w(2.3.2 2.3.3).include?(RAILS_GEM_VERSION)
+      if %w(2.3.2 2.3.3 2.3.4).include?(RAILS_GEM_VERSION)
         response.body.should match(
           %r!
             <input[^>]*

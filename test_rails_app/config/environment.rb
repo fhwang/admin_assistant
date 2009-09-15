@@ -5,7 +5,7 @@
 # ENV['RAILS_ENV'] ||= 'production'
 
 # I need to be able to run this against an arbitrary version of Rails
-RAILS_GEM_VERSION = ENV['RAILS_GEM_VERSION'] || '2.3.3'
+RAILS_GEM_VERSION = ENV['RAILS_GEM_VERSION'] || '2.3.4'
 
 # Bootstrap the Rails environment, frameworks, and default configuration
 require File.join(File.dirname(__FILE__), 'boot')

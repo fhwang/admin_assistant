@@ -26,7 +26,7 @@ end
 
 desc 'Run all specs across all supported Rails gem versions.'
 task :spec do
-  versions = %w(2.1.0 2.1.2 2.2.2 2.3.2 2.3.3)
+  versions = %w(2.1.0 2.1.2 2.2.2 2.3.2 2.3.3 2.3.4)
   cmd = "cd test_rails_app && " + (versions.map { |version|
     "echo '===== Testing #{version} =====' && RAILS_GEM_VERSION=#{version} rake"
   }.join(" && "))
