@@ -6,7 +6,7 @@ admin\_assistant is a Rails plugin that automates a lot of features typically ne
 
 admin\_assistant is in beta, meaning that it is stable, and being used in production sites, but there may be small API changes in the future.
 
-It currently supports Rails 2.1.0, 2.1.2, 2.2.2, 2.3.2, and 2.3.3. There are no plans to support Rails 2.0 or earlier.
+It currently supports Rails 2.1.0, 2.1.2, 2.2.2, 2.3.2, 2.3.3, and 2.3.4. There are no plans to support Rails 2.0 or earlier.
 
 
 ## Features
