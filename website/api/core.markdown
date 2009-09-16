@@ -66,3 +66,18 @@ Overrides the default label for that column in index, search, and form views.
 
 If a column is a polymorphic association, admin\_assistant will offer specific widgets for searching and editing this column. With `polymorphic_types` you can tell it what possible types the association can be set to.
 
+### Model methods
+
+#### name\_for\_admin\_assistant
+
+When dealing with associations, admin\_assistant needs a convenient way to display a given record. By default, it will look for a method with the name `name`, `title`, `login`, or `username`. If you'd like to provide custom functionality across all admin\_assistant controllers, define the method `name_for_admin_assistant` on the model.
+
+For example, let's say you have a ProductCategory class with a field `category_name`. With the code below, any time a product category is referred to through an association, admin\_assistant will display the `category_name`, in index views, form selects, etc.
+
+    class ProductCategory < ActiveRecord::Base
+      def name_for_admin_assistant
+        self.category_name
+      end
+    end
+
+

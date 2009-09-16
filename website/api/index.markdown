@@ -152,4 +152,15 @@ Often you can accomplish the same thing with a partial. For example, the functio
 
     <%= password_field_tag("user[password]", user.password, :disabled => true) %>
     
+#### Model methods
+
+admin\_assistant can also look for methods to be defined on models, themselves. This is generally for behaviors that would apply across all admin controllers.
+
+    class ProductCategory < ActiveRecord::Base
+      def name_for_admin_assistant
+        self.category_name
+      end
+    end
+
+Generally speaking there won't be many of these hooks, because in practice this can make the admin\_assistant API sort of invasive. Unless your Rails project is 99% the admin interface, it's going to get annoying to keep tripping over admin\_assistant-specific hooks when you're trying to write some front-facing code.
 
