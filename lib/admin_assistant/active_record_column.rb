@@ -37,13 +37,21 @@ class AdminAssistant
     end
       
     def attributes_for_search_object(search_params)
-      terms = search_params[@ar_column.name]
-      value = unless terms.blank?
-        case field_type
-          when :boolean
-            terms.blank? ? nil : (terms == 'true')
-          else
-            terms
+      value = if field_type == :datetime
+        begin
+          Time.utc(
+            *(1..5).to_a.map { |i| search_params["#{name}(#{i}i)"].to_i }
+          )
+        rescue ArgumentError; end
+      else
+        terms = search_params[@ar_column.name]
+        unless terms.blank?
+          case field_type
+            when :boolean
+              terms.blank? ? nil : (terms == 'true')
+            else
+              terms
+          end
         end
       end
       {name => value}
