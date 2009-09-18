@@ -148,7 +148,7 @@ class AdminAssistant
     
     def column_config_fields
       {:boolean_labels => :accessor, :label => :accessor,
-       :polymorphic_types => :accessor}
+       :polymorphic_types => :accessor, :strftime_format => :accessor}
     end
   end
   

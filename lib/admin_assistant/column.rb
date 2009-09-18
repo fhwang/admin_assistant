@@ -135,14 +135,6 @@ class AdminAssistant
         "sort #{sort_order}" if sort_order
       end
       
-      def td_css_class
-        'sort' if sort_order
-      end
-      
-      def unconfigured_html(record)
-        @action_view.send(:h, string(record))
-      end
-      
       def html(record)
         html_for_index_method = "#{name}_html_for_index"
         html = if @action_view.respond_to?(html_for_index_method)
@@ -182,6 +174,14 @@ class AdminAssistant
         @sort_order = index.sort_order if name == index.sort
         @image_size = setting.image_size
         @ajax_toggle_allowed = admin_assistant.update?
+      end
+      
+      def td_css_class
+        'sort' if sort_order
+      end
+      
+      def unconfigured_html(record)
+        @action_view.send(:h, string(record))
       end
     end
     
@@ -263,7 +263,7 @@ class AdminAssistant
     
     module ShowViewMethods
       def html(record)
-        @action_view.send(:h, value(record))
+        @action_view.send(:h, string(record))
       end
     end
 
@@ -275,6 +275,7 @@ class AdminAssistant
         @model_class = admin_assistant.model_class
         base_setting = admin_assistant[name]
         @boolean_labels = base_setting.boolean_labels
+        @strftime_format = base_setting.strftime_format
         fem_name = name + '_exists?'
         if @action_view.respond_to?(fem_name)
           @file_exists_method = @action_view.method(fem_name)
@@ -329,6 +330,8 @@ class AdminAssistant
           value = value(record)
           if @boolean_labels
             value ? @boolean_labels.first : @boolean_labels.last
+          elsif value.respond_to?(:strftime) && @strftime_format
+            value.strftime @strftime_format
           else
             value.to_s
           end

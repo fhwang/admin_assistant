@@ -9,6 +9,13 @@ describe Admin::BlogPosts4Controller do
   end
   
   describe '#index' do
+    before :all do
+      BlogPost.create!(
+        :published_at => Time.utc(2009, 9, 1, 12, 30, 0), :user => @user,
+        :title => 'whatever'
+      )
+    end
+    
     before :each do
       get :index
       response.should be_success
@@ -42,6 +49,10 @@ describe Admin::BlogPosts4Controller do
           :text => 'Clear'
         )
       end
+    end
+    
+    it 'should use strftime_format for displaying published_at' do
+      response.should have_tag('td', :text => "Sep 01, 2009 12:30:00")
     end
   end
   
@@ -167,4 +178,21 @@ describe Admin::BlogPosts4Controller do
     end
   end
 
+  describe '#show' do
+    before :all do
+      @blog_post = BlogPost.create!(
+        :published_at => Time.utc(2009, 9, 1, 12, 30, 0), :user => @user,
+        :title => 'whatever'
+      )
+    end
+    
+    before :each do
+      get :show, :id => @blog_post.id
+      response.should be_success
+    end
+    
+    it 'should use strftime_format for displaying published_at' do
+      response.body.should match(/Sep 01, 2009 12:30:00/)
+    end
+  end
 end
