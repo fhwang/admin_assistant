@@ -2,17 +2,15 @@ require 'ar_query'
 
 class AdminAssistant
   class Index
-    attr_reader :controller_methods
+    attr_reader :admin_assistant, :controller_methods, :url_params
     
     def initialize(admin_assistant, url_params = {}, controller_methods = {})
       @admin_assistant, @url_params, @controller_methods =
             admin_assistant, url_params, controller_methods
     end
     
-    def belongs_to_sort_column
-      @admin_assistant.accumulate_belongs_to_columns(column_names).detect { |c|
-        c.name.to_s == sort
-      }
+    def belongs_to_columns
+      @admin_assistant.accumulate_belongs_to_columns column_names
     end
     
     def column_names
@@ -23,72 +21,12 @@ class AdminAssistant
       @admin_assistant.accumulate_columns column_names
     end
     
-    def conditions_from_settings
-      settings.conditions
-    end
-    
-    def find_include
-      fi = settings.include || []
-      if by_assoc = belongs_to_sort_column
-        fi << by_assoc.name
-      end
-      fi
-    end
-    
     def model_class
       @admin_assistant.model_class
     end
     
-    def order_sql
-      if (sc = sort_column)
-        first_part = if (by_assoc = belongs_to_sort_column)
-          by_assoc.order_sql_field
-        else
-          sc.name
-        end
-        "#{first_part} #{sort_order}"
-      else
-        settings.sort_by
-      end
-    end
-    
     def records
-      unless @records
-        ar_query = ARQuery.new(
-          :order => order_sql, :include => find_include,
-          :per_page => per_page, :page => @url_params[:page]
-        )
-        if @controller_methods[:conditions_for_index]
-          sql = @controller_methods[:conditions_for_index].call
-          ar_query.condition_sqls << sql if sql
-        elsif conditions_from_settings
-          if conditions_from_settings.respond_to?(:call)
-            conditions_sql = conditions_from_settings.call @url_params
-          else
-            conditions_sql = conditions_from_settings
-          end
-          ar_query.condition_sqls << conditions_sql if conditions_sql
-        end
-        search.add_to_query(ar_query)
-        if settings.total_entries
-          ar_query.total_entries = settings.total_entries.call
-        elsif search.params.empty? &&
-              (time_span = settings.cache_total_entries)
-          ar_query.total_entries = Rails.cache.read(
-            total_entries_cache_key ar_query
-          )
-        end
-        @records = model_class.paginate :all, ar_query.to_hash
-        if search.params.empty? &&
-           (time_span = settings.cache_total_entries) &&
-           ar_query.to_hash[:total_entries].nil?
-          Rails.cache.write(
-            total_entries_cache_key(ar_query), @records.size,
-            :expires_in => time_span
-          )
-        end
-      end
-      @records
+      @records ||= RecordFinder.new(self).run
     end
     
     def search
@@ -110,34 +48,104 @@ class AdminAssistant
           (settings.sort_by.to_s if settings.sort_by.is_a?(Symbol))
     end
     
-    def sort_column
-      if sort
-        columns.detect { |c|
-          c.name.to_s == sort
-        } || belongs_to_sort_column
-      elsif settings.sort_by.is_a?(Symbol)
-        columns.detect { |c| c.name == settings.sort_by.to_s }
-      end
-    end
-    
     def sort_order
       @url_params[:sort_order] || 'asc'
     end
     
-    def per_page
-      settings.per_page
-    end
-    
-    def total_entries_cache_key(ar_query)
-      key = "AdminAssistant::#{@admin_assistant.controller_class.name}_count"
-      if conditions = ar_query.to_hash[:conditions]
-        key << conditions.gsub(/\W/, '_')
-      end
-      key
-    end
-    
     def view(action_view)
       @view ||= View.new(self, action_view, @admin_assistant)
+    end
+      
+    class RecordFinder
+      def initialize(index)
+        @index = index
+      end
+      
+      def belongs_to_sort_column
+        @index.belongs_to_columns.detect { |c| c.name.to_s == @index.sort }
+      end
+    
+      def conditions_from_settings
+        @index.settings.conditions
+      end
+    
+      def find_include
+        fi = @index.settings.include || []
+        if by_assoc = belongs_to_sort_column
+          fi << by_assoc.name
+        end
+        fi
+      end
+    
+      def order_sql
+        if (sc = sort_column)
+          first_part = if (by_assoc = belongs_to_sort_column)
+            by_assoc.order_sql_field
+          else
+            sc.name
+          end
+          "#{first_part} #{@index.sort_order}"
+        else
+          @index.settings.sort_by
+        end
+      end
+      
+      def run
+        ar_query = ARQuery.new(
+          :order => order_sql, :include => find_include,
+          :per_page => @index.settings.per_page,
+          :page => @index.url_params[:page]
+        )
+        if @index.controller_methods[:conditions_for_index]
+          sql = @index.controller_methods[:conditions_for_index].call
+          ar_query.condition_sqls << sql if sql
+        elsif conditions_from_settings
+          if conditions_from_settings.respond_to?(:call)
+            conditions_sql = conditions_from_settings.call @index.url_params
+          else
+            conditions_sql = conditions_from_settings
+          end
+          ar_query.condition_sqls << conditions_sql if conditions_sql
+        end
+        @index.search.add_to_query(ar_query)
+        if @index.settings.total_entries
+          ar_query.total_entries = @index.settings.total_entries.call
+        elsif @index.search.params.empty? &&
+              (time_span = @index.settings.cache_total_entries)
+          ar_query.total_entries = Rails.cache.read(
+            total_entries_cache_key ar_query
+          )
+        end
+        records = @index.model_class.paginate(:all, ar_query.to_hash)
+        if @index.search.params.empty? &&
+           (time_span = @index.settings.cache_total_entries) &&
+           ar_query.to_hash[:total_entries].nil?
+          Rails.cache.write(
+            total_entries_cache_key(ar_query), records.size,
+            :expires_in => time_span
+          )
+        end
+        records
+      end
+    
+      def sort_column
+        if @index.sort
+          @index.columns.detect { |c|
+            c.name.to_s == @index.sort
+          } || belongs_to_sort_column
+        elsif @index.settings.sort_by.is_a?(Symbol)
+          @index.columns.detect { |c| c.name == @index.settings.sort_by.to_s }
+        end
+      end
+    
+      def total_entries_cache_key(ar_query)
+        key =
+            "AdminAssistant::#{@index.admin_assistant.controller_class.name}_count"
+        if conditions = ar_query.to_hash[:conditions]
+          key << conditions.gsub(/\W/, '_')
+        end
+        key
+      end
     end
     
     class View
