@@ -7,6 +7,10 @@ class Admin::BlogPosts4Controller < ApplicationController
     a.index do |index|
       index.columns :user, :title, :tags, :published_at, :textile
       index.search :id, :title, :body, :textile, :user, :published_at
+      
+      index.total_entries do
+        25
+      end
     end
   end
 end

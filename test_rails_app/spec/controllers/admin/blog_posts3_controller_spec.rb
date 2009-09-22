@@ -58,6 +58,7 @@ describe Admin::BlogPosts3Controller do
       end
       
       before :each do
+        $cache.flush
         get :index
       end
       
@@ -96,30 +97,7 @@ describe Admin::BlogPosts3Controller do
           end
         end
       end
-    end
     
-    describe 'with 26 unpublished blog posts' do
-      before :all do
-        BlogPost.destroy_all
-        1.upto(26) do |i|
-          BlogPost.create!(
-            :title => "--post #{i}--", :user => @user, :published_at => nil
-          )
-        end
-      end
-      
-      before :each do
-        get :index
-      end
-      
-      it 'should not show link to page 2' do
-        response.should_not have_tag("a[href=/admin/blog_posts3?page=2]")
-      end
-      
-      it 'should only say 25 blog posts found' do
-        response.body.should match(/25 posts found/)
-      end
-      
       it 'should show a search form with specific fields' do
         response.should have_tag(
           'form[id=search_form][method=get]', :text => /Title/
@@ -135,10 +113,18 @@ describe Admin::BlogPosts3Controller do
           with_tag('input[name=?]', 'search[user]')
         end
       end
+      
+      it 'should set the count in memcache' do
+        key =
+            "AdminAssistant::Admin::BlogPosts3Controller_count_published_at_is_null_"
+        $cache.read(key).should == 1
+        $cache.expires_in(key).should be_close(12.hours, 5.seconds)
+      end
     end
     
     describe 'with a published blog post' do
       before :all do
+        $cache.flush
         BlogPost.destroy_all
         BlogPost.create!(
           :title => "published blog post", :user => @user,
@@ -398,6 +384,47 @@ describe Admin::BlogPosts3Controller do
     
     it 'should not match a record with an ID that has the ID as a substring' do
       response.should_not have_tag("tr[id=?]", "blog_post_#{@blog_post2.id}")
+    end
+  end
+  
+  describe '#index when the blank-body count has been cached in memcache but the request is looking for the default index' do
+    before :all do
+      $cache.flush
+      another_key = 
+          "AdminAssistant::Admin::BlogPosts3Controller_count__body_is_null_or_body______"
+      $cache.write another_key, 1_000_000, :expires_in => 12.hours
+    end
+    
+    before :each do
+      get :index
+    end
+    
+    it 'should not read a value from memcache' do
+      response.body.should_not match(/1000000 posts found/)
+    end
+
+    it 'should set the count in memcache' do
+      key =
+          "AdminAssistant::Admin::BlogPosts3Controller_count_published_at_is_null_"
+      $cache.read(key).should_not be_nil
+      $cache.expires_in(key).should be_close(12.hours, 5.seconds)
+    end
+  end
+  
+  describe '#index when the count has been cached in memcache' do
+    before :all do
+      key =
+          "AdminAssistant::Admin::BlogPosts3Controller_count_published_at_is_null_"
+      $cache.write key, 1_000_000, :expires_in => 12.hours
+    end
+    
+    before :each do
+      $cache.raise_on_write
+      get :index
+    end
+    
+    it 'should read memcache and not hit the database' do
+      response.body.should match(/1000000 posts found/)
     end
   end
   

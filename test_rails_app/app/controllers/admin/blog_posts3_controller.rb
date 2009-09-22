@@ -11,10 +11,6 @@ class Admin::BlogPosts3Controller < ApplicationController
       index.columns :id, :title, :created_at, :updated_at, :body, :textile,
                     :published?, :user
       
-      index.total_entries do
-        25
-      end
-      
       index.actions['All'] = {:all => '1'}
       index.actions['Short title'] = {:short_title => '1'}
       index.actions['Blank body'] = {:blank_body => '1'}
@@ -32,6 +28,8 @@ class Admin::BlogPosts3Controller < ApplicationController
           'published_at is null'
         end
       end
+      
+      index.cache_total_entries 12.hours
       
       # Extended search configuration
       index.search do |search|

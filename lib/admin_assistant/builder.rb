@@ -215,6 +215,10 @@ class AdminAssistant
       @per_page = 25
     end
     
+    def cache_total_entries(time_span = nil)
+      time_span ? (@cache_total_entries = time_span) : @cache_total_entries
+    end
+    
     def column_config_fields
       {:image_size => :accessor, :link_to_args => :block,
        :sort_by => :accessor}

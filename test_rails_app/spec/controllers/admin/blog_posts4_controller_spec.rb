@@ -177,6 +177,29 @@ describe Admin::BlogPosts4Controller do
       end
     end
   end
+  
+  describe '#index with 26 unpublished blog posts' do
+    before :all do
+      BlogPost.destroy_all
+      1.upto(26) do |i|
+        BlogPost.create!(
+          :title => "--post #{i}--", :user => @user, :published_at => nil
+        )
+      end
+    end
+    
+    before :each do
+      get :index
+    end
+    
+    it 'should not show link to page 2' do
+      response.should_not have_tag("a[href=/admin/blog_posts4?page=2]")
+    end
+    
+    it 'should only say 25 blog posts found' do
+      response.body.should match(/25 blog posts found/)
+    end
+  end
 
   describe '#show' do
     before :all do

@@ -72,8 +72,21 @@ class AdminAssistant
         search.add_to_query(ar_query)
         if settings.total_entries
           ar_query.total_entries = settings.total_entries.call
+        elsif search.params.empty? &&
+              (time_span = settings.cache_total_entries)
+          ar_query.total_entries = Rails.cache.read(
+            total_entries_cache_key ar_query
+          )
         end
         @records = model_class.paginate :all, ar_query.to_hash
+        if search.params.empty? &&
+           (time_span = settings.cache_total_entries) &&
+           ar_query.to_hash[:total_entries].nil?
+          Rails.cache.write(
+            total_entries_cache_key(ar_query), @records.size,
+            :expires_in => time_span
+          )
+        end
       end
       @records
     end
@@ -113,6 +126,14 @@ class AdminAssistant
     
     def per_page
       settings.per_page
+    end
+    
+    def total_entries_cache_key(ar_query)
+      key = "AdminAssistant::#{@admin_assistant.controller_class.name}_count"
+      if conditions = ar_query.to_hash[:conditions]
+        key << conditions.gsub(/\W/, '_')
+      end
+      key
     end
     
     def view(action_view)

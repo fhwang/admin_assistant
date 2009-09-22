@@ -17,3 +17,12 @@ test:
   password: test
   host: localhost
 
+# This app never actually gets deployed, but we use it locally for developing
+# with Memcache
+production:
+  adapter: mysql
+  database: test_rails_app_development
+  username: dev
+  password: ved
+  host: localhost
+
