@@ -61,16 +61,30 @@ class AdminAssistant
         @index = index
       end
       
+      def add_base_condition_sqls
+        if @index.controller_methods[:conditions_for_index]
+          sql = @index.controller_methods[:conditions_for_index].call
+          @ar_query.condition_sqls << sql if sql
+        elsif conditions_from_settings
+          if conditions_from_settings.respond_to?(:call)
+            conditions_sql = conditions_from_settings.call @index.url_params
+          else
+            conditions_sql = conditions_from_settings
+          end
+          @ar_query.condition_sqls << conditions_sql if conditions_sql
+        end
+      end
+      
       def belongs_to_sort_column
         @index.belongs_to_columns.detect { |c| c.name.to_s == @index.sort }
       end
     
       def conditions_from_settings
-        @index.settings.conditions
+        settings.conditions
       end
     
       def find_include
-        fi = @index.settings.include || []
+        fi = settings.include || []
         if by_assoc = belongs_to_sort_column
           fi << by_assoc.name
         end
@@ -86,46 +100,40 @@ class AdminAssistant
           end
           "#{first_part} #{@index.sort_order}"
         else
-          @index.settings.sort_by
+          settings.sort_by
         end
       end
       
       def run
-        ar_query = ARQuery.new(
+        @ar_query = ARQuery.new(
           :order => order_sql, :include => find_include,
-          :per_page => @index.settings.per_page,
-          :page => @index.url_params[:page]
+          :per_page => settings.per_page, :page => @index.url_params[:page]
         )
-        if @index.controller_methods[:conditions_for_index]
-          sql = @index.controller_methods[:conditions_for_index].call
-          ar_query.condition_sqls << sql if sql
-        elsif conditions_from_settings
-          if conditions_from_settings.respond_to?(:call)
-            conditions_sql = conditions_from_settings.call @index.url_params
-          else
-            conditions_sql = conditions_from_settings
-          end
-          ar_query.condition_sqls << conditions_sql if conditions_sql
+        add_base_condition_sqls
+        search.add_to_query @ar_query
+        if settings.total_entries
+          @ar_query.total_entries = settings.total_entries.call
+        elsif search.params.empty? &&
+              (time_span = settings.cache_total_entries)
+          @ar_query.total_entries = Rails.cache.read total_entries_cache_key
         end
-        @index.search.add_to_query(ar_query)
-        if @index.settings.total_entries
-          ar_query.total_entries = @index.settings.total_entries.call
-        elsif @index.search.params.empty? &&
-              (time_span = @index.settings.cache_total_entries)
-          ar_query.total_entries = Rails.cache.read(
-            total_entries_cache_key ar_query
-          )
-        end
-        records = @index.model_class.paginate(:all, ar_query.to_hash)
-        if @index.search.params.empty? &&
-           (time_span = @index.settings.cache_total_entries) &&
-           ar_query.to_hash[:total_entries].nil?
+        records = @index.model_class.paginate(:all, @ar_query.to_hash)
+        if search.params.empty? &&
+           (time_span = settings.cache_total_entries) &&
+           @ar_query.to_hash[:total_entries].nil?
           Rails.cache.write(
-            total_entries_cache_key(ar_query), records.size,
-            :expires_in => time_span
+            total_entries_cache_key, records.size, :expires_in => time_span
           )
         end
         records
+      end
+      
+      def search
+        @index.search
+      end
+      
+      def settings
+        @index.settings
       end
     
       def sort_column
@@ -133,15 +141,15 @@ class AdminAssistant
           @index.columns.detect { |c|
             c.name.to_s == @index.sort
           } || belongs_to_sort_column
-        elsif @index.settings.sort_by.is_a?(Symbol)
-          @index.columns.detect { |c| c.name == @index.settings.sort_by.to_s }
+        elsif settings.sort_by.is_a?(Symbol)
+          @index.columns.detect { |c| c.name == settings.sort_by.to_s }
         end
       end
     
-      def total_entries_cache_key(ar_query)
+      def total_entries_cache_key
         key =
             "AdminAssistant::#{@index.admin_assistant.controller_class.name}_count"
-        if conditions = ar_query.to_hash[:conditions]
+        if conditions = @ar_query.to_hash[:conditions]
           key << conditions.gsub(/\W/, '_')
         end
         key
@@ -167,12 +175,29 @@ class AdminAssistant
         @columns
       end
       
+      def delete_link(record)
+        @action_view.link_to_remote(
+          'Delete',
+          :url => {:action => 'destroy', :id => record.id},
+          :confirm => 'Are you sure?',
+          :success =>
+              "Effect.Fade('#{@admin_assistant.model_class.name.underscore}_#{record.id}')",
+          :method => :delete
+        ) << ' '
+      end
+      
       def destroy?
         @destroy ||= @admin_assistant.destroy?
       end
       
       def edit?
         @edit ||= @admin_assistant.edit?
+      end
+      
+      def edit_link(record)
+        @action_view.link_to(
+          'Edit', :action => 'edit', :id => record.id
+        ) << " "
       end
       
       def new?
@@ -198,21 +223,8 @@ class AdminAssistant
       
       def right_column_links(record)
         links = ""
-        if render_edit_link?(record)
-          links << @action_view.link_to(
-            'Edit', :action => 'edit', :id => record.id
-          ) << " "
-        end
-        if render_delete_link?(record)
-          links << @action_view.link_to_remote(
-            'Delete',
-            :url => {:action => 'destroy', :id => record.id},
-            :confirm => 'Are you sure?',
-            :success =>
-                "Effect.Fade('#{@admin_assistant.model_class.name.underscore}_#{record.id}')",
-            :method => :delete
-          ) << ' '
-        end
+        links << edit_link(record) if render_edit_link?(record)
+        links << delete_link(record) if render_delete_link?(record)
         if render_show_link?(record)
           links << @action_view.link_to(
             'Show', :action => 'show', :id => record.id
