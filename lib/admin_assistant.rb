@@ -10,11 +10,19 @@ end
 require 'will_paginate'
 
 class AdminAssistant
+  cattr_accessor :request_start_time
+
   attr_reader   :base_settings, :controller_class, :form_settings, 
                 :index_settings, :model_class, :show_settings
   attr_accessor :actions, :custom_destroy
   attr_writer   :model_class_name
-
+  
+  def self.profile(msg)
+    if self.request_start_time
+      Rails.logger.info "#{msg}: #{Time.now - self.request_start_time}"
+    end
+  end
+  
   def self.template_file(template_name)
     "#{File.dirname(__FILE__)}/views/#{template_name}.html.erb"
   end
@@ -51,21 +59,24 @@ class AdminAssistant
   end
   
   def autocomplete_actions
-    ac_actions = []
-    if [:new, :create, :edit, :update].any? { |action|
-      actions.include?(action)
-    }
-      defaults = @model.default_column_names
-      accumulate_belongs_to_columns(defaults).each { |column|
-        ac_actions << "autocomplete_#{column.name}".to_sym
+    @autocomplete_actions ||= begin
+      ac_actions = []
+      if [:new, :create, :edit, :update].any? { |action|
+        actions.include?(action)
       }
-    end
-    if actions.include?(:index)
-      base_settings.all_polymorphic_types.each do |p_type|
-        ac_actions << "autocomplete_#{p_type.name.underscore.downcase}".to_sym
+        defaults = @model.default_column_names
+        accumulate_belongs_to_columns(defaults).each { |column|
+          ac_actions << "autocomplete_#{column.name}".to_sym
+        }
       end
+      if actions.include?(:index)
+        base_settings.all_polymorphic_types.each do |p_type|
+          ac_actions << "autocomplete_#{p_type.name.underscore.downcase}".to_sym
+        end
+      end
+      ac_actions.uniq
     end
-    ac_actions.uniq
+    @autocomplete_actions
   end
   
   def column(name)
@@ -131,6 +142,7 @@ class AdminAssistant
   
   def method_missing(meth, *args)
     if crudful_request_methods.include?(meth) and args.size == 1
+      self.class.request_start_time = Time.now if ENV['PROFILE_LOGGING']
       request_class = Request.const_get meth.to_s.capitalize
       dispatch_to_request_method request_class, args.first
     elsif autocomplete_actions && autocomplete_actions.include?(meth)
@@ -153,12 +165,6 @@ class AdminAssistant
   
   def paperclip_attachments
     @model.paperclip_attachments
-  end
-  
-  def profile(msg)
-    if @request_start_time
-      puts "#{msg}: #{Time.now - @request_start_time}"
-    end
   end
   
   def search_settings
