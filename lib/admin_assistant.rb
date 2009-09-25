@@ -149,7 +149,12 @@ class AdminAssistant
       dispatch_to_request_method Request::Autocomplete, args.first
     else
       if meth.to_s =~ /(.*)\?/ && crudful_request_methods.include?($1.to_sym)
-        @controller_class.public_instance_methods.include?($1)
+        @memoized_action_booleans ||= {}
+        unless @memoized_action_booleans.has_key?($1)
+          @memoized_action_booleans[$1] = 
+              @controller_class.public_instance_methods.include?($1)
+        end
+        @memoized_action_booleans[$1]
       elsif @request.respond_to?(meth)
         @request.send meth, *args
       else
