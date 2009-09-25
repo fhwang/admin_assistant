@@ -6,7 +6,7 @@ class AdminAssistant
     
     def add_to_query_condition(ar_query_condition, search)
       table_name = search.model_class.table_name
-      if blank?(search)
+      if search.blank?(name)
         ar_query_condition.add_condition do |sub_cond|
           sub_cond.boolean_join = :or
           sub_cond.sqls << "#{table_name}.#{name} is null"
@@ -15,11 +15,7 @@ class AdminAssistant
       else
         value_for_query = search.send(@ar_column.name)
         unless value_for_query.nil?
-          comp = comparator(search)
-          unless %w(< <= = >= >).include?(comp)
-            comp = nil
-          end
-          if comp
+          if comp = search.comparator(name)
             ar_query_condition.sqls << "#{table_name}.#{name} #{comp} ?"
             ar_query_condition.bind_vars << value_for_query
           else

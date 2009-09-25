@@ -31,6 +31,10 @@ class AdminAssistant
       end
     end
     
+    def blank?(column_name)
+      @params["#{column_name}(blank)"] == '1'
+    end
+    
     def columns
       column_names = settings.column_names
       if column_names.empty?
@@ -49,6 +53,11 @@ class AdminAssistant
       columns.map { |c|
         c.search_view action_view, @admin_assistant, :search => self
       }
+    end
+    
+    def comparator(column_name)
+      c = @params["#{column_name}(comparator)"]
+      c if %w(< <= = >= >).include?(c)
     end
     
     def id

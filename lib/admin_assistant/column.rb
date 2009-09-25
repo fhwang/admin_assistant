@@ -1,13 +1,5 @@
 class AdminAssistant
-  class Column
-    def blank?(search)
-      search.params["#{name}(blank)"] == '1'
-    end
-
-    def comparator(search)
-      search.params["#{name}(comparator)"]
-    end
-    
+  class Column    
     def form_view(action_view, admin_assistant, opts = {})
       view 'FormView', action_view, admin_assistant, opts
     end
@@ -201,7 +193,7 @@ class AdminAssistant
       
       def blank_checkbox_html(form)
         check_box_and_hidden_tags(
-          "search[#{name}(blank)]", @column.blank?(form.object)
+          "search[#{name}(blank)]", form.object.blank?(@column.name)
         ) + "is blank"
       end
       
@@ -218,7 +210,7 @@ class AdminAssistant
       end
       
       def comparator_html(search)
-        selected_comparator = @column.comparator(search) || '='
+        selected_comparator = search.comparator(@column.name) || '='
         option_tags = comparator_opts.map { |text, value|
           opt = "<option value=\"#{value}\""
           if selected_comparator == value
