@@ -201,7 +201,7 @@ class AdminAssistant
       end
       
       def new?
-        @edit ||= @admin_assistant.edit?
+        @new ||= @admin_assistant.new?
       end
       
       def header

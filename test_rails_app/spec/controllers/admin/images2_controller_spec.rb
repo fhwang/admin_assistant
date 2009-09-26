@@ -34,5 +34,11 @@ describe Admin::Images2Controller do
         'a[href=?]', "/admin/images2/edit/#{@image.id}"
       )
     end
+      
+    it 'should have a new link' do
+      response.should have_tag(
+        "a[href=/admin/images2/new]", 'New image'
+      )
+    end
   end
 end
