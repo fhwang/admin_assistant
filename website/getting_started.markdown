@@ -11,10 +11,11 @@ title:  Getting started
 
     ./script/plugin install git://github.com/mislav/will_paginate.git
 
-3) admin\_assistant comes packaged with standard CSS and Javascript that you should include in whatever layout your admin controllers will be using.
+3) admin\_assistant comes packaged with standard CSS and Javascript that you should include in whatever layout your admin controllers will be using. You'll also need to make sure to include prototype.js, effects.js, and controls.js, if you're not including them already.
 
     <html>
       <head>
+        <%= javascript_include_tag("prototype", "effects", "controls") %>
         <%= admin_assistant_includes %>
       </head>
       ...

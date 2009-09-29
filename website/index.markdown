@@ -26,16 +26,9 @@ It currently supports Rails 2.1.0, 2.1.2, 2.2.2, 2.3.2, 2.3.3, and 2.3.4. There 
 Check out our [screenshots](./screenshots.html), [who's using admin\_assistant](./community.html#whos_using), or our [design principles](./design_principles.html).
 
 
-## Installation
+## Ready to give it a try?
 
-Installing admin\_assistant is the same as installing any other plugin:
-
-    ./script/plugin install git://github.com/fhwang/admin_assistant.git
-
-It depends on the will\_paginate plugin, so you'll have to install that as well if you don't already have it:
-
-    ./script/plugin install git://github.com/mislav/will_paginate.git
-
+[Getting started](./getting_started.html) is easy.
 
 [afarrill]: http://github.com/alexfarrill
 [fhwang]: http://fhwang.net/
