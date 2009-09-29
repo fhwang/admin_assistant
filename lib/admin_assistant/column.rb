@@ -165,7 +165,8 @@ class AdminAssistant
         @link_to_args = setting.link_to_args
         @sort_order = index.sort_order if name == index.sort
         @image_size = setting.image_size
-        @ajax_toggle_allowed = admin_assistant.update?
+        @ajax_toggle_allowed =
+            admin_assistant.update? && setting.ajax_toggle != false
       end
       
       def td_css_class

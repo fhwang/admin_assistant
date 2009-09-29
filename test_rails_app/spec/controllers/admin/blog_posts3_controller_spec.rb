@@ -120,6 +120,25 @@ describe Admin::BlogPosts3Controller do
         $cache.read(key).should == 1
         $cache.expires_in(key).should be_close(12.hours, 5.seconds)
       end
+      
+      it 'should not make the textile field an Ajax toggle' do
+        toggle_div_id = "blog_post_#{@blog_post.id}_textile"
+        response.body.should_not match(
+          %r|new Ajax.Updater\('#{toggle_div_id}'|
+        )
+        
+=begin        
+        post_url =
+            "/admin/blog_posts2/update/#{@blog_post.id}?" +
+            CGI.escape('blog_post[textile]') + "=1&amp;from=#{toggle_div_id}"
+            
+            
+        response.should_not have_tag("div[id=?]", toggle_div_id) do
+          ajax_substr = "new Ajax.Updater('#{toggle_div_id}', '#{post_url}'"
+          with_tag("a[href=#][onclick*=?]", ajax_substr, :text => 'No')
+        end
+=end
+      end
     end
     
     describe 'with a published blog post' do

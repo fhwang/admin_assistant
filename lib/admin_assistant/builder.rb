@@ -220,8 +220,8 @@ class AdminAssistant
     end
     
     def column_config_fields
-      {:image_size => :accessor, :link_to_args => :block,
-       :sort_by => :accessor}
+      {:ajax_toggle => :accessor, :image_size => :accessor,
+       :link_to_args => :block, :sort_by => :accessor}
     end
     
     def conditions(str = nil, &block)

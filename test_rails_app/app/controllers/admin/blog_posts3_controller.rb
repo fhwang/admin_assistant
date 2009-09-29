@@ -10,6 +10,8 @@ class Admin::BlogPosts3Controller < ApplicationController
     a.index do |index|
       index.columns :id, :title, :created_at, :updated_at, :body, :textile,
                     :published?, :user
+                    
+      index[:textile].ajax_toggle = false
       
       index.actions['All'] = {:all => '1'}
       index.actions['Short title'] = {:short_title => '1'}
