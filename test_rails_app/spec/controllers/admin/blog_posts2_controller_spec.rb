@@ -743,6 +743,10 @@ describe Admin::BlogPosts2Controller do
       end
     end
     
+    it "should not duplicate the DOM ID of the 'publish' checkbox on the page" do
+      response.body.scan(/id="blog_post_publish"|id="blog_post\[publish\]"/).size.should == 1
+    end
+    
     it "should show the description for the 'publish' virtual field" do
       response.body.should match(
         /Click this and published_at will be set automatically/
