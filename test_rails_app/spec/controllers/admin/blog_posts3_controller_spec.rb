@@ -126,18 +126,6 @@ describe Admin::BlogPosts3Controller do
         response.body.should_not match(
           %r|new Ajax.Updater\('#{toggle_div_id}'|
         )
-        
-=begin        
-        post_url =
-            "/admin/blog_posts2/update/#{@blog_post.id}?" +
-            CGI.escape('blog_post[textile]') + "=1&amp;from=#{toggle_div_id}"
-            
-            
-        response.should_not have_tag("div[id=?]", toggle_div_id) do
-          ajax_substr = "new Ajax.Updater('#{toggle_div_id}', '#{post_url}'"
-          with_tag("a[href=#][onclick*=?]", ajax_substr, :text => 'No')
-        end
-=end
       end
     end
     
@@ -444,6 +432,31 @@ describe Admin::BlogPosts3Controller do
     
     it 'should read memcache and not hit the database' do
       response.body.should match(/1000000 posts found/)
+    end
+  end
+  
+  describe "#index with more than one page's worth of unpublished blog posts" do
+    before :all do
+      unpub_count = BlogPost.count "published_at is null"
+      unpub_count.upto(26) do |i|
+        BlogPost.create!(
+          :title => "unpublished blog post #{i}", :user => @user,
+          :published_at => nil
+        )
+      end
+      @unpub_count = BlogPost.count "published_at is null"
+    end
+    
+    before :each do
+      $cache.flush
+      get :index
+    end
+    
+    it "should cache the total number of entries, not the entries on just this page" do
+      key =
+          "AdminAssistant::Admin::BlogPosts3Controller_count_published_at_is_null_"
+      $cache.read(key).should == @unpub_count
+      $cache.expires_in(key).should be_close(12.hours, 5.seconds)
     end
   end
   

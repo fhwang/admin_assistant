@@ -122,7 +122,8 @@ class AdminAssistant
            (time_span = settings.cache_total_entries) &&
            @ar_query.to_hash[:total_entries].nil?
           Rails.cache.write(
-            total_entries_cache_key, records.size, :expires_in => time_span
+            total_entries_cache_key, records.total_entries,
+            :expires_in => time_span
           )
         end
         records
