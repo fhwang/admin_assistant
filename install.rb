@@ -5,11 +5,8 @@ outer = File.dirname(__FILE__)
 
 # Delete test_rails_app and various doc directories, unless you're actually
 # developing admin_assistant itself
-containing = Pathname.new(outer).realpath.to_s
-two_layers_in = Pathname.new(
-  "#{outer}/test_rails_app/vendor/plugins/admin_assistant"
-).realpath.to_s
-unless containing == two_layers_in
+test_rails_app = Pathname.new("#{outer}/test_rails_app").realpath.to_s
+unless RAILS_ROOT == test_rails_app
   %w(doc test_rails_app website).each do |dir|
     FileUtils.rm_rf "#{outer}/#{dir}"
   end
