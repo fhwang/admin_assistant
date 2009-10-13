@@ -91,8 +91,9 @@ class AdminAssistant
     class ParamsForSave < Hash
       def initialize(controller, record, model_class_symbol)
         super()
-        @controller, @record, @model_class_symbol =
-            controller, record, model_class_symbol
+        @controller, @model_class_symbol = controller, model_class_symbol
+        @model_methods = record.methods
+        @model_columns = record.class.columns
         build_from_split_params
         destroy_params.each do |k,v|
           if whole_params[k].blank?
@@ -116,7 +117,7 @@ class AdminAssistant
           from_form_method = "#{b}_from_form".to_sym
           if @controller.respond_to?(from_form_method)
             self[b] = @controller.send(from_form_method, h)
-          elsif @record.respond_to?("#{b}=")
+          elsif @model_methods.include?("#{b}=")
             self.merge! h
           end
         end
@@ -127,9 +128,9 @@ class AdminAssistant
           from_form_method = "#{k}_from_form".to_sym
           if @controller.respond_to?(from_form_method)
             self[k] = @controller.send(from_form_method, v)
-          elsif @record.respond_to?("#{k}=")
+          elsif @model_methods.include?("#{k}=")
             unless destroy_params[k] && v.blank?
-              column = @record.class.columns.detect { |c| c.name == k }
+              column = @model_columns.detect { |c| c.name == k }
               if column && column.type == :boolean
                 if v == '1'
                   v = true
