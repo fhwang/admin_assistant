@@ -216,4 +216,8 @@ Don't edit this file: It gets re-copied every time the server starts.
   font-size: small;
 }
 
-
+ul.aa_filter li {
+  float: left;
+  margin: 0 10px 10px 0;
+  font-weight: bold;
+}

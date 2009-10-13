@@ -163,6 +163,19 @@ class AdminAssistant
             index, action_view, admin_assistant
       end
       
+      def render_filter
+        slug = "_filter.html.erb"
+        abs_template_file = File.join( Rails.root, 'app/views', @admin_assistant.controller_class.controller_path, slug )
+        if File.exist?(abs_template_file)
+          template = if RAILS_GEM_VERSION == '2.1.0'
+            File.join(@admin_assistant.controller_class.controller_path, slug)
+          else
+            abs_template_file
+          end
+          @action_view.render :file => template
+        end
+      end
+      
       def ajax_toggle_allowed?
         @admin_assistant.update?
       end
