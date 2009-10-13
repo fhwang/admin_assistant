@@ -221,7 +221,7 @@ class AdminAssistant
       end
 
       def right_column?
-        edit? or destroy? or show? or !right_column_lambdas.empty?
+        edit? or destroy? or show? or !right_column_lambdas.empty? or @action_view.respond_to?(:extra_right_column_links_for_index)
       end
       
       def right_column_lambdas
