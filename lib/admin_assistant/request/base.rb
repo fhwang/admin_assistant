@@ -117,7 +117,7 @@ class AdminAssistant
           from_form_method = "#{b}_from_form".to_sym
           if @controller.respond_to?(from_form_method)
             self[b] = @controller.send(from_form_method, h)
-          elsif @model_methods.include?("#{b}=")
+          elsif model_setter?(b)
             self.merge! h
           end
         end
@@ -128,7 +128,7 @@ class AdminAssistant
           from_form_method = "#{k}_from_form".to_sym
           if @controller.respond_to?(from_form_method)
             self[k] = @controller.send(from_form_method, v)
-          elsif @model_methods.include?("#{k}=")
+          elsif model_setter?(k)
             unless destroy_params[k] && v.blank?
               column = @model_columns.detect { |c| c.name == k }
               if column && column.type == :boolean
@@ -154,6 +154,11 @@ class AdminAssistant
           end
         end
         dp
+      end
+      
+      def model_setter?(attr)
+        @model_columns.any? { |mc| mc.name.to_s == attr } or
+            @model_methods.include?("#{attr}=")
       end
       
       def split_params
