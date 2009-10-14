@@ -722,7 +722,7 @@ describe Admin::BlogPostsController do
   
   describe '#new' do
     before :each do
-      @alfie = User.create! :username => 'alfie'
+      @alfie = User.find_or_create_by_username 'alfie'
       get :new
     end
     

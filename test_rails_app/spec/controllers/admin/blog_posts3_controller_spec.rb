@@ -437,6 +437,7 @@ describe Admin::BlogPosts3Controller do
   
   describe "#index with more than one page's worth of unpublished blog posts" do
     before :all do
+      $cache.flush
       unpub_count = BlogPost.count "published_at is null"
       unpub_count.upto(26) do |i|
         BlogPost.create!(
