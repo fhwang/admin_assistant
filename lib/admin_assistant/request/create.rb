@@ -3,25 +3,17 @@ class AdminAssistant
     class Create < Base
       def call
         @record = model_class.new
-        params = params_for_save
-        if !params.errors.empty?
-          @record.attributes = params
-          @record.valid?
-          valid = false
-          params.errors.each do |attr, msg|
-            @record.errors.add attr, msg
-          end
-        else
-          @record.attributes = params
-          valid = @record.valid?
-        end
-        if valid
+        if record_and_associations_valid?(@record)
           save
           redirect_after_save
         else
           @controller.instance_variable_set :@record, @record
           render_template_file 'form'
         end
+      end
+      
+      def prepare_record_to_receive_invalid_association_assignments(record)
+        # no preparations necessary for creation
       end
       
       def save

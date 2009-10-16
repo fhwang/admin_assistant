@@ -76,6 +76,22 @@ class AdminAssistant
         end
       end
       
+      def record_and_associations_valid?(record)
+        params = params_for_save
+        if !params.errors.empty?
+          prepare_record_to_receive_invalid_association_assignments record
+          record.attributes = params
+          record.valid?
+          params.errors.each do |attr, msg|
+            record.errors.add attr, msg
+          end
+        else
+          record.attributes = params
+          record.valid?
+        end
+        record.errors.empty?
+      end
+      
       def save
         if @controller.respond_to?(:before_save)
           @controller.send(:before_save, @record)
@@ -139,17 +155,7 @@ class AdminAssistant
             self[k] = @controller.send(from_form_method, *args)
           elsif model_setter?(k)
             unless destroy_params[k] && v.blank?
-              column = @model_columns.detect { |c| c.name == k }
-              if column && column.type == :boolean
-                if v == '1'
-                  v = true
-                elsif v == '0'
-                 v = false
-                else
-                 v = nil
-               end
-              end
-              self[k] = v
+              self[k] = value_from_param(k, v)
             end
           end
         end
@@ -176,6 +182,21 @@ class AdminAssistant
           sp[k] = v if k =~ /\([0-9]+i\)$/
         end
         sp
+      end
+      
+      def value_from_param(name, str)
+        column = @model_columns.detect { |c| c.name == name }
+        if column && column.type == :boolean
+          if str == '1'
+            true
+          elsif str == '0'
+            false
+          else
+            nil
+          end
+        else
+          str
+        end
       end
       
       def whole_params
