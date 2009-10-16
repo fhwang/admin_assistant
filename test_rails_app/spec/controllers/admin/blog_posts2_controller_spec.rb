@@ -64,6 +64,80 @@ describe Admin::BlogPosts2Controller do
     end
   end
   
+  describe '#create with a bad tag' do
+    before :each do
+      @title = random_word
+      post(
+        :create,
+        :blog_post => {
+          :title => @title, :tags => 'foo bar! baz', :user_id => @user.id
+        }
+      )
+    end
+    
+    it 'should not create a new BlogPost' do
+      BlogPost.find_by_title(@title).should be_nil
+    end
+    
+    it 'should keep the title in the form' do
+      response.should have_tag(
+        "input[name=?][value=?]", 'blog_post[title]', @title
+      )
+    end
+    
+    it 'should render a useful error' do
+      response.should have_tag("div.errorExplanation") do
+        with_tag 'li', :text => "Tags contain invalid string 'bar!'"
+      end
+    end
+    
+    it 'should highlight the tag string entry' do
+      response.should have_tag("div.fieldWithErrors") do
+        with_tag "input[name=?][value=?]", "blog_post[tags]", "foo bar! baz"
+      end
+    end
+  end
+  
+  describe '#create with a bad tag and a missing title' do
+    before :each do
+      @orig_count = BlogPost.count
+      post(
+        :create,
+        :blog_post => {
+          :title => '', :tags => 'foo bar! baz', :user_id => @user.id
+        }
+      )
+    end
+    
+    it 'should not create a new BlogPost' do
+      BlogPost.count.should == @orig_count
+    end
+    
+    it 'should render a useful tags error' do
+      response.should have_tag("div.errorExplanation") do
+        with_tag 'li', :text => "Tags contain invalid string 'bar!'"
+      end
+    end
+    
+    it 'should highlight the tag string entry' do
+      response.should have_tag("div.fieldWithErrors") do
+        with_tag "input[name=?][value=?]", "blog_post[tags]", "foo bar! baz"
+      end
+    end
+    
+    it 'should render a useful title error' do
+      response.should have_tag("div.errorExplanation") do
+        with_tag 'li', :text => "Title can't be blank"
+      end
+    end
+    
+    it 'should highlight the title string entry' do
+      response.should have_tag("div.fieldWithErrors") do
+        with_tag "input[name=?][value=?]", "blog_post[title]", ""
+      end
+    end
+  end
+  
   describe '#edit' do
     before :all do
       BlogPost.destroy_all
@@ -75,7 +149,7 @@ describe Admin::BlogPosts2Controller do
       tag2 = Tag.find_or_create_by_tag 'tag2'
       BlogPostTag.create! :blog_post => @blog_post, :tag => tag2
     end
-      
+                    
     before :each do
       get :edit, :id => @blog_post.id
       response.should be_success
@@ -817,6 +891,70 @@ describe Admin::BlogPosts2Controller do
         response.should redirect_to(
           :action => 'edit', :id => @blog_post.id, :preview => '1'
         )
+      end
+    end
+  end
+
+  describe '#update with a bad tag' do
+    before :all do
+      @blog_post = BlogPost.create! :title => random_word, :user => @user
+    end
+    
+    before :each do
+      post(
+        :update,
+        :id => @blog_post.id,
+        :blog_post => {:tags => "foo bar! baz"}
+      )
+    end
+    
+    it 'should render a useful error' do
+      response.should have_tag("div.errorExplanation") do
+        with_tag 'li', :text => "Tags contain invalid string 'bar!'"
+      end
+    end
+    
+    it 'should highlight the tag string entry' do
+      response.should have_tag("div.fieldWithErrors") do
+        with_tag "input[name=?][value=?]", "blog_post[tags]", "foo bar! baz"
+      end
+    end
+  end
+  
+  describe '#update with a bad tag and a missing title' do
+    before :all do
+      @blog_post = BlogPost.create! :title => random_word, :user => @user
+    end
+    
+    before :each do
+      post(
+        :update,
+        :id => @blog_post.id,
+        :blog_post => {:tags => "foo bar! baz", :title => ''}
+      )
+    end
+    
+    it 'should render a useful tags error' do
+      response.should have_tag("div.errorExplanation") do
+        with_tag 'li', :text => "Tags contain invalid string 'bar!'"
+      end
+    end
+    
+    it 'should highlight the tag string entry' do
+      response.should have_tag("div.fieldWithErrors") do
+        with_tag "input[name=?][value=?]", "blog_post[tags]", "foo bar! baz"
+      end
+    end
+    
+    it 'should render a useful title error' do
+      response.should have_tag("div.errorExplanation") do
+        with_tag 'li', :text => "Title can't be blank"
+      end
+    end
+    
+    it 'should highlight the title string entry' do
+      response.should have_tag("div.fieldWithErrors") do
+        with_tag "input[name=?][value=?]", "blog_post[title]", ""
       end
     end
   end

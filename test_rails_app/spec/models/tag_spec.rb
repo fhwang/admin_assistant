@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 describe Tag do
   before(:each) do
     @valid_attributes = {
-      :tag => "value for tag"
+      :tag => "value_for_tag"
     }
   end
 

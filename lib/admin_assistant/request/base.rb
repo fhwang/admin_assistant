@@ -89,11 +89,14 @@ class AdminAssistant
     end
     
     class ParamsForSave < Hash
+      attr_reader :errors
+      
       def initialize(controller, record, model_class_symbol)
         super()
         @controller, @model_class_symbol = controller, model_class_symbol
         @model_methods = record.methods
         @model_columns = record.class.columns
+        @errors = Errors.new
         build_from_split_params
         destroy_params.each do |k,v|
           if whole_params[k].blank?
@@ -127,7 +130,9 @@ class AdminAssistant
         whole_params.each do |k, v|
           from_form_method = "#{k}_from_form".to_sym
           if @controller.respond_to?(from_form_method)
-            self[k] = @controller.send(from_form_method, v)
+            args = [v]
+            args << @errors if @controller.method(from_form_method).arity == 2
+            self[k] = @controller.send(from_form_method, *args)
           elsif model_setter?(k)
             unless destroy_params[k] && v.blank?
               column = @model_columns.detect { |c| c.name == k }
@@ -177,6 +182,43 @@ class AdminAssistant
           end
         end
         wp
+      end
+      
+      class Error
+        attr_reader :message
+        
+        def initialize(attribute, message, options)
+          @attribute, @message, @options = attribute, message, options
+        end
+      end
+      
+      class Errors
+        def initialize
+          @errors = Hash.new { |h,k| h[k] = []}
+        end
+        
+        def add(error_or_attr, message = nil, options = {})
+          error, attribute = error_or_attr.is_a?(Error) ? [error_or_attr, error_or_attr.attribute] : [nil, error_or_attr]
+          options[:message] = options.delete(:default) if options.has_key?(:default)
+    
+          @errors[attribute.to_s] << (error || Error.new(attribute, message, options))
+        end
+        
+        def each
+          @errors.each do |attr, ary|
+            ary.each do |error|
+              yield attr, error.message
+            end
+          end
+        end
+        
+        def each_attribute
+          @errors.keys.each do |key| yield key; end
+        end
+        
+        def empty?
+          @errors.empty?
+        end
       end
     end
   end

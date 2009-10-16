@@ -3,8 +3,30 @@ class AdminAssistant
     class Update < Base
       def call
         @record = model_class.find @controller.params[:id]
-        @record.attributes = params_for_save
-        if save
+        params = params_for_save
+        if !params.errors.empty?
+          params.errors.each_attribute do |attr|
+            @record.instance_eval <<-EVAL
+              @attempted_attributes ||= {}
+              def #{attr}=(ary)
+                @attempted_attributes[#{attr.inspect}] = ary
+              end
+              def #{attr}; @attempted_attributes[#{attr.inspect}]; end
+            EVAL
+            @record.send "#{attr}=", params[attr]
+          end
+          @record.attributes = params
+          @record.valid?
+          valid = false
+          params.errors.each do |attr, msg|
+            @record.errors.add attr, msg
+          end
+        else
+          @record.attributes = params
+          valid = @record.valid?
+        end
+        if valid
+          save
           if @controller.params[:from]
             render_response_to_ajax_toggle
           else

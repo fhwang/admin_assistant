@@ -109,9 +109,20 @@ class Admin::BlogPosts2Controller < ApplicationController
   #   blog_post.tags = params[:tags]
   #
   # and this will work fine with the BlogPost#tags association
-  def tags_from_form(tags_strings)
-    tags_strings.split(/\s+/).map { |tag_str|
+  def tags_from_form(tags_string, errors)
+    tags = tags_string.split(/\s+/).map { |tag_str|
       Tag.find_by_tag(tag_str) || Tag.create(:tag => tag_str)
     }
+    bad_tags = tags.select { |t| !t.valid? }
+    unless bad_tags.empty?
+      error_str = if bad_tags.size == 1
+        "contain invalid string '#{bad_tags.first.tag}'"
+      else
+        "contain invalid strings " +
+            bad_tags.map { |t| "'#{t.tag}'" }.join(',')
+      end
+      errors.add(:tags, error_str)
+    end
+    tags
   end
 end

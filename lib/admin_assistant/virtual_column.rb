@@ -42,8 +42,9 @@ class AdminAssistant
       include AdminAssistant::Column::FormViewMethods
       
       def default_html(form)
+        object = form.object
         input_name = "#{@column.model_class.name.underscore}[#{name}]"
-        if @input
+        html = if @input
           if @input == :check_box
             fv = value form.object
             check_box_and_hidden_tags(input_name, fv)
@@ -51,6 +52,11 @@ class AdminAssistant
         else
           @action_view.send(:text_field_tag, input_name, string(form.object))
         end
+        if object.respond_to?(:errors) && object.errors.respond_to?(:on) && 
+           object.errors.on(name)
+          html = "<div class=\"fieldWithErrors\">#{html}</div>"
+        end
+        html
       end
     end
     
