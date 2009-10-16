@@ -46,17 +46,20 @@ class AdminAssistant
         input_name = "#{@column.model_class.name.underscore}[#{name}]"
         html = if @input
           if @input == :check_box
-            fv = value form.object
-            check_box_and_hidden_tags(input_name, fv)
+            check_box_and_hidden_tags(input_name, value(object))
           end
         else
-          @action_view.send(:text_field_tag, input_name, string(form.object))
+          @action_view.send(:text_field_tag, input_name, string(object))
         end
-        if object.respond_to?(:errors) && object.errors.respond_to?(:on) && 
-           object.errors.on(name)
+        if has_matching_errors?(object)
           html = "<div class=\"fieldWithErrors\">#{html}</div>"
         end
         html
+      end
+      
+      def has_matching_errors?(record)
+        record.respond_to?(:errors) && record.errors.respond_to?(:on) && 
+           record.errors.on(name)
       end
     end
     
