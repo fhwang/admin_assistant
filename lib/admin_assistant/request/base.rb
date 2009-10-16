@@ -9,6 +9,20 @@ class AdminAssistant
         @controller.action_name
       end
       
+      def after_template_file(template_name)
+        File.join(
+          RAILS_ROOT, 'app/views/', @controller.controller_path, 
+          "_after_#{template_name}.html.erb"
+        )
+      end
+      
+      def before_template_file(template_name)
+        File.join(
+          RAILS_ROOT, 'app/views/', @controller.controller_path, 
+          "_before_#{template_name}.html.erb"
+        )
+      end
+      
       def model_class
         @admin_assistant.model_class
       end
@@ -30,20 +44,6 @@ class AdminAssistant
         url_params ||= @controller.params[:referer] if @controller.params[:referer]
         url_params ||= {:action => 'index'}
         @controller.send :redirect_to, url_params
-      end
-      
-      def after_template_file(template_name)
-        File.join(
-          RAILS_ROOT, 'app/views/', @controller.controller_path, 
-          "_after_#{template_name}.html.erb"
-        )
-      end
-      
-      def before_template_file(template_name)
-        File.join(
-          RAILS_ROOT, 'app/views/', @controller.controller_path, 
-          "_before_#{template_name}.html.erb"
-        )
       end
 
       def render_template_file(template_name = action, opts_plus = {})
@@ -99,15 +99,19 @@ class AdminAssistant
         @errors = Errors.new
         build_from_split_params
         destroy_params.each do |k,v|
-          if whole_params[k].blank?
-            self[k] = nil
-            mname = "destroy_#{k}_in_attributes"
-            if controller.respond_to?(mname)
-              controller.send(mname, self)
-            end
-          end
+          apply_destroy_param k, v
         end
         build_from_whole_params
+      end
+      
+      def apply_destroy_param(name, value)
+        if whole_params[name].blank?
+          self[name] = nil
+          mname = "destroy_#{name}_in_attributes"
+          if @controller.respond_to?(mname)
+            @controller.send(mname, self)
+          end
+        end
       end
       
       def build_from_split_params

@@ -12,11 +12,6 @@ require 'will_paginate'
 class AdminAssistant
   cattr_accessor :request_start_time
 
-  attr_reader   :base_settings, :controller_class, :form_settings, 
-                :index_settings, :model_class, :show_settings
-  attr_accessor :actions, :custom_destroy
-  attr_writer   :model_class_name
-  
   def self.profile(msg)
     if self.request_start_time
       Rails.logger.info "#{msg}: #{Time.now - self.request_start_time}"
@@ -27,6 +22,11 @@ class AdminAssistant
     "#{File.dirname(__FILE__)}/views/#{template_name}.html.erb"
   end
 
+  attr_reader   :base_settings, :controller_class, :form_settings, 
+                :index_settings, :model_class, :show_settings
+  attr_accessor :actions, :custom_destroy
+  attr_writer   :model_class_name
+  
   def initialize(controller_class, model_class)
     @controller_class, @model_class = controller_class, model_class
     @model = Model.new model_class
@@ -147,19 +147,10 @@ class AdminAssistant
       dispatch_to_request_method request_class, args.first
     elsif autocomplete_actions && autocomplete_actions.include?(meth)
       dispatch_to_request_method Request::Autocomplete, args.first
+    elsif meth.to_s =~ /(.*)\?/ && crudful_request_methods.include?($1.to_sym)
+      supports_action? $1
     else
-      if meth.to_s =~ /(.*)\?/ && crudful_request_methods.include?($1.to_sym)
-        @memoized_action_booleans ||= {}
-        unless @memoized_action_booleans.has_key?($1)
-          @memoized_action_booleans[$1] = 
-              @controller_class.public_instance_methods.include?($1)
-        end
-        @memoized_action_booleans[$1]
-      elsif @request.respond_to?(meth)
-        @request.send meth, *args
-      else
-        super
-      end
+      super
     end
   end
     
@@ -174,6 +165,15 @@ class AdminAssistant
   
   def search_settings
     @index_settings.search_settings
+  end
+  
+  def supports_action?(action)
+    @memoized_action_booleans ||= {}
+    unless @memoized_action_booleans.has_key?(action)
+      @memoized_action_booleans[action] = 
+          @controller_class.public_instance_methods.include?(action)
+    end
+    @memoized_action_booleans[action]
   end
   
   def url_params(a = action)
