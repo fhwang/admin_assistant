@@ -1,9 +1,11 @@
 class AdminAssistant
   module Request
     class Create < Base
+      include Save
+      
       def call
         @record = model_class.new
-        if record_and_associations_valid?(@record)
+        if record_and_associations_valid?
           save
           redirect_after_save
         else
@@ -12,7 +14,7 @@ class AdminAssistant
         end
       end
       
-      def prepare_record_to_receive_invalid_association_assignments(record)
+      def prepare_record_to_receive_invalid_association_assignments
         # no preparations necessary for creation
       end
       

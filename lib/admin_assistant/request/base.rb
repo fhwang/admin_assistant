@@ -35,17 +35,6 @@ class AdminAssistant
         ParamsForSave.new(@controller, @record, model_class_symbol)
       end
       
-      def redirect_after_save
-        url_params = if @controller.respond_to?(:destination_after_save)
-          @controller.send(
-            :destination_after_save, @record, @controller.params
-          )
-        end
-        url_params ||= @controller.params[:referer] if @controller.params[:referer]
-        url_params ||= {:action => 'index'}
-        @controller.send :redirect_to, url_params
-      end
-
       def render_template_file(template_name = action, opts_plus = {})
         html = ''
         html << render_to_string_if_exists(
@@ -74,33 +63,6 @@ class AdminAssistant
         else
           ''
         end
-      end
-      
-      def record_and_associations_valid?(record)
-        params = params_for_save
-        if !params.errors.empty?
-          prepare_record_to_receive_invalid_association_assignments record
-          record.attributes = params
-          record.valid?
-          params.errors.each do |attr, msg|
-            record.errors.add attr, msg
-          end
-        else
-          record.attributes = params
-          record.valid?
-        end
-        record.errors.empty?
-      end
-      
-      def save
-        if @controller.respond_to?(:before_save)
-          @controller.send(:before_save, @record)
-        end
-        result = @record.save
-        if result && @controller.respond_to?(:after_save)
-          @controller.send(:after_save, @record)
-        end
-        result
       end
     end
     
@@ -244,6 +206,46 @@ class AdminAssistant
         def empty?
           @errors.empty?
         end
+      end
+    end
+    
+    module Save
+      def redirect_after_save
+        url_params = if @controller.respond_to?(:destination_after_save)
+          @controller.send(
+            :destination_after_save, @record, @controller.params
+          )
+        end
+        url_params ||= @controller.params[:referer] if @controller.params[:referer]
+        url_params ||= {:action => 'index'}
+        @controller.send :redirect_to, url_params
+      end
+      
+      def record_and_associations_valid?
+        params = params_for_save
+        if !params.errors.empty?
+          prepare_record_to_receive_invalid_association_assignments
+          @record.attributes = params
+          @record.valid?
+          params.errors.each do |attr, msg|
+            @record.errors.add attr, msg
+          end
+        else
+          @record.attributes = params
+          @record.valid?
+        end
+        @record.errors.empty?
+      end
+      
+      def save
+        if @controller.respond_to?(:before_save)
+          @controller.send(:before_save, @record)
+        end
+        result = @record.save
+        if result && @controller.respond_to?(:after_save)
+          @controller.send(:after_save, @record)
+        end
+        result
       end
     end
   end

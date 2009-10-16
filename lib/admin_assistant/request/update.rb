@@ -1,9 +1,11 @@
 class AdminAssistant
   module Request
     class Update < Base
+      include Save
+      
       def call
         @record = model_class.find @controller.params[:id]
-        if record_and_associations_valid?(@record)
+        if record_and_associations_valid?
           save
           if @controller.params[:from]
             render_response_to_ajax_toggle
@@ -16,16 +18,16 @@ class AdminAssistant
         end
       end
       
-      def prepare_record_to_receive_invalid_association_assignments(record)
+      def prepare_record_to_receive_invalid_association_assignments
         params_for_save.errors.each_attribute do |attr|
-          record.instance_eval <<-EVAL
+          @record.instance_eval <<-EVAL
             @attempted_attributes ||= {}
             def #{attr}=(ary)
               @attempted_attributes[#{attr.inspect}] = ary
             end
             def #{attr}; @attempted_attributes[#{attr.inspect}]; end
           EVAL
-          record.send "#{attr}=", params_for_save[attr]
+          @record.send "#{attr}=", params_for_save[attr]
         end
       end
       
