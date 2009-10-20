@@ -8,6 +8,23 @@ describe Admin::BlogPosts3Controller do
     @user = User.create! :username => 'soren', :password => 'password'
   end
   
+  describe '#create with no title' do
+    before :each do
+      @orig_blog_post_count = BlogPost.count
+      post :create, :blog_post => {:user_id => @user.id}
+    end
+    
+    it 'should redirect to the index' do
+      response.should redirect_to(:action => 'index')
+    end
+    
+    it 'should create a new blog post with the title pre-filled as (draft)' do
+      BlogPost.count.should == @orig_blog_post_count + 1
+      blog_post = BlogPost.last
+      blog_post.title.should == '(draft)'
+    end
+  end
+  
   describe '#edit' do
     before :all do
       @blog_post = BlogPost.create! :title => random_word, :user => @user
@@ -438,8 +455,8 @@ describe Admin::BlogPosts3Controller do
   describe "#index with more than one page's worth of unpublished blog posts" do
     before :all do
       $cache.flush
-      unpub_count = BlogPost.count "published_at is null"
-      unpub_count.upto(26) do |i|
+      BlogPost.destroy_all
+      1.upto(26) do |i|
         BlogPost.create!(
           :title => "unpublished blog post #{i}", :user => @user,
           :published_at => nil

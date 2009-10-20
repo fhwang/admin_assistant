@@ -222,6 +222,9 @@ class AdminAssistant
       end
       
       def record_and_associations_valid?
+        if @controller.respond_to?(:before_validation)
+          @controller.send(:before_validation, @record)
+        end
         params = params_for_save
         if !params.errors.empty?
           prepare_record_to_receive_invalid_association_assignments

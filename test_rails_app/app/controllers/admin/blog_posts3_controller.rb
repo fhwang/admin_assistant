@@ -67,4 +67,10 @@ class Admin::BlogPosts3Controller < ApplicationController
   def time_now_utc
     Time.now.utc
   end
+  
+  protected
+  
+  def before_validation(blog_post)
+    blog_post.title = '(draft)' if blog_post.title.blank?
+  end
 end
