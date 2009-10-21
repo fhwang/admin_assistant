@@ -138,6 +138,34 @@ describe Admin::BlogPosts2Controller do
     end
   end
   
+  describe '#create with a bad publish value somehow' do
+    before :each do
+      @title = random_word
+      post(
+        :create,
+        :blog_post => {
+          :title => @title, :tags => 'tag1 tag2', :publish => 'FOOBAR',
+        }
+      )
+    end
+      
+    it 'should be successful' do
+      response.should be_success
+    end
+    
+    it 'should not save the blog post' do
+      BlogPost.find_by_title(@title).should be_nil
+    end
+    
+    it 'should display the publish error' do
+      response.body.should match(/Publish can't be .*FOOBAR.*/)
+    end
+    
+    it 'should display a user error too' do
+      response.body.should match(/User can't be blank/)
+    end
+  end
+  
   describe '#edit' do
     before :all do
       BlogPost.destroy_all

@@ -237,6 +237,9 @@ class AdminAssistant
           @record.attributes = params
           @record.valid?
         end
+        if @controller.respond_to?(:validate)
+          @controller.send(:validate, @record)
+        end
         @record.errors.empty?
       end
       

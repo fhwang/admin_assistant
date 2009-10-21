@@ -125,4 +125,13 @@ class Admin::BlogPosts2Controller < ApplicationController
     end
     tags
   end
+  
+  def validate(blog_post)
+    pub_str = params[:blog_post][:publish]
+    unless pub_str.nil? or [true, false, '0', '1'].include?(pub_str)
+      blog_post.errors.add(
+        :publish, "can't be \"#{params[:blog_post][:publish]}\""
+      )
+    end
+  end
 end
