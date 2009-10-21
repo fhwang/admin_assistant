@@ -200,6 +200,16 @@ describe Admin::BlogPosts4Controller do
       response.body.should match(/25 blog posts found/)
     end
   end
+  
+  describe '#new' do
+    before :each do
+      get :new
+    end
+    
+    it 'should use a textarea for virtual_text' do
+      response.should have_tag("textarea[name=?]", "blog_post[virtual_text]")
+    end
+  end
 
   describe '#show' do
     before :all do
