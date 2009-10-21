@@ -9,6 +9,10 @@ module Admin::BlogPosts2Helper
     )
   end
   
+  def publish_value(blog_post)
+    blog_post.published?
+  end
+  
   def tags_string(blog_post)
     blog_post.tags.map { |tag| tag.tag }.join ' '
   end

@@ -268,6 +268,26 @@ describe Admin::BlogPosts2Controller do
       end
     end
   end
+  
+  describe '#edit a blog_post that has already been published' do
+    before :all do
+      @blog_post = BlogPost.create!(
+        :title => "blog post title", :body => 'blog post body', :user => @user,
+        :published_at => Time.now.utc
+      )
+    end
+                    
+    before :each do
+      get :edit, :id => @blog_post.id
+      response.should be_success
+    end
+    
+    it 'should show the publish check-box checked' do
+      response.should have_tag(
+        'input[type=checkbox][name=?][checked=checked]', 'blog_post[publish]'
+      )
+    end
+  end
 
   describe '#index' do
     describe 'when there is one record and 15 or less users' do

@@ -332,7 +332,12 @@ class AdminAssistant
       end
       
       def value(record)
-        record.send(name) if record.respond_to?(name)
+        value_method = "#{name}_value"
+        if @action_view.respond_to?(value_method)
+          @action_view.send value_method, record
+        else
+          record.send(name) if record.respond_to?(name)
+        end
       end
     end
     
