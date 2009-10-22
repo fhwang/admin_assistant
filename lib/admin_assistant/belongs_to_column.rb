@@ -127,20 +127,24 @@ class AdminAssistant
       
       def default_html(form)
         if associated_class.count > 15
-          @action_view.send(
-            :render,
-            :file => AdminAssistant.template_file('_restricted_autocompleter'),
-            :use_full_path => false,
-            :locals => {
-              :form => form, :column => @column,
-              :select_options => @select_options
-            }
-          )
+          render_autocompleter form
         else
           form.select(
             association_foreign_key, options_for_select, @select_options
           )
         end
+      end
+      
+      def render_autocompleter(form)
+        @action_view.send(
+          :render,
+          :file => AdminAssistant.template_file('_restricted_autocompleter'),
+          :use_full_path => false,
+          :locals => {
+            :form => form, :column => @column,
+            :select_options => @select_options
+          }
+        )
       end
     end
 
