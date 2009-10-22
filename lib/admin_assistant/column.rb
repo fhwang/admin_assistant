@@ -232,17 +232,23 @@ class AdminAssistant
         ]
       end
       
+      def datetime_input(form)
+        input = ''
+        input << comparator_html(form.object) << ' ' if @comparators == :all
+        input << form.datetime_select(name, :include_blank => true)
+        input << @action_view.send(
+          :link_to_function, 'Clear',
+          "AdminAssistant.clear_datetime_select('search_#{name.underscore}')"
+        )
+        input
+      end
+      
       def html(form)
         input = ''
         if @column.field_type == :boolean
           input = boolean_input form
         elsif @column.field_type == :datetime
-          input << comparator_html(form.object) << ' ' if @comparators == :all
-          input << form.datetime_select(name, :include_blank => true)
-          input << @action_view.send(
-            :link_to_function, 'Clear',
-            "AdminAssistant.clear_datetime_select('search_#{name.underscore}')"
-          )
+          input = datetime_input form
         else
           if @column.field_type == :integer && @comparators == :all
             input << comparator_html(form.object) << ' '

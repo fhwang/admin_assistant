@@ -78,6 +78,17 @@ class AdminAssistant
       def belongs_to_sort_column
         @index.belongs_to_columns.detect { |c| c.name.to_s == @index.sort }
       end
+      
+      def cache_total_entries(total_entries)
+        Rails.cache.write(
+          total_entries_cache_key, total_entries,
+          :expires_in => settings.cache_total_entries
+        )
+      end
+      
+      def caching_total_entries?
+        search.params.empty? && settings.cache_total_entries
+      end
     
       def conditions_from_settings
         settings.conditions
@@ -89,6 +100,14 @@ class AdminAssistant
           fi << by_assoc.name
         end
         fi
+      end
+      
+      def optimized_total_entries
+        if settings.total_entries
+          settings.total_entries.call
+        elsif caching_total_entries?
+          Rails.cache.read total_entries_cache_key
+        end
       end
     
       def order_sql
@@ -111,20 +130,10 @@ class AdminAssistant
         )
         add_base_condition_sqls
         search.add_to_query @ar_query
-        if settings.total_entries
-          @ar_query.total_entries = settings.total_entries.call
-        elsif search.params.empty? &&
-              (time_span = settings.cache_total_entries)
-          @ar_query.total_entries = Rails.cache.read total_entries_cache_key
-        end
+        @ar_query.total_entries = optimized_total_entries
         records = @index.model_class.paginate(:all, @ar_query.to_hash)
-        if search.params.empty? &&
-           (time_span = settings.cache_total_entries) &&
-           @ar_query.to_hash[:total_entries].nil?
-          Rails.cache.write(
-            total_entries_cache_key, records.total_entries,
-            :expires_in => time_span
-          )
+        if caching_total_entries? && @ar_query.to_hash[:total_entries].nil?
+          cache_total_entries records.total_entries
         end
         records
       end
@@ -184,7 +193,7 @@ class AdminAssistant
           :success =>
               "Effect.Fade('#{@admin_assistant.model_class.name.underscore}_#{record.id}')",
           :method => :delete
-        ) << ' '
+        )
       end
       
       def destroy?
@@ -196,9 +205,7 @@ class AdminAssistant
       end
       
       def edit_link(record)
-        @action_view.link_to(
-          'Edit', :action => 'edit', :id => record.id
-        ) << " "
+        @action_view.link_to 'Edit', :action => 'edit', :id => record.id
       end
       
       def new?
@@ -224,13 +231,9 @@ class AdminAssistant
       
       def right_column_links(record)
         links = ""
-        links << edit_link(record) if render_edit_link?(record)
-        links << delete_link(record) if render_delete_link?(record)
-        if render_show_link?(record)
-          links << @action_view.link_to(
-            'Show', :action => 'show', :id => record.id
-          ) << ' '
-        end
+        links << edit_link(record) << ' ' if render_edit_link?(record)
+        links << delete_link(record) << ' ' if render_delete_link?(record)
+        links << show_link(record) << ' ' if render_show_link?(record)
         right_column_lambdas.each do |lambda|
           link_args = lambda.call record
           links << @action_view.link_to(*link_args)
@@ -265,6 +268,10 @@ class AdminAssistant
       
       def show?
         @show ||= @admin_assistant.show?
+      end
+      
+      def show_link(record)
+        @action_view.link_to 'Show', :action => 'show', :id => record.id
       end
     end
   end
