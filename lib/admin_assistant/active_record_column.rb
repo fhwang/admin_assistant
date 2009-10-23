@@ -5,40 +5,75 @@ class AdminAssistant
     end
     
     def add_to_query_condition(ar_query_condition, search)
-      table_name = search.model_class.table_name
-      if search.blank?(name)
-        ar_query_condition.add_condition do |sub_cond|
+      ConditionUpdate.new(ar_query_condition, search, name, field_type).run
+    end
+      
+    class ConditionUpdate
+      def initialize(ar_query_condition, search, name, field_type)
+        @ar_query_condition, @search, @name, @field_type =
+            ar_query_condition, search, name, field_type
+      end
+      
+      def add_blank_condition
+        @ar_query_condition.add_condition do |sub_cond|
           sub_cond.boolean_join = :or
-          sub_cond.sqls << "#{table_name}.#{name} is null"
-          sub_cond.sqls << "#{table_name}.#{name} = ''"
+          sub_cond.sqls << "#{table_name}.#{@name} is null"
+          sub_cond.sqls << "#{table_name}.#{@name} = ''"
         end
-      else
-        value_for_query = search.send(@ar_column.name)
-        unless value_for_query.nil?
-          if comp = search.comparator(name)
-            ar_query_condition.sqls << "#{table_name}.#{name} #{comp} ?"
-            ar_query_condition.bind_vars << value_for_query
-          else
-            case field_type
-              when :boolean, :integer
-                ar_query_condition.sqls << "#{table_name}.#{name} = ?"
-                ar_query_condition.bind_vars << value_for_query
-              else
-                ar_query_condition.sqls << "LOWER(#{table_name}.#{name}) like LOWER(?)"
-                ar_query_condition.bind_vars << "%#{value_for_query}%"
+      end
+      
+      def add_case_insensitive_string_comparison
+        @ar_query_condition.sqls <<
+            "LOWER(#{table_name}.#{@name}) like LOWER(?)"
+        @ar_query_condition.bind_vars << "%#{value_for_query}%"
+      end
+      
+      def add_comparative_condition
+        @ar_query_condition.sqls << "#{table_name}.#{@name} #{comparator} ?"
+        @ar_query_condition.bind_vars << value_for_query
+      end
+      
+      def add_equality_condition
+        @ar_query_condition.sqls << "#{table_name}.#{@name} = ?"
+        @ar_query_condition.bind_vars << value_for_query
+      end
+      
+      def comparator
+        @search.comparator @name
+      end
+      
+      def column_is_a_string_type?
+        ![:boolean, :integer].include?(@field_type)
+      end
+      
+      def run
+        if @search.blank?(@name)
+          add_blank_condition
+        else
+          unless value_for_query.nil?
+            if comparator
+              add_comparative_condition
+            elsif column_is_a_string_type?
+              add_case_insensitive_string_comparison
+            else
+              add_equality_condition
             end
           end
         end
+      end
+      
+      def table_name
+        @search.model_class.table_name
+      end
+      
+      def value_for_query
+        @search.send @name
       end
     end
       
     def attributes_for_search_object(search_params)
       value = if field_type == :datetime
-        begin
-          Time.utc(
-            *(1..5).to_a.map { |i| search_params["#{name}(#{i}i)"].to_i }
-          )
-        rescue ArgumentError; end
+        datetime_attributes_for_search_object search_params
       else
         terms = search_params[@ar_column.name]
         unless terms.blank?
@@ -55,6 +90,14 @@ class AdminAssistant
     
     def contains?(column_name)
       column_name.to_s == @ar_column.name
+    end
+    
+    def datetime_attributes_for_search_object(search_params)
+      begin
+        Time.utc(
+          *(1..5).to_a.map { |i| search_params["#{name}(#{i}i)"].to_i }
+        )
+      rescue ArgumentError; end
     end
     
     def field_type
