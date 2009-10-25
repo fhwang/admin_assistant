@@ -4,12 +4,26 @@ describe Admin::Products2Controller do
   integrate_views
   
   describe '#new' do
+    before :all do
+      @shiny = ProductCategory.find_or_create_by_category_name 'shiny'
+      @fuzzy = ProductCategory.find_or_create_by_category_name 'fuzzy'
+    end
+    
     before :each do
       get :new
     end
     
     it 'should be successful' do
       response.should be_success
+    end
+    
+    it 'should show a product category selector with category name strings' do
+      response.should have_tag(
+        "select[name=?]", "product[product_category_id]"
+      ) do
+        with_tag "option[value=#{@fuzzy.id}]", :text => "fuzzy"
+        with_tag "option[value=#{@shiny.id}]", :text => "shiny"
+      end
     end
   end
   

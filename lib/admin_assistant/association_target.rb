@@ -24,9 +24,14 @@ class AdminAssistant
       
     def options_for_select
       records = @associated_class.find(:all)
-      if default_name_method
-        records.sort_by { |model| model.send(default_name_method) }.
-                map { |model| [model.send(default_name_method), model.id] }
+      name_method = default_name_method
+      if name_method.nil? and
+         records.first.respond_to?(:name_for_admin_assistant)
+        name_method = :name_for_admin_assistant
+      end
+      if name_method
+        records.sort_by { |model| model.send(name_method) }.
+                map { |model| [model.send(name_method), model.id] }
       else
         records.map &:id
       end
