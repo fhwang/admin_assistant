@@ -31,12 +31,17 @@ class AdminAssistant
         model_class.name.underscore.to_sym
       end
       
+      def origin
+        @controller.params[:origin] || @controller.request.referer
+      end
+      
       def params_for_save
         ParamsForSave.new(@controller, @record, model_class_symbol)
       end
       
       def render_form
         @controller.instance_variable_set :@record, @record
+        @controller.instance_variable_set :@origin, origin
         render_template_file 'form'
       end
       
@@ -221,7 +226,7 @@ class AdminAssistant
             :destination_after_save, @record, @controller.params
           )
         end
-        url_params ||= @controller.params[:referer] if @controller.params[:referer]
+        url_params ||= @controller.params[:origin]
         url_params ||= {:action => 'index'}
         @controller.send :redirect_to, url_params
       end

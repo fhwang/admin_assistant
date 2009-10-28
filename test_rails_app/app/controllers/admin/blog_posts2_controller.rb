@@ -99,7 +99,8 @@ class Admin::BlogPosts2Controller < ApplicationController
   # app/views/admin/blog_posts2/_after_form.html.erb
   def destination_after_save(blog_post, params)
     if params[:commit] == 'Preview'
-      {:action => 'edit', :id => blog_post.id, :preview => '1'}
+      {:action => 'edit', :id => blog_post.id, :preview => '1',
+       :origin => params[:origin]}
     end
   end
   

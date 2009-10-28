@@ -140,12 +140,12 @@ describe Admin::BlogPostsController do
   end
 
   describe '#edit when there is a referer value on the request' do
-    it 'should have the referer hidden input value' do
+    it 'should have the origin hidden input value' do
       blog_post = BlogPost.create! :title => random_word, :user => @user
       referer_page = 'referer_page'
       @request.env['HTTP_REFERER'] = referer_page
       get :edit, :id => blog_post.id
-      response.should have_tag("input#referer[value=#{referer_page}]")
+      response.should have_tag("input#origin[value=#{referer_page}]")
     end
   end
 
@@ -916,11 +916,11 @@ describe Admin::BlogPostsController do
       end
     end
 
-    describe 'on handling the referer param' do
-      it 'should redirect to the referer when there is a referer on the form submit' do
-        referer_url = 'http://foo.com'
-        post :update, :id => @blog_post.id, :blog_post => {:title => 'foo'}, :referer => referer_url
-        response.should redirect_to(referer_url)
+    describe 'on handling the origin param' do
+      it 'should redirect to the origin when there is a origin on the form submit' do
+        origin = 'http://foo.com'
+        post :update, :id => @blog_post.id, :blog_post => {:title => 'foo'}, :origin => origin
+        response.should redirect_to(origin)
       end
     end
 
