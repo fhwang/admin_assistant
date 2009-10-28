@@ -3,8 +3,7 @@ class AdminAssistant
     class Edit < Base
       def call
         @record = model_class.find @controller.params[:id]
-        @controller.instance_variable_set :@record, @record
-        render_template_file 'form'
+        render_form
       end
     end
   end

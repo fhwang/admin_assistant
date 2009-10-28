@@ -11,8 +11,7 @@ class AdminAssistant
         if @controller.params[model_class_symbol]
           @record.attributes = params_for_save
         end
-        @controller.instance_variable_set :@record, @record
-        render_template_file 'form'
+        render_form
       end
     end
   end

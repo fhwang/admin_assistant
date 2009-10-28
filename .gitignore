@@ -9,4 +9,5 @@ test_rails_app/public/file_column_image/*
 test_rails_app/public/product/*
 test_rails_app/public/user/*
 test_rails_app/tmp/*
+test_rails_app/webrat-*.html
 website/_site

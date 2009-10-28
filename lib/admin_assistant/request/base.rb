@@ -35,6 +35,11 @@ class AdminAssistant
         ParamsForSave.new(@controller, @record, model_class_symbol)
       end
       
+      def render_form
+        @controller.instance_variable_set :@record, @record
+        render_template_file 'form'
+      end
+      
       def render_template_file(template_name = action, opts_plus = {})
         html = ''
         html << render_to_string_if_exists(

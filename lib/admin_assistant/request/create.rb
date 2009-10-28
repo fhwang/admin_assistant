@@ -9,8 +9,7 @@ class AdminAssistant
           save
           redirect_after_save
         else
-          @controller.instance_variable_set :@record, @record
-          render_template_file 'form'
+          render_form
         end
       end
       
