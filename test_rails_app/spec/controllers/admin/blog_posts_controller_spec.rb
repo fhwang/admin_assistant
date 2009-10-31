@@ -261,7 +261,7 @@ describe Admin::BlogPostsController do
         response.should be_success
       end
     
-      it 'should show all fields by default' do
+      it 'should show title by default' do
         response.body.should match(/hi there/)
       end
       
@@ -289,8 +289,7 @@ describe Admin::BlogPostsController do
       
       it 'should show sort links' do
         pretty_column_names = {
-          'id' => 'ID', 'title' => 'Title', 'created_at' => 'Created at', 
-          'updated_at' => 'Updated at', 'body' => 'Body', 'user' => 'User'
+          'id' => 'ID', 'title' => 'Title', 'body' => 'Body', 'user' => 'User'
         }
         pretty_column_names.each do |field, pretty_column_name|
           assert_a_tag_with_get_args(
@@ -301,9 +300,7 @@ describe Admin::BlogPostsController do
       end
       
       it 'should show pretty column headers' do
-        column_headers = [
-          'ID', 'Title', 'Created at', 'Updated at', 'Body', 'User'
-        ]
+        column_headers = ['ID', 'Title', 'Body', 'User']
         column_headers.each do |column_header|
           response.should have_tag('th') do
             with_tag 'a', column_header
@@ -344,6 +341,11 @@ describe Admin::BlogPostsController do
       
       it 'should have a tr with the ID based on @blog_post.id' do
         response.should have_tag("tr[id=blog_post_#{@blog_post.id}]")
+      end
+      
+      it 'should not show created_at or updated_at by default' do
+        response.body.should_not match(/Created at/)
+        response.body.should_not match(/Updated at/)
       end
     end
     
@@ -415,10 +417,7 @@ describe Admin::BlogPostsController do
         end
         
         it 'should show asc sort links for other fields' do
-          pretty_column_names = {
-            'id' => 'ID', 'created_at' => 'Created at',
-            'updated_at' => 'Updated at', 'body' => 'Body'
-          }
+          pretty_column_names = {'id' => 'ID', 'body' => 'Body'}
           pretty_column_names.each do |field, pretty_column_name|
             assert_a_tag_with_get_args(
               pretty_column_name, '/admin/blog_posts',
@@ -459,10 +458,7 @@ describe Admin::BlogPostsController do
         end
         
         it 'should show asc sort links for other fields' do
-          pretty_column_names = {
-            'id' => 'ID', 'created_at' => 'Created at',
-            'updated_at' => 'Updated at', 'body' => 'Body'
-          }
+          pretty_column_names = {'id' => 'ID', 'body' => 'Body'}
           pretty_column_names.each do |field, pretty_column_name|
             assert_a_tag_with_get_args(
               pretty_column_name, '/admin/blog_posts',

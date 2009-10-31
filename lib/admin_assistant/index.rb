@@ -14,7 +14,13 @@ class AdminAssistant
     end
     
     def column_names
-      settings.column_names || model_class.columns.map(&:name)
+      if settings.column_names
+        settings.column_names
+      else
+        model_class.columns.map(&:name).reject { |n|
+          %w(created_at updated_at).include?(n)
+        }
+      end
     end
     
     def columns
