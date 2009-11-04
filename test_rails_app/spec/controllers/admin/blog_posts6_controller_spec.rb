@@ -24,6 +24,10 @@ describe Admin::BlogPosts6Controller do
           user = User.find(:first, :conditions => ['id != ?', @user.id])
           user.destroy
         end
+        
+        BlogPost.create!(
+          :title => "return nil", :body => 'blog post body', :user => @user
+        )
       end
       
       before :each do
