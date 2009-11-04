@@ -247,7 +247,7 @@ class AdminAssistant
         if @action_view.respond_to?(:extra_right_column_links_for_index)
           links << @action_view.extra_right_column_links_for_index(
             record
-          ) || ''
+          ).to_s
         end
         links
       end
