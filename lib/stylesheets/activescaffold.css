@@ -134,6 +134,7 @@ Don't edit this file: It gets re-copied every time the server starts.
 
 .admin_assistant.form label {
   font-size: 11px;
+  display: block;
 }
 
 .admin_assistant.form input[type=text] {

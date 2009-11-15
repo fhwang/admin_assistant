@@ -25,7 +25,7 @@ form_view = AdminAssistant::FormView.new(@record, @admin_assistant, self)
       <% if column.description %>
         <p class="description"><%= h(column.description) %></p>
       <% end %>
-      <br /><%= column.html(rails_form) %>
+      <%= column.html(rails_form) %>
       </div>
     <% end %>
       <div>
