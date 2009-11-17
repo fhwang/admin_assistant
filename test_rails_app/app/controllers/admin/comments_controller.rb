@@ -6,7 +6,7 @@ class Admin::CommentsController < ApplicationController
     
     a.index do |index|
       index.conditions "comment like '%smart%'"
-      index.search.default_search_includes :id
+      index.search.default_search_matches_on << :id
     end
   end
 end

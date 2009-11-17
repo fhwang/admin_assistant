@@ -2,18 +2,19 @@ class AdminAssistant
   class DefaultSearchColumn < Column
     def initialize(model_class, opts)
       @model_class = model_class
-      @fields_to_include = opts[:fields_to_include] || []
+      @fields_to_match = opts[:fields_to_match] || []
     end
     
     def add_to_query_condition(ar_query_condition, search)
       unless search.params.blank?
         ar_query_condition.ar_query.boolean_join = :and
         ar_query_condition.boolean_join = :or
-        names_to_search = Model.new(@model_class).searchable_columns.map(
-          &:name
-        )
-        names_to_search.concat @fields_to_include
-        names_to_search.uniq.each do |field_name|
+#        names_to_search = Model.new(@model_class).searchable_columns.map(
+ #         &:name
+  #      )
+   #     names_to_search.concat @fields_to_include
+#        names_to_search.uniq.each do |field_name|
+        @fields_to_match.each do |field_name|
           ar_query_condition.sqls << "LOWER(#{field_name}) like LOWER(?)"
           ar_query_condition.bind_vars << "%#{search.params}%"
         end

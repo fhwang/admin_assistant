@@ -295,11 +295,11 @@ class AdminAssistant
         @column_names = c
       end
     
-      def default_search_includes(*includes)
+      def default_search_matches_on(*includes)
         if includes.empty?
-          @default_search_includes
+          @admin_assistant.default_search_matches_on
         else
-          @default_search_includes = includes
+          @admin_assistant.default_search_matches_on = includes
         end
       end
     end

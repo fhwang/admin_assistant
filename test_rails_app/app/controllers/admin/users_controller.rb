@@ -7,17 +7,21 @@ class Admin::UsersController < ApplicationController
     a[:state].input = :us_state
     
     a.index do |index|
-      index.columns :id, :username, :password, :tmp_avatar
+      index.columns :id, :username, :password, :tmp_avatar, :first_name,
+                    :last_name
       index.right_column_links << lambda { |user|
         [ "New blog post",
           { :controller => '/admin/blog_posts', :action => 'new',
             :blog_post => {:user_id => user.id} } ]
       }
+      index.search.default_search_matches_on(
+        :username, "concat_ws(' ', users.first_name, users.last_name)"
+      )
     end
     
     a.form do |form|
       form.columns :username, :password, :admin_level, :birthday, :state,
-                   :tmp_avatar, :force_blog_posts_to_textile
+                   :tmp_avatar, :force_blog_posts_to_textile, :first_name, :last_name
       form[:admin_level].input = :select
       form[:admin_level].select_choices = %w(normal admin superuser)
       form[:admin_level].select_options = {:include_blank => false}

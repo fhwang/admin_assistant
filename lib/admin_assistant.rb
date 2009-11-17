@@ -24,7 +24,7 @@ class AdminAssistant
 
   attr_reader   :base_settings, :controller_class, :form_settings, 
                 :index_settings, :model_class, :show_settings
-  attr_accessor :actions, :custom_destroy
+  attr_accessor :actions, :custom_destroy, :default_search_matches_on
   attr_writer   :model_class_name
   
   def initialize(controller_class, model_class)
@@ -35,6 +35,7 @@ class AdminAssistant
     @index_settings = IndexSettings.new self
     @show_settings = ShowSettings.new self
     @base_settings = BaseSettings.new self
+    @default_search_matches_on = @model.searchable_columns.map &:name
   end
   
   def [](name)

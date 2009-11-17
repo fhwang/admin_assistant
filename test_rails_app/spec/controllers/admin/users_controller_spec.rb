@@ -134,6 +134,44 @@ describe Admin::UsersController do
     end
   end
   
+  describe '#index search' do
+    before :all do
+      User.destroy_all
+      @john_doe = User.create! :username => 'johndoe'
+      @jane_doe = User.create! :username => 'janedoe', :password => "ihatejohn"
+    end
+    
+    before :each do
+      get :index, :search => "john"
+      response.should be_success
+    end
+    
+    it 'should match username' do
+      response.should have_tag('td', :text => 'johndoe')
+    end
+    
+    it 'should not match password' do
+      response.should_not have_tag('td', :text => 'janedoe')
+    end
+  end
+  
+  describe "#index search across first name and last name" do
+    before :all do
+      User.destroy_all
+      @john_doe = User.create!(
+        :username => 'johndoe', :first_name => 'john', :last_name => 'doe'
+      )
+    end
+
+    before :each do
+      get :index, :search => "john doe"
+    end
+    
+    it 'should match' do
+      response.should have_tag('td', :text => 'johndoe')
+    end
+  end
+  
   describe '#new' do
     before :each do
       get :new
