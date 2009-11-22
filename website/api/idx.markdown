@@ -24,6 +24,13 @@ The index is the action that lets you view all records, with pagination and sort
 
 Adds more links to the upper-right hand-corner. By default there are two links there: "Search", and "New \[model name\]". If you have any other specific links to add, you can add them with index.actions, and they will be added to the right of those default two links.
 
+#### cache\_total\_entries
+
+    index.cache_total_entries 12.hours
+    
+This is an optimization for large tables. Some databases are slow when trying to simply get the number of records in the table; but this number is required for any paginated view. If your index views are slow because of this, you should consider setting `cache_total_entries` to some amount of time. This will cache the count SQL request, so that the count will be slightly off for some period of time, but that probably doesn't matter if you have, for example, 150,000 users.
+
+
 #### conditions
 
 Specifies additional SQL that can restrict the records shown in the index view. This can be a simple string:
@@ -117,6 +124,12 @@ This block will be called during pagination to provide the total number of recor
 
 There are also configurations that can be applied to specific columns in the index view.
 
+#### ajax\_toggle
+
+    index[:textile].ajax_toggle = false
+    
+By default, all boolean fields displayed in the index can be toggled with an Ajax link. Set `ajax_toggle` to false to disable this behavior.
+
 #### image\_size
 
     index[:image].image_size = '300x500'
@@ -126,7 +139,6 @@ By default, [Paperclip] and [FileColumn] image files are rendered at full-size i
 
 #### link\_to\_args
 
-    
     class Admin::BlogPostsController < ApplicationController
       layout 'admin'
 
@@ -144,6 +156,25 @@ If you'd like this column to link somewhere from the index view, set this with a
 Note that this block takes the base record as its argument, not the value of the specific column or association. In the example above, the base model is BlogPost, so the block is receiving a blog post, not the associated user.
 
 ### Controller methods
+
+#### before\_render\_for\_index
+
+If defined on your controller, this hook is executed just before render takes place for the index action.
+
+    class Admin::BlogPostsController < ApplicationController
+      layout 'admin'
+
+      admin_assistant_for BlogPost
+  
+      protected
+  
+      # Blog post authors should not be visible if they have requested anonymity
+      def before_render_for_index
+        @index.records.each do |record|
+          record.author = nil if record.author.requested_anonymity?
+        end
+      end
+    end
 
 #### conditions\_for\_index
 

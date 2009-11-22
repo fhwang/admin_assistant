@@ -66,6 +66,20 @@ Overrides the default label for that column in index, search, and form views.
 
 If a column is a polymorphic association, admin\_assistant will offer specific widgets for searching and editing this column. With `polymorphic_types` you can tell it what possible types the association can be set to.
 
+#### strftime\_format
+
+    aa[:published_at].strftime_format = "%b %d, %Y %H:%M:%S"
+    
+If the column is a date or time, this will use the given strftime format for displaying the column in index and shows views.
+
+### Helper methods
+
+#### \[column\]\_value
+
+Determines what value is passed to form inputs, index views, etc, for the individual column. This is most useful for a virtual column.
+
+
+
 ### Model methods
 
 #### name\_for\_admin\_assistant

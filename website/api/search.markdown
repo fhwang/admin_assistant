@@ -42,13 +42,18 @@ You can also call this with Index#search:
 
     index.search :title, :user
     
-#### default\_search\_includes
+#### default\_search\_matches\_on
 
-If you don't specify any columns, the search form is simply one field, and whatever text is entered in that field will be compared to every text and string field on the database table. If there are other fields you'd like the default search to compare with, you can add them using `default_search_includes`. For example, to give users the ability to search by ID:
+If you don't specify any columns, the search form is simply one field, and whatever text is entered in that field will be compared to every text and string field on the database table. If there are other fields you'd like the default search to compare with, you can add them using `default_search_matches_on`. For example, to give users the ability to search by ID:
 
-      index.search.default_search_includes :id
+      index.search.default_search_matches_on :id
 
+You can also pass in SQL fragments:
 
+      index.search.default_search_matches_on \
+            "concat_ws(' ', users.first_name, users.last_name)"
+
+      
 ### Column config options
 
 These are configurations that can be applied to specific columns in the search.
@@ -57,7 +62,7 @@ These are configurations that can be applied to specific columns in the search.
 
     search[:price].comparators = false
     
-By default, integer fields are presented with a list of options for comparing to the entered value: "greater than", "greater than or equal to", "equal to", "less than or equal to", and "less than". This way the user can do a search like "show me all products that cost more than $100."
+By default, integer and datetime fields are presented with a list of options for comparing to the entered value: "greater than", "greater than or equal to", "equal to", "less than or equal to", and "less than". This way the user can do a search like "show me all products that cost more than $100."
 
 To turn this off, set `comparators` to false.
 

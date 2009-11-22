@@ -79,7 +79,7 @@ By default, [Paperclip] and [FileColumn] image files are rendered at full-size i
 
     form[:publish].input = :check_box
 
-Currently only supports `:check_box` and `:us_state`. `:check_box` is most useful for virtual columns right now. `:us_state` will render a drop-down with U.S. states.
+Currently supports `:check_box`, `:select`, `:text_area`, and `:us_state`. `:us_state` will render a drop-down with U.S. states.
 
 #### nilify\_link
 
@@ -93,6 +93,13 @@ Date and datetime fields come with a javascript link the clears the value in the
     a.form[:comment].read_only
 
 If this is set, the given column will only be displayed, and not editable.
+
+
+#### select\_choices
+
+    form[:admin_level].select_choices = %w(normal admin superuser)
+    
+Uses this with select inputs to set or override what is passed to Rails' `select` method as its `choices` argument.
 
 
 #### select\_options
@@ -138,6 +145,12 @@ Runs before the record is saved.
 
 Runs before the record is updated.
 
+
+#### before\_validation
+
+Runs before the record is validated.
+
+
 #### \[column\]\_exists?
 
 Used for image fields in generating form pages. If this method exists on the controller, it will be called to see if the image exists. You'll probably use this in conjunction with `[column]_url` and `destroy_[column]_in_attributes`.
@@ -166,6 +179,21 @@ Used for image fields in generating form pages. If the existing record has an im
 
 Should return a value suitable for assignment. In the above example, a BlogPost has-many tags, and the method tags\_from\_form will turn the string `"funny, video, lolcat"` into an array of three Tag model records, so admin\_assistant can set BlogPost#tags to that array.
 
+If the value being returned is meant to be assigned through an association, you may find it useful to return custom errors to work around the strangeness of ActiveRecord's association-assignment error-handling. So admin\_assistant lets you optionally take a 2nd errors argument, which you can use to attach errors to the core model. This error object isn't returned, but changes to it will persist outside the body of the method.
+
+    def tags_from_form(tags_string, errors)
+      tags = tags_string.split(/\s+/).map { |tag_str|
+        Tag.find_by_tag(tag_str) || Tag.create(:tag => tag_str)
+      }
+      if tags.any? { |t| !t.valid? }
+        errors.add(:tags, "One or more tags was invalid")
+      end
+      tags
+    end
+
+
+
+
 #### destination\_after\_save
 
     def destination_after_save(blog_post, params)
@@ -183,6 +211,11 @@ Used for image fields. If a file field already exists, and the user clicks on th
     def destroy_tmp_avatar_in_attributes(attributes)
       attributes[:has_avatar] = false
     end
+    
+    
+#### validate
+
+Runs after the model's built-in validation, before admin\_assistant tries to save the model.
 
 
 ### Helper methods
