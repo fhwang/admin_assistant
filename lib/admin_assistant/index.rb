@@ -163,8 +163,8 @@ class AdminAssistant
             index, action_view, admin_assistant
       end
       
-      def render_filter
-        slug = "_filter.html.erb"
+      def render_after_index_header
+        slug = "_after_index_header.html.erb"
         abs_template_file = File.join( Rails.root, 'app/views', @admin_assistant.controller_class.controller_path, slug )
         if File.exist?(abs_template_file)
           template = if RAILS_GEM_VERSION == '2.1.0'
