@@ -30,11 +30,11 @@ describe Admin::Products2Controller do
   describe '#index sort by product category' do
     before :all do
       Product.destroy_all
-      diamond_cat = ProductCategory.create! :category_name => 'diamond'
+      diamond_cat = ProductCategory.find_or_create_by_category_name 'diamond'
       @diamond = Product.create!(
         :name => 'Diamond', :price => 200_000, :product_category => diamond_cat
       )
-      choc_cat = ProductCategory.create! :category_name => 'chocolate'
+      choc_cat = ProductCategory.find_or_create_by_category_name 'chocolate'
       @chocolate = Product.create!(
         :name => 'Chocolate bar', :price => 200, :product_category => choc_cat
       )
