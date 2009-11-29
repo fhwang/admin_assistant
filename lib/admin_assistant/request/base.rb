@@ -79,9 +79,11 @@ class AdminAssistant
     class ParamsForSave < Hash
       attr_reader :errors
       
-      def initialize(controller, record, model_class_symbol)
+      def initialize(controller, record, model_class_symbol, record_params=nil)
         super()
-        @controller, @model_class_symbol = controller, model_class_symbol
+        @controller, @model_class_symbol, @record_params =
+            controller, model_class_symbol, record_params
+        @record_params ||= @controller.params[@model_class_symbol]
         @model_methods = record.methods
         @model_columns = record.class.columns
         @errors = Errors.new
@@ -135,7 +137,7 @@ class AdminAssistant
       
       def destroy_params
         dp = {}
-        @controller.params[@model_class_symbol].each do |k,v|
+        @record_params.each do |k,v|
           if k =~ %r|(.*)\(destroy\)|
             dp[$1] = v
           end
@@ -150,9 +152,7 @@ class AdminAssistant
       
       def split_params
         sp = {}
-        @controller.params[@model_class_symbol].each do |k,v|
-          sp[k] = v if k =~ /\([0-9]+i\)$/
-        end
+        @record_params.each do |k,v| sp[k] = v if k =~ /\([0-9]+i\)$/; end
         sp
       end
       
@@ -173,7 +173,7 @@ class AdminAssistant
       
       def whole_params
         wp = {}
-        @controller.params[@model_class_symbol].each do |k,v|
+        @record_params.each do |k,v|
           unless k =~ /\([0-9]+i\)$/ || k =~ %r|(.*)\(destroy\)|
             wp[k] = v
           end
