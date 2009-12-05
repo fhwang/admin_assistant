@@ -3,7 +3,7 @@ class AdminAssistant
     class Edit < Base
       def call
         @record = model_class.find @controller.params[:id]
-        render_form
+        render_form @record
       end
     end
   end

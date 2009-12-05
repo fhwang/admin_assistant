@@ -35,12 +35,8 @@ class AdminAssistant
         @controller.params[:origin] || @controller.request.referer
       end
       
-      def params_for_save
-        ParamsForSave.new(@controller, @record, model_class_symbol)
-      end
-      
-      def render_form
-        @controller.instance_variable_set :@record, @record
+      def render_form(record)
+        @controller.instance_variable_set :@record, record
         @controller.instance_variable_set :@origin, origin
         render_template_file 'form'
       end
@@ -79,10 +75,10 @@ class AdminAssistant
     class ParamsForSave < Hash
       attr_reader :errors
       
-      def initialize(controller, record, model_class_symbol, record_params=nil)
+      def initialize(controller, record, record_params=nil)
         super()
-        @controller, @model_class_symbol, @record_params =
-            controller, model_class_symbol, record_params
+        @controller, @record_params = controller, record_params
+        @model_class_symbol = record.class.name.underscore.to_sym
         @record_params ||= @controller.params[@model_class_symbol]
         @model_methods = record.methods
         @model_columns = record.class.columns
@@ -219,16 +215,15 @@ class AdminAssistant
       end
     end
     
-    module Save
-      def redirect_after_save
-        url_params = if @controller.respond_to?(:destination_after_save)
-          @controller.send(
-            :destination_after_save, @record, @controller.params
-          )
-        end
-        url_params ||= @controller.params[:origin]
-        url_params ||= {:action => 'index'}
-        @controller.send :redirect_to, url_params
+    class AbstractSaving
+      attr_reader :record
+      
+      def initialize(record, controller)
+        @record, @controller = record, controller
+      end
+      
+      def params_for_save
+        ParamsForSave.new(@controller, @record)
       end
       
       def record_and_associations_valid?
@@ -251,6 +246,17 @@ class AdminAssistant
           @controller.send(:validate, @record)
         end
         @record.errors.empty?
+      end
+      
+      def redirect_after_save
+        url_params = if @controller.respond_to?(:destination_after_save)
+          @controller.send(
+            :destination_after_save, @record, @controller.params
+          )
+        end
+        url_params ||= @controller.params[:origin]
+        url_params ||= {:action => 'index'}
+        @controller.send :redirect_to, url_params
       end
       
       def save
