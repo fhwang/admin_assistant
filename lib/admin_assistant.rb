@@ -130,13 +130,6 @@ class AdminAssistant
     @model.default_column_names
   end
   
-  def dispatch_to_request_method(request_class, controller)
-    controller.instance_variable_set :@admin_assistant, self
-    @request = request_class.new(self, controller)
-    @request.call
-    @request = nil
-  end
-  
   def file_columns
     @model.file_columns
   end
@@ -144,10 +137,9 @@ class AdminAssistant
   def method_missing(meth, *args)
     if crudful_request_methods.include?(meth) and args.size == 1
       self.class.request_start_time = Time.now if ENV['PROFILE_LOGGING']
-      request_class = Request.const_get meth.to_s.capitalize
-      dispatch_to_request_method request_class, args.first
+      Request.dispatch meth, self, args.first
     elsif autocomplete_actions && autocomplete_actions.include?(meth)
-      dispatch_to_request_method Request::Autocomplete, args.first
+      Request.dispatch :autocomplete, self, args.first
     elsif meth.to_s =~ /(.*)\?/ && crudful_request_methods.include?($1.to_sym)
       supports_action? $1
     else

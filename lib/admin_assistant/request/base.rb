@@ -1,8 +1,14 @@
 class AdminAssistant
   module Request
+    def self.dispatch(action_name, admin_assistant, controller)
+      request_class = const_get action_name.to_s.capitalize
+      request_class.new(admin_assistant, controller).call
+    end
+    
     class Base
       def initialize(admin_assistant, controller)
         @admin_assistant, @controller = admin_assistant, controller
+        controller.instance_variable_set :@admin_assistant, admin_assistant
       end
   
       def action
