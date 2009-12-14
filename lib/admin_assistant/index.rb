@@ -225,6 +225,19 @@ class AdminAssistant
           @admin_assistant.model_class_name.pluralize.capitalize
         end
       end
+      
+      def multi_form?
+        @admin_assistant.form_settings.multi?
+      end
+      
+      def new_link
+        new_link_name = if multi_form?
+          "New #{@admin_assistant.model_class_name.pluralize}"
+        else
+          "New #{@admin_assistant.model_class_name}"
+        end
+        @action_view.link_to new_link_name, @admin_assistant.url_params(:new)
+      end
 
       def right_column?
         edit? or destroy? or show? or !right_column_lambdas.empty? or @action_view.respond_to?(:extra_right_column_links_for_index)

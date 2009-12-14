@@ -1,8 +1,15 @@
 class AdminAssistant
   module Request
     def self.dispatch(action_name, admin_assistant, controller)
-      request_class = const_get action_name.to_s.capitalize
-      request_class.new(admin_assistant, controller).call
+      class_name = action_name.to_s.capitalize
+      if [:create, :new].include?(action_name)
+        if admin_assistant.form_settings.multi?
+          class_name = "Multi#{class_name}"
+        else
+          class_name = "Single#{class_name}"
+        end
+      end
+      const_get(class_name).new(admin_assistant, controller).call
     end
     
     class Base
@@ -41,10 +48,16 @@ class AdminAssistant
         @controller.params[:origin] || @controller.request.referer
       end
       
-      def render_form(record)
+      def render_single_form(record)
         @controller.instance_variable_set :@record, record
         @controller.instance_variable_set :@origin, origin
         render_template_file 'form'
+      end
+      
+      def render_multi_form(records)
+        @controller.instance_variable_set :@records, records
+        @controller.instance_variable_set :@origin, origin
+        render_template_file 'multi_form'
       end
       
       def render_template_file(template_name = action, opts_plus = {})
@@ -234,24 +247,24 @@ class AdminAssistant
       
       def record_and_associations_valid?
         if @controller.respond_to?(:before_validation)
-          @controller.send(:before_validation, @record)
+          @controller.send(:before_validation, record)
         end
         params = params_for_save
         if !params.errors.empty?
           prepare_record_to_receive_invalid_association_assignments
-          @record.attributes = params
-          @record.valid?
+          record.attributes = params
+          record.valid?
           params.errors.each do |attr, msg|
-            @record.errors.add attr, msg
+            record.errors.add attr, msg
           end
         else
-          @record.attributes = params
-          @record.valid?
+          record.attributes = params
+          record.valid?
         end
         if @controller.respond_to?(:validate)
-          @controller.send(:validate, @record)
+          @controller.send(:validate, record)
         end
-        @record.errors.empty?
+        record.errors.empty?
       end
       
       def redirect_after_save
@@ -267,11 +280,11 @@ class AdminAssistant
       
       def save
         if @controller.respond_to?(:before_save)
-          @controller.send(:before_save, @record)
+          @controller.send(:before_save, record)
         end
-        result = @record.save
+        result = record.save
         if result && @controller.respond_to?(:after_save)
-          @controller.send(:after_save, @record)
+          @controller.send(:after_save, record)
         end
         result
       end

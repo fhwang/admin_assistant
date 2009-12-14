@@ -5,9 +5,9 @@
 <div class="aa_header">
 <div class="actions">
 <%= link_to_function('Search', 'AdminAssistant.show_search_form()') %>
-<%= link_to(
-  "New #{@admin_assistant.model_class_name}", @admin_assistant.url_params(:new)
-) if index_view.render_new_link? %>
+<% if index_view.render_new_link? %>
+  <%= index_view.new_link %>
+<% end %>
 <% @admin_assistant.index_settings.actions.each do |action, params| %>
   <%= link_to_unless_current(action, params) %>
 <% end %>

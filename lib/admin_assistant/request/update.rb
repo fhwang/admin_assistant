@@ -13,7 +13,7 @@ class AdminAssistant
             saving.redirect_after_save
           end
         else
-          render_form saving.record
+          render_single_form saving.record
         end
       end
       
