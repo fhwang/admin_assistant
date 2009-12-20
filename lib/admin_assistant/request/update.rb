@@ -44,7 +44,6 @@ class AdminAssistant
               end
               def #{attr}; @attempted_attributes[#{attr.inspect}]; end
             EVAL
-            @record.send "#{attr}=", params_for_save[attr]
           end
         end
 

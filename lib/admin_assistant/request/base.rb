@@ -250,17 +250,10 @@ class AdminAssistant
           @controller.send(:before_validation, record)
         end
         params = params_for_save
-        if !params.errors.empty?
-          prepare_record_to_receive_invalid_association_assignments
-          record.attributes = params
-          record.valid?
-          params.errors.each do |attr, msg|
-            record.errors.add attr, msg
-          end
-        else
-          record.attributes = params
-          record.valid?
-        end
+        prepare_record_to_receive_invalid_association_assignments
+        record.attributes = params
+        record.valid?
+        params.errors.each do |attr, msg| record.errors.add(attr, msg); end
         if @controller.respond_to?(:validate)
           @controller.send(:validate, record)
         end
