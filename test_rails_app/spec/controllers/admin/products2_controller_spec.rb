@@ -5,8 +5,13 @@ describe Admin::Products2Controller do
   
   describe '#new' do
     before :all do
-      @shiny = ProductCategory.find_or_create_by_category_name 'shiny'
-      @fuzzy = ProductCategory.find_or_create_by_category_name 'fuzzy'
+      ProductCategory.destroy_all
+      @shiny = ProductCategory.create!(
+        :category_name => 'shiny', :position => 1
+      )
+      @fuzzy = ProductCategory.create!(
+        :category_name => 'fuzzy', :position => 2
+      )
     end
     
     before :each do
@@ -29,12 +34,17 @@ describe Admin::Products2Controller do
   
   describe '#index sort by product category' do
     before :all do
+      ProductCategory.destroy_all
       Product.destroy_all
-      diamond_cat = ProductCategory.find_or_create_by_category_name 'diamond'
+      diamond_cat = ProductCategory.create!(
+        :category_name => 'diamond', :position => 1
+      )
       @diamond = Product.create!(
         :name => 'Diamond', :price => 200_000, :product_category => diamond_cat
       )
-      choc_cat = ProductCategory.find_or_create_by_category_name 'chocolate'
+      choc_cat = ProductCategory.create!(
+        :category_name => 'chocolate', :position => 2
+      )
       @chocolate = Product.create!(
         :name => 'Chocolate bar', :price => 200, :product_category => choc_cat
       )

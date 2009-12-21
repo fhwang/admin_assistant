@@ -9,9 +9,9 @@ describe Admin::ProductCategories2Controller do
       post(
         :create,
         :product_category => {
-          'a' => {'category_name' => 'shiny'},
-          'b' => {'category_name' => 'bouncy'},
-          'c' => {'category_name' => 'sparkly'},
+          'a' => {'category_name' => 'shiny', 'position' => 1},
+          'b' => {'category_name' => 'bouncy', 'position' => 2},
+          'c' => {'category_name' => 'sparkly', 'position' => 3},
           'd' => {'category_name' => ''},
           'e' => {'category_name' => ''},
           'f' => {'category_name' => ''},
@@ -41,7 +41,7 @@ describe Admin::ProductCategories2Controller do
   describe '#create with 2 new valid product categories, 1 invalid product category, and 7 blanks' do
     before :each do
       ProductCategory.destroy_all
-      ProductCategory.create! :category_name => 'shiny'
+      ProductCategory.create! :category_name => 'shiny', :position => 1
       @orig_pc_count = ProductCategory.count
       post(
         :create,
@@ -122,7 +122,10 @@ describe Admin::ProductCategories2Controller do
   
   describe '#edit' do
     before :all do
-      @pc = ProductCategory.find_or_create_by_category_name 'shiny'
+      ProductCategory.destroy_all
+      @pc = ProductCategory.create!(
+        :category_name => 'shiny', :position => 1
+      )
     end
     
     before :each do
@@ -170,7 +173,10 @@ describe Admin::ProductCategories2Controller do
   
   describe '#update' do
     before :all do
-      @pc = ProductCategory.find_or_create_by_category_name 'shiny'
+      ProductCategory.destroy_all
+      @pc = ProductCategory.create!(
+        :category_name => 'shiny', :position => 1
+      )
     end
     
     before :each do

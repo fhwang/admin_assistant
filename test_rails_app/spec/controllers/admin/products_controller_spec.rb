@@ -89,12 +89,17 @@ describe Admin::ProductsController do
   
   describe '#index sort by product category' do
     before :all do
+      ProductCategory.destroy_all
       Product.destroy_all
-      diamond_cat = ProductCategory.create! :category_name => 'diamond'
+      diamond_cat = ProductCategory.create!(
+        :category_name => 'diamond', :position => 1
+      )
       @diamond = Product.create!(
         :name => 'Diamond', :price => 200_000, :product_category => diamond_cat
       )
-      choc_cat = ProductCategory.create! :category_name => 'chocolate'
+      choc_cat = ProductCategory.create!(
+        :category_name => 'chocolate', :position => 2
+      )
       @chocolate = Product.create!(
         :name => 'Chocolate bar', :price => 200, :product_category => choc_cat
       )
