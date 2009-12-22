@@ -48,11 +48,11 @@ describe Admin::ProductCategories2Controller do
         :product_category => {
           'a' => {'category_name' => ''},
           'b' => {'category_name' => ''},
-          'c' => {'category_name' => 'shiny'},
+          'c' => {'category_name' => 'shiny', :position => 2},
           'd' => {'category_name' => ''},
-          'e' => {'category_name' => 'bouncy'},
+          'e' => {'category_name' => 'bouncy', :position => 3},
           'f' => {'category_name' => ''},
-          'g' => {'category_name' => 'sparkly'},
+          'g' => {'category_name' => 'sparkly', :position => 4},
           'h' => {'category_name' => ''},
           'i' => {'category_name' => ''},
           'j' => {'category_name' => ''},
@@ -83,6 +83,26 @@ describe Admin::ProductCategories2Controller do
           'input[name=?][value=?]', "product_category[c][category_name]",
           'sparkly'
         )
+      end
+    end
+    
+    it 'should render the error directly above the row with the error in it' do
+      response.should have_tag('form') do
+        with_tag('table') do
+          with_tag('tr') do
+            with_tag('td', :text => /^\s*$/)
+            with_tag(
+              'td.errorExplanation:not([colspan])',
+              :text => /Category name has already been taken/
+            )
+          end
+          with_tag('td.fieldWithErrors') do
+            with_tag(
+              'input[name=?][value=?]', "product_category[a][category_name]",
+              'shiny'
+            )
+          end
+        end
       end
     end
     

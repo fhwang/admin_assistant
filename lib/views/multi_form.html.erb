@@ -3,7 +3,7 @@ multi_form_view = AdminAssistant::MultiFormView.new(
   @records, @admin_assistant, self
 )
 %>
-<div class="admin_assistant form <%=
+<div class="admin_assistant form multi <%=
   @admin_assistant.controller_css_class(controller)
 %>">
   <div class="aa_header">
@@ -30,13 +30,32 @@ multi_form_view = AdminAssistant::MultiFormView.new(
         </tr>
       </thead>
       <% rails_form.each_sub_form do |rails_sub_form, sub_form_view| %>
+        <% record = sub_form_view.record %>
         <% if !sub_form_view.record.errors.empty? %>
-          <% @record = sub_form_view.record %>
-          <%= error_messages_for 'record' %>
+          <tr>
+            <% sub_form_view.columns.each do |column| %>
+              <td class="errorExplanation">
+                <% errors = column.errors(record) %>
+                <% if errors %>
+                  <% if errors.is_a?(String) %>
+                    <%= h(column.label) %> <%= h(errors) %>
+                  <% else %>
+                    <ul>
+                      <% errors.each do |error| %>
+                        <li><%= h(column.label) %> <%= h(error) %></li>
+                      <% end %>
+                    </ul>
+                  <% end %>
+                <% end %>
+              </td>
+            <% end %>
+          </tr>
         <% end %>
         <tr>
         <% sub_form_view.columns.each do |column| %>
-          <td><%= column.html(rails_sub_form) %></td>
+          <td<%= " class='fieldWithErrors'" if column.errors(record) %>>
+            <%= column.html(rails_sub_form) %>
+          </td>
         <% end %>
         </tr>
       <% end %>

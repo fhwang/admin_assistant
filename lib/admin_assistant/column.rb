@@ -57,6 +57,10 @@ class AdminAssistant
         @description
       end
       
+      def errors(record)
+        record.errors.on name
+      end
+      
       def file_option_for_custom_template_render(slug)
         if RAILS_GEM_VERSION == '2.1.0'
           File.join(controller.controller_path, "#{slug}.html.erb")

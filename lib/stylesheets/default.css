@@ -100,6 +100,14 @@ Don't edit this file: It gets re-copied every time the server starts.
   text-align: left;
 }
 
+.admin_assistant.multi.form .errorExplanation {
+  font-size: small;
+}
+
+.admin_assistant.form .fieldWithErrors {
+  background: red;
+}
+
 .admin_assistant .autocomplete_palette {
   background: white;
   color: #000;
