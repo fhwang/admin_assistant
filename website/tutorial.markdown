@@ -3,7 +3,7 @@ layout: default
 title:  Quick start
 ---
 
-*This document assumes you are a beginning Rails user; if you are very familiar with Rails you might want to check out our [quick start](/quick_start.html).*
+*This document assumes you are a beginning Rails user; if you are very familiar with Rails you might want to check out our [quick start](./quick_start.html).*
 
 1) First, install the plugin from Github.
 

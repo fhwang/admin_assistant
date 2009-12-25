@@ -3,7 +3,7 @@ layout: default
 title:  Quick start
 ---
 
-*This document assumes you are highly familiar with Ruby and Rails; if you are a beginning Rails user you might want to start with our [tutorial](/tutorial.html).*
+*This document assumes you are highly familiar with Ruby and Rails; if you are a beginning Rails user you might want to start with our [tutorial](./tutorial.html).*
 
 1) First, install the plugin from Github.
 
