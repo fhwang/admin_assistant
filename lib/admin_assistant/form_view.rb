@@ -122,7 +122,7 @@ class AdminAssistant
       end
       
       class SubFormBuilder < ::ActionView::Helpers::FormBuilder
-        attr_reader :object
+        attr_reader :object, :prefix
         
         def initialize(object_name, object, template, options, proc, position)
           super(object_name, object, template, options, proc)

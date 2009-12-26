@@ -99,12 +99,14 @@ class AdminAssistant
           @action_view.instance_variable_set(
             "@#{varname}".to_sym, rails_form.object
           )
+          locals = {varname.to_sym => rails_form.object, :form => rails_form}
+          if rails_form.respond_to?(:prefix)
+            locals[:prefix] = rails_form.prefix
+            @action_view.instance_variable_set(:@prefix, rails_form.prefix)
+          end
           @action_view.render(
             :file => file_option_for_custom_template_render(slug),
-            :locals => {
-              varname.to_sym => rails_form.object,
-              :form => rails_form
-            }
+            :locals => locals
           )
         end
       end
