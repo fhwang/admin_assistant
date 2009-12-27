@@ -4,6 +4,12 @@ describe Admin::Appointments2Controller do
   integrate_views
   
   describe '#create with 2 new appointments' do
+    before :all do
+      User.destroy_all
+      @user1 = User.create! :username => random_word
+      @user2 = User.create! :username => random_word
+    end
+
     before :each do
       Appointment.destroy_all
       post(
@@ -11,7 +17,7 @@ describe Admin::Appointments2Controller do
         :appointment => {
           'a' => {
             'subject' => 'Lunch with Dick', 'time(1-3i)' => '2010-01-04',
-            'time(4i)' => '12', 'time(5i)' => '00'
+            'time(4i)' => '12', 'time(5i)' => '00', 'user_id' => @user1.id
           },
           'b' => {
             'subject' => '', 'time(1-3i)' => '', 'time(4i)' => '',
@@ -19,7 +25,7 @@ describe Admin::Appointments2Controller do
           },
           'c' => {
             'subject' => 'Dinner with Jane', 'time(1-3i)' => '2010-01-06',
-            'time(4i)' => '20', 'time(5i)' => '00'
+            'time(4i)' => '20', 'time(5i)' => '00', 'user_id' => @user2.id
           },
           'd' => {
             'subject' => '', 'time(1-3i)' => '', 'time(4i)' => '',
@@ -57,11 +63,11 @@ describe Admin::Appointments2Controller do
       Appointment.count.should == 2
       Appointment.all.any? { |appt|
         appt.subject == 'Lunch with Dick' and
-            appt.time == Time.utc(2010, 1, 4, 12, 0)
+          appt.time == Time.utc(2010, 1, 4, 12, 0) and appt.user == @user1
       }.should be_true
       Appointment.all.any? { |appt|
         appt.subject == 'Dinner with Jane' and
-            appt.time == Time.utc(2010, 1, 6, 20, 0)
+          appt.time == Time.utc(2010, 1, 6, 20, 0) and appt.user == @user2
       }.should be_true
     end
   end

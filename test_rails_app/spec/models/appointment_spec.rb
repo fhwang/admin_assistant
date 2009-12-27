@@ -1,3 +1,4 @@
+=begin
 require 'spec_helper'
 
 describe Appointment do
@@ -12,3 +13,4 @@ describe Appointment do
     Appointment.create!(@valid_attributes)
   end
 end
+=end

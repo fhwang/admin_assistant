@@ -154,6 +154,13 @@ class AdminAssistant
         def objectify_options(options)
           @default_options.merge(options.merge(:object => @object))
         end
+        
+        def select(method, choices, options = {}, html_options = {})
+          @template.select(
+            "#{@object_name}[#{@prefix}]", method, choices, 
+            objectify_options(options), @default_options.merge(html_options)
+          )
+        end
       end
     end
   end
