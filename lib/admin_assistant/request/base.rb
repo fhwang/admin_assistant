@@ -120,16 +120,23 @@ class AdminAssistant
       end
       
       def build_from_split_params
-        bases = split_params.map { |k, v| k.gsub(/\([0-9]+i\)$/, '') }.uniq
+        bases = split_params.map { |k, v| k.gsub(split_param_regex, '') }.uniq
         bases.each do |b|
           h = {}
-          split_params.each { |k, v|
-            h[k] = split_params.delete(k) if k =~ /#{b}\([0-9]+i\)$/
-          }
           from_form_method = "#{b}_from_form".to_sym
           if @controller.respond_to?(from_form_method)
+            split_params.each { |k, v|
+              if k =~ /#{b}#{split_param_regex.source}/
+                h[$1] = split_params.delete(k)
+              end
+            }
             self[b] = @controller.send(from_form_method, h)
           elsif model_setter?(b)
+            split_params.each { |k, v|
+              if k =~ /#{b}#{split_param_regex.source}/
+                h[k] = split_params.delete(k)
+              end
+            }
             self.merge! h
           end
         end
@@ -165,9 +172,17 @@ class AdminAssistant
             @model_methods.include?("#{attr}=")
       end
       
+      def split_param_key?(key)
+        key =~ split_param_regex
+      end
+      
+      def split_param_regex
+        @split_param_regex ||= /\((.+i)\)$/
+      end
+      
       def split_params
         sp = {}
-        @record_params.each do |k,v| sp[k] = v if k =~ /\([0-9]+i\)$/; end
+        @record_params.each do |k,v| sp[k] = v if split_param_key?(k); end
         sp
       end
       
@@ -189,7 +204,7 @@ class AdminAssistant
       def whole_params
         wp = {}
         @record_params.each do |k,v|
-          unless k =~ /\([0-9]+i\)$/ || k =~ %r|(.*)\(destroy\)|
+          unless split_param_key?(k) || k =~ %r|(.*)\(destroy\)|
             wp[k] = v
           end
         end
