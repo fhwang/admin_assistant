@@ -121,21 +121,38 @@ class AdminAssistant
         end
       end
       
-      class SubFormBuilder < ::ActionView::Helpers::FormBuilder
+      class SubFormBuilder
         attr_reader :object, :prefix
         
         def initialize(object_name, object, template, options, proc, position)
-          super(object_name, object, template, options, proc)
+          @object_name, @object, @template, @options, @proc =
+              object_name, object, template, options, proc
+          @default_options = @options ? @options.slice(:index) : {}
           @prefix = ('a'..'z').to_a[position]
         end
         
-        def text_field(method, options = {})
-          @template.send(
-            :text_field,
-            "#{@object_name}[#{@prefix}]",
-            method,
-            objectify_options(options)
-          )
+        def method_missing(meth, *args, &block)
+          if my_field_helpers.include?(meth.to_s)
+            method = args.shift
+            options = args.shift || {}
+            @template.send(
+              meth,
+              "#{@object_name}[#{@prefix}]",
+              method,
+              objectify_options(options)
+            )
+          else
+            super
+          end
+        end
+        
+        def my_field_helpers
+          ::ActionView::Helpers::FormBuilder.field_helpers -
+              %w(label check_box radio_button fields_for) + ['datetime_select']
+        end
+        
+        def objectify_options(options)
+          @default_options.merge(options.merge(:object => @object))
         end
       end
     end
