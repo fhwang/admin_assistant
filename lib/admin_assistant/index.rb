@@ -210,7 +210,7 @@ class AdminAssistant
           :url => {:action => 'destroy', :id => record.id},
           :confirm => 'Are you sure?',
           :success =>
-              "Effect.Fade('#{@admin_assistant.model_class.name.underscore}_#{record.id}')",
+            "Effect.Fade('#{@admin_assistant.model_class.name.underscore}_#{record.id}', {duration: 0.25})",
           :method => :delete
         )
       end

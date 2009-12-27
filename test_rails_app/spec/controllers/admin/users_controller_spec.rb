@@ -106,7 +106,7 @@ describe Admin::UsersController do
         with_tag(
           "a[href=#][onclick*=?][onclick*=?][onclick*=?]",
           "new Ajax.Request", "method:'delete'",
-          "Effect.Fade('user_#{@user.id}')",
+          "Effect.Fade('user_#{@user.id}'",
           :text => 'Delete'
         )
         with_tag(
