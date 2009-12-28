@@ -135,6 +135,10 @@ class AdminAssistant
         end
       end
       
+      def errors(record)
+        record.errors.on @column.association_foreign_key
+      end
+      
       def render_autocompleter(form)
         @action_view.send(
           :render,

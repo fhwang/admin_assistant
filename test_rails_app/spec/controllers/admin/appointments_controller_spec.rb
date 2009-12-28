@@ -74,6 +74,63 @@ describe Admin::AppointmentsController do
       }.should be_true
     end
   end
+  
+  describe '#create while missing a user_id' do
+    before :each do
+      post(
+        :create,
+        :appointment => {
+          'a' => {
+            'subject' => 'Lunch with Dick', 'time(1i)' => '2010',
+            'time(2i)' => '1', 'time(3i)' => '4', 'time(4i)' => '12',
+            'time(5i)' => '00', 'user_id' => ''
+          },
+          'b' => {
+            'subject' => '', 'time(1i)' => '', 'time(2i)' => '',
+            'time(3i)' => '', 'time(4i)' => '', 'time(5i)' => ''
+          },
+          'c' => {
+            'subject' => '', 'time(1i)' => '', 'time(2i)' => '',
+            'time(3i)' => '', 'time(4i)' => '', 'time(5i)' => ''
+          },
+          'd' => {
+            'subject' => '', 'time(1i)' => '', 'time(2i)' => '',
+            'time(3i)' => '', 'time(4i)' => '', 'time(5i)' => ''
+          },
+          'e' => {
+            'subject' => '', 'time(1i)' => '', 'time(2i)' => '',
+            'time(3i)' => '', 'time(4i)' => '', 'time(5i)' => ''
+          },
+          'f' => {
+            'subject' => '', 'time(1i)' => '', 'time(2i)' => '',
+            'time(3i)' => '', 'time(4i)' => '', 'time(5i)' => ''
+          },
+          'g' => {
+            'subject' => '', 'time(1i)' => '', 'time(2i)' => '',
+            'time(3i)' => '', 'time(4i)' => '', 'time(5i)' => ''
+          },
+          'h' => {
+            'subject' => '', 'time(1i)' => '', 'time(2i)' => '',
+            'time(3i)' => '', 'time(4i)' => '', 'time(5i)' => ''
+          },
+          'i' => {
+            'subject' => '', 'time(1i)' => '', 'time(2i)' => '',
+            'time(3i)' => '', 'time(4i)' => '', 'time(5i)' => ''
+          },
+          'j' => {
+            'subject' => '', 'time(1i)' => '', 'time(2i)' => '',
+            'time(3i)' => '', 'time(4i)' => '', 'time(5i)' => ''
+          }
+        }
+      )
+      response.should_not be_error
+    end
+
+    it 'should show an error for user_id' do
+      response.should be_success
+      response.body.should match(/User can't be blank/)
+    end
+  end
 
   describe '#new' do
     before :all do
