@@ -110,7 +110,7 @@ class Admin::BlogPosts2Controller < ApplicationController
   #   blog_post.tags = params[:tags]
   #
   # and this will work fine with the BlogPost#tags association
-  def tags_from_form(tags_string, errors)
+  def tags_from_form(tags_string, record_params, errors)
     tags = tags_string.split(/\s+/).map { |tag_str|
       Tag.find_by_tag(tag_str) || Tag.create(:tag => tag_str)
     }

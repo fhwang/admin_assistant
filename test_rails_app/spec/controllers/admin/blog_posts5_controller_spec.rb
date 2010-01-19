@@ -9,6 +9,23 @@ describe Admin::BlogPosts5Controller do
     @jean = User.create! :username => 'jean'
   end
   
+  describe '#create with title_alt' do
+    before :each do
+      post(
+        :create,
+        :blog_post => {
+          :user_id => @soren.id, :title => '', :title_alt => 'alternate field'
+        }
+      )
+      response.should be_redirect
+    end
+    
+    it 'should use the value of title alt for the title' do
+      bp = BlogPost.last
+      bp.title.should == 'alternate field'
+    end
+  end
+  
   describe '#index' do
     before :all do
       BlogPost.create!(

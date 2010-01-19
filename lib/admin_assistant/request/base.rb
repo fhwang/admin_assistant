@@ -147,7 +147,10 @@ class AdminAssistant
           from_form_method = "#{k}_from_form".to_sym
           if @controller.respond_to?(from_form_method)
             args = [v]
-            args << @errors if @controller.method(from_form_method).arity == 2
+            if @controller.method(from_form_method).arity >= 2
+              args << @record_params
+            end
+            args << @errors if @controller.method(from_form_method).arity >= 3
             self[k] = @controller.send(from_form_method, *args)
           elsif model_setter?(k)
             unless destroy_params[k] && v.blank?

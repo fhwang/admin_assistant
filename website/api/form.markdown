@@ -179,9 +179,19 @@ Used for image fields in generating form pages. If the existing record has an im
 
 Should return a value suitable for assignment. In the above example, a BlogPost has-many tags, and the method tags\_from\_form will turn the string `"funny, video, lolcat"` into an array of three Tag model records, so admin\_assistant can set BlogPost#tags to that array.
 
-If the value being returned is meant to be assigned through an association, you may find it useful to return custom errors to work around the strangeness of ActiveRecord's association-assignment error-handling. So admin\_assistant lets you optionally take a 2nd errors argument, which you can use to attach errors to the core model. This error object isn't returned, but changes to it will persist outside the body of the method.
+If you need to return a value from another parameter, you can accept a second argument, which will be the params hash for the record.
 
-    def tags_from_form(tags_string, errors)
+    def title_from_form(title_str, record_params)
+      if title_str.blank?
+        record_params[:title_alt]
+      else
+        title_str
+      end
+    end
+
+If the value being returned is meant to be assigned through an association, you may find it useful to return custom errors to work around the strangeness of ActiveRecord's association-assignment error-handling. So admin\_assistant lets you optionally take a 3rd errors argument, which you can use to attach errors to the core model. This error object isn't returned, but changes to it will persist outside the body of the method.
+
+    def tags_from_form(tags_string, record_params, errors)
       tags = tags_string.split(/\s+/).map { |tag_str|
         Tag.find_by_tag(tag_str) || Tag.create(:tag => tag_str)
       }
