@@ -26,6 +26,17 @@ class AdminAssistant
     def columns
       @admin_assistant.accumulate_columns column_names
     end
+
+    def hidden_fields_for_search_form
+      if @admin_assistant.search_settings.include_params_in_form
+        @url_params.reject do |name,value| 
+          name=="commit" or name=="search" or name=="action" or
+          name=="controller"
+        end
+      else
+        []
+      end
+    end
     
     def model_class
       @admin_assistant.model_class

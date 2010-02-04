@@ -8,6 +8,8 @@ class Admin::BlogPosts5Controller < ApplicationController
       end
       
       index.columns :user, :title, :tags, :published_at, :textile
+      
+      index.search.include_params_in_form = true
     end
     
     a.form.columns :user, :title, :title_alt

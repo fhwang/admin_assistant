@@ -283,12 +283,14 @@ class AdminAssistant
     end
     
     class SearchSettings < AbstractSettings
+      attr_accessor :include_params_in_form
       attr_reader :column_names
       
       def initialize(admin_assistant)
         super
         @column_names = []
         @default_search_includes = []
+        @include_params_in_form = false
       end
       
       def column_config_fields
