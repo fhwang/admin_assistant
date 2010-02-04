@@ -38,6 +38,15 @@ Shows only these columns in the edit action.
 Shows only these columns in the new action.
 
 
+#### multi
+
+    form.multi = true
+    
+Set this to true to enable multi-record creation in your form. Validation errors will be shown on top of the individual row that caused the error, and if any of the records has a validation error, none of the records will be created.
+
+Please note that this feature is alpha and may change significantly in the near future. As always, input is appreciated.
+
+
 #### submit\_buttons
 
     form.submit_buttons << 'Preview'

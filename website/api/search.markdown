@@ -53,6 +53,12 @@ You can also pass in SQL fragments:
       index.search.default_search_matches_on \
             "concat_ws(' ', users.first_name, users.last_name)"
 
+#### include\_params\_in\_form
+            
+      index.search.include_params_in_form = true
+      
+This will put any custom page params in the search form to be posted with the search parameters. You might use this if you've got another way of filtering, say, blog posts by user, and you want the search form on that page to only search within blog posts by that user.
+
       
 ### Column config options
 
