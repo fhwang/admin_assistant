@@ -45,7 +45,8 @@ class AdminAssistant
       end
       
       def origin
-        @controller.params[:origin] || @controller.request.referer
+        @controller.params[:origin] || @controller.request.referer ||
+            {:action => 'index'}
       end
       
       def render_single_form(record)

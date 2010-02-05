@@ -89,7 +89,9 @@ describe Admin::BlogPostsController do
 
     describe 'when there are validation errors' do
       before :each do
-        post :create, :blog_post => {:title => ''}
+        post(
+          :create, :blog_post => {:title => ''}, :origin => '/admin/blog_posts'
+        )
       end
       
       it 'should not create a new BlogPost' do
@@ -116,11 +118,12 @@ describe Admin::BlogPostsController do
   end
   
   describe '#edit' do
-     before :all do
+    before :all do
       @blog_post = BlogPost.create! :title => random_word, :user => @user
     end
     
     before :each do
+      @request.env["HTTP_REFERER"] = '/admin/blog_posts'
       get :edit, :id => @blog_post.id
     end
     
@@ -719,6 +722,7 @@ describe Admin::BlogPostsController do
   describe '#new' do
     before :each do
       @alfie = User.find_or_create_by_username 'alfie'
+      @request.env["HTTP_REFERER"] = '/admin/blog_posts'
       get :new
     end
     
@@ -895,7 +899,11 @@ describe Admin::BlogPostsController do
     
     describe 'when there are validation errors' do
       before :each do
-        post :update, :id => @blog_post.id, :blog_post => {:title => ''}
+        post(
+          :update,
+          :id => @blog_post.id, :blog_post => {:title => ''},
+          :origin => '/admin/blog_posts'
+        )
       end
       
       it 'should not create a new BlogPost' do

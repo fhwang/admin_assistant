@@ -8,7 +8,7 @@ form_view = AdminAssistant::FormView.new(@record, @admin_assistant, self)
   <div class="aa_header">
     <h2><%= h(form_view.title) %></h2>
     <div class="actions">
-    <%= link_to('Back to index', :action => 'index') %>
+    <%= link_to('Back to index', @origin) %>
     </div>
   </div>
   <% if !@record.errors.empty? %>
