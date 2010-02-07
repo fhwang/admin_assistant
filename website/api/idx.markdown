@@ -221,6 +221,14 @@ The link to create a new record will be shown on the index view if there is a 'n
       false
     end
 
+#### link\_to\_search\_in\_index?
+
+The link to the search form will be shown unless it is prevented using a define a helper method like this:
+
+    def link_to_search_in_index?
+      false
+    end
+
 #### link\_to\_edit\_in\_index?
 
 The edit link in the right column of each row will be shown if there is a 'edit' action for the controller (whether via admin\_assistant or otherwise). If you don't want the link generated, define a helper method like this:
@@ -243,6 +251,22 @@ The show link in the right column of each row will be shown if there is a 'show'
 
     def link_to_show_in_index?(blog_post)
       false
+    end
+    
+#### \[column\]\_td\_css\_class\_for\_index
+
+To add a css class to a table cell, define a helper method based on the name of the column:
+
+    def user_td_css_class_for_index(blog_post)
+      'custom_td_css_class'
+    end
+
+#### tr\_css\_class\_for\_index
+
+To add a css class to a table row, define a helper method like so:
+
+    def tr_css_class_for_index(blog_post)
+      'custom_tr_css_class'
     end
 
 ### Partials

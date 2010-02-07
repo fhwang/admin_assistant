@@ -93,6 +93,10 @@ class AdminAssistant
         end
       end
       
+      def field_id
+        "#{@model_class.name.underscore}_#{name}"
+      end
+      
       def render_from_custom_template(slug, rails_form)
         if File.exist?(custom_template_file_path(slug))
           varname = @model_class.name.underscore
@@ -132,7 +136,7 @@ class AdminAssistant
       def header_css_class
         "sort #{sort_order}" if sort_order
       end
-      
+            
       def html(record)
         html_for_index_method = "#{name}_html_for_index"
         html = if @action_view.respond_to?(html_for_index_method)
@@ -175,8 +179,14 @@ class AdminAssistant
             admin_assistant.update? && setting.ajax_toggle != false
       end
       
-      def td_css_class
-        'sort' if sort_order
+      def td_css_classes(column, record)
+        css_classes = []
+        css_classes << 'sort' if sort_order
+        td_css_class_for_index_method = "#{name}_td_css_class_for_index"
+        if @action_view.respond_to?(td_css_class_for_index_method)
+          css_classes << @action_view.send(td_css_class_for_index_method, record)
+        end
+        css_classes.reject{ |c| c.blank? }.join(' ')
       end
       
       def unconfigured_html(record)
@@ -296,11 +306,11 @@ class AdminAssistant
         # Rails 2.3 wants the hidden tag to come before the checkbox, but it's
         # the opposite for Rails 2.2 and 2.1
         if RAILS_GEM_VERSION =~ /^2.3/
-          @action_view.send(:hidden_field_tag, input_name, '0') +
+          @action_view.send(:hidden_field_tag, input_name, '0', :id => "#{input_name}_hidden") +
               @action_view.send(:check_box_tag, input_name, '1', value)
         else
           @action_view.send(:check_box_tag, input_name, '1', value) +
-              @action_view.send(:hidden_field_tag, input_name, '0')
+              @action_view.send(:hidden_field_tag, input_name, '0', :id => "#{input_name}_hidden")
         end
       end
       
