@@ -2,12 +2,16 @@ class AdminAssistant
   module Request
     class SingleCreate < Base
       def call
-        saving = CreateSaving.new model_class.new, @controller
-        if saving.record_and_associations_valid?
-          saving.save
-          saving.redirect_after_save
+        if @controller.request.get?
+          @controller.send :redirect_to, :action => 'new'
         else
-          render_single_form saving.record
+          saving = CreateSaving.new model_class.new, @controller
+          if saving.record_and_associations_valid?
+            saving.save
+            saving.redirect_after_save
+          else
+            render_single_form saving.record
+          end
         end
       end
     end

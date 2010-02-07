@@ -107,6 +107,16 @@ describe Admin::BlogPostsController do
         response.should have_tag("a[href=/admin/blog_posts]", 'Back to index')
       end
     end
+    
+    describe 'when somebody GETs for some reason' do
+      before :each do
+        get :create
+      end
+      
+      it 'should just redirect to #new' do
+        response.should redirect_to(:action => 'new')
+      end
+    end
   end
   
   describe '#destroy' do
