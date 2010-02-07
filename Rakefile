@@ -28,7 +28,7 @@ desc 'Run all specs across all supported Rails gem versions.'
 task :spec do
   supported_versions = %w(2.1.0 2.1.2 2.2.2 2.3.2 2.3.3 2.3.4)
   locally_installed_versions =
-      `gem list --local rails`.lines.
+      `gem list --local rails`.split(/\n/).
           detect { |l| l=~ /^rails / }.strip.
           gsub(/^.*\((.*)\).*$/, '\1').split(/\s*,\s*/)
   missing = supported_versions - locally_installed_versions
