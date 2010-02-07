@@ -295,8 +295,8 @@ class AdminAssistant
       
       def tr_css_classes(record)
         css_classes = [@action_view.cycle('odd', 'even')]
-        if @action_view.respond_to?(:tr_css_class_for_index)
-          css_classes << @action_view.tr_css_class_for_index(record)
+        if @action_view.respond_to?(:css_class_for_index_tr)
+          css_classes << @action_view.css_class_for_index_tr(record)
         end
         css_classes.join(' ')
       end

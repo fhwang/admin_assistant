@@ -182,7 +182,7 @@ class AdminAssistant
       def td_css_classes(column, record)
         css_classes = []
         css_classes << 'sort' if sort_order
-        td_css_class_for_index_method = "#{name}_td_css_class_for_index"
+        td_css_class_for_index_method = "#{name}_css_class_for_index_td"
         if @action_view.respond_to?(td_css_class_for_index_method)
           css_classes << @action_view.send(td_css_class_for_index_method, record)
         end

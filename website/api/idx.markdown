@@ -253,19 +253,19 @@ The show link in the right column of each row will be shown if there is a 'show'
       false
     end
     
-#### \[column\]\_td\_css\_class\_for\_index
+#### \[column\]\_css\_class\_for\_index\_td
 
 To add a css class to a table cell, define a helper method based on the name of the column:
 
-    def user_td_css_class_for_index(blog_post)
+    def user_css_class_for_index_td(blog_post)
       'custom_td_css_class'
     end
 
-#### tr\_css\_class\_for\_index
+#### css\_class\_for\_index\_tr
 
 To add a css class to a table row, define a helper method like so:
 
-    def tr_css_class_for_index(blog_post)
+    def css_class_for_index_tr(blog_post)
       'custom_tr_css_class'
     end
 
