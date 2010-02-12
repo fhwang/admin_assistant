@@ -9,9 +9,7 @@ title:  Quick start
 
     ./script/plugin install git://github.com/fhwang/admin_assistant.git
 
-2) If you don't have the popular will\_paginate plugin, you'll need that too.
-
-    ./script/plugin install git://github.com/mislav/will_paginate.git
+2) If you don't have the popular will\_paginate gem, you'll need that too. See [http://wiki.github.com/mislav/will_paginate/installation](http://wiki.github.com/mislav/will_paginate/installation) for more info.
 
 3) admin\_assistant comes packaged with standard CSS and Javascript that you should include in whatever layout your admin controllers will be using. You'll also need to make sure to include prototype.js, effects.js, and controls.js, if you're not including them already.
 

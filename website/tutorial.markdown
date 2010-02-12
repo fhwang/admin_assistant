@@ -9,9 +9,7 @@ title:  Quick start
 
     ./script/plugin install git://github.com/fhwang/admin_assistant.git
 
-2) If you don't have the popular will\_paginate plugin, you'll need that too.
-
-    ./script/plugin install git://github.com/mislav/will_paginate.git
+2) If you don't have the popular will\_paginate gem, you'll need that too. See [http://wiki.github.com/mislav/will_paginate/installation](http://wiki.github.com/mislav/will_paginate/installation) for more info.
 
 3) If you don't have any admin controllers in your Rails project yet, you probably need to create a separate admin layout. Create a file called `app/views/layouts/admin.html.erb` like this:
 

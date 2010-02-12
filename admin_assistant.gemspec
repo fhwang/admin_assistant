@@ -16,5 +16,5 @@ Gem::Specification.new do |s|
     vendor/ar_query/MIT-LICENSE vendor/ar_query/README vendor/ar_query/*.rb 
     vendor/ar_query/*/*.rb vendor/ar_query/*/*.rake
   )].to_a
-  s.add_dependency 'mislav-will_paginate'
+  s.add_dependency 'will_paginate'
 end
