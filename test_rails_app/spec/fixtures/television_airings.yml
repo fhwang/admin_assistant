@@ -1,0 +1,11 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  television_time_slot_id: 1
+  title: MyString
+  description: MyText
+
+two:
+  television_time_slot_id: 1
+  title: MyString
+  description: MyText

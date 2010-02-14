@@ -29,9 +29,17 @@ class AdminAssistant
          records.first.respond_to?(:name_for_admin_assistant)
         name_method = :name_for_admin_assistant
       end
+      sort_value_method = nil
+      if records.first.respond_to?(:sort_value_for_admin_assistant)
+        sort_value_method = :sort_value_for_admin_assistant
+      else
+        sort_value_method = name_method
+      end
+      if sort_value_method
+        records = records.sort_by { |model| model.send(sort_value_method) }
+      end
       if name_method
-        records.sort_by { |model| model.send(name_method) }.
-                map { |model| [model.send(name_method), model.id] }
+        records.map { |model| [model.send(name_method), model.id] }
       else
         records.map &:id
       end
