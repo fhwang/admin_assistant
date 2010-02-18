@@ -72,6 +72,19 @@ By default, integer and datetime fields are presented with a list of options for
 
 To turn this off, set `comparators` to false.
 
+#### conditions
+
+    search[:has_short_title].field_type = :boolean
+    search[:has_short_title].conditions do |has_short_title|
+      if has_short_title
+        "length(title) < 10"
+      elsif has_short_title == false
+        "length(title) >= 10"
+      end
+    end
+    
+To be used with a virtual column in search. The block should return a SQL fragment to add to the final query, or nil to not change anything.
+
 #### match\_text\_fields\_for\_association
 
     search[:user].match_text_fields_for_association
