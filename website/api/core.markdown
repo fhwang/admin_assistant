@@ -94,4 +94,13 @@ For example, let's say you have a ProductCategory class with a field `category_n
       end
     end
 
+#### sort\_value\_for\_admin\_assistant
+
+When showing associated records, admin\_assistant will sort by the method `sort_value_for_admin_assistant` if it's defined on the model. This comes in handy if you want to specify sorting on form drop-downs for belongs-to associations.
+
+    class Appointment < ActiveRecord::Base
+      def sort_value_for_admin_assistant
+        self.time
+      end
+    end
 
