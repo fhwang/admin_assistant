@@ -38,6 +38,21 @@ class AdminAssistant
         @ar_query_condition.bind_vars << value_for_query
       end
       
+      def add_range_condition
+        if lower_limit = @search.send(@name)[:gt]
+          @ar_query_condition.sqls << "#{table_name}.#{@name} > ?"
+          @ar_query_condition.bind_vars << lower_limit
+        end
+        if upper_limit = @search.send(@name)[:lt]
+          @ar_query_condition.sqls << "#{table_name}.#{@name} < ?"
+          @ar_query_condition.bind_vars << upper_limit
+        end
+      end
+      
+      def compare_to_range?
+        @search.compare_to_range? @name
+      end
+      
       def comparator
         @search.comparator @name
       end
@@ -55,6 +70,8 @@ class AdminAssistant
               add_comparative_condition
             elsif column_is_a_string_type?
               add_case_insensitive_string_comparison
+            elsif compare_to_range?
+              add_range_condition
             else
               add_equality_condition
             end

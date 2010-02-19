@@ -72,6 +72,12 @@ By default, integer and datetime fields are presented with a list of options for
 
 To turn this off, set `comparators` to false.
 
+#### compare\_to\_range
+
+    search[:price].compare_to_range = true
+    
+If you want to offer a ranged search, set `compare_to_range` to true. This will render two fields for greater-than and less-than in the search.
+    
 #### conditions
 
     search[:has_short_title].field_type = :boolean

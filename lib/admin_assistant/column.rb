@@ -202,6 +202,7 @@ class AdminAssistant
         end
         @search = opts[:search]
         @blank_checkbox = setting.blank_checkbox
+        @compare_to_range = setting.compare_to_range
       end
     end
     
@@ -266,11 +267,24 @@ class AdminAssistant
         elsif @column.field_type == :datetime
           input = datetime_input form
         else
-          if @column.field_type == :integer && @comparators == :all
-            input << comparator_html(form.object) << ' '
+          if @compare_to_range
+            input << "Greater than "
+            input << @action_view.send(
+              :text_field_tag, "search[#{name}(gt)]",
+              form.object.send(name)[:gt]
+            )
+            input << "&nbsp;&nbsp;&nbsp;Less than "
+            input << @action_view.send(
+              :text_field_tag, "search[#{name}(lt)]",
+              form.object.send(name)[:lt]
+            )
+          else
+            if @column.field_type == :integer && @comparators == :all
+              input << comparator_html(form.object) << ' '
+            end
+            input << form.text_field(name)
+            input << blank_checkbox_html(form) if @blank_checkbox
           end
-          input << form.text_field(name)
-          input << blank_checkbox_html(form) if @blank_checkbox
         end
         "<p><label>#{label}</label> <br/>#{input}</p>"
       end

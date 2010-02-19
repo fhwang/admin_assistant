@@ -295,7 +295,8 @@ class AdminAssistant
       
       def column_config_fields
         {:blank_checkbox => :accessor, :comparators => :accessor,
-         :conditions => :block, :field_type => :accessor,
+         :compare_to_range => :accessor, :conditions => :block,
+         :field_type => :accessor,
          :match_text_fields_for_association => :boolean}
       end
       
