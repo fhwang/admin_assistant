@@ -45,8 +45,8 @@ describe Admin::Products2Controller do
   
     it 'should show a search range widget' do
       response.should have_tag('form#search_form') do
-        with_tag 'input[name=?]', 'search[price(gt)]'
-        with_tag 'input[name=?]', 'search[price(lt)]'
+        with_tag 'input[name=?]', 'search[price][gt]'
+        with_tag 'input[name=?]', 'search[price][lt]'
         without_tag 'input[type=checkbox]'
       end
     end
@@ -65,13 +65,13 @@ describe Admin::Products2Controller do
     end
     
     before :each do
-      get :index, :search => {"price(gt)" => "5000", "price(lt)" => ""}
+      get :index, :search => {:price => {:gt => "5000", :lt => ""}}
     end
   
     it 'should prefill the search form fields' do
       response.should have_tag('form#search_form') do
-        with_tag 'input[name=?][value=?]', 'search[price(gt)]', 5000
-        with_tag 'input:not([value])[name=?]', 'search[price(lt)]'
+        with_tag 'input[name=?][value=?]', 'search[price][gt]', 5000
+        with_tag 'input:not([value])[name=?]', 'search[price][lt]'
         without_tag 'input[type=checkbox]'
       end
     end
@@ -102,13 +102,13 @@ describe Admin::Products2Controller do
     end
     
     before :each do
-      get :index, :search => {"price(gt)" => "", "price(lt)" => "5000"}
+      get :index, :search => {:price => {:gt => "", :lt => "5000"}}
     end
   
     it 'should prefill the search form fields' do
       response.should have_tag('form#search_form') do
-        with_tag 'input:not([value])[name=?]', 'search[price(gt)]'
-        with_tag 'input[name=?][value=?]', 'search[price(lt)]', 5000
+        with_tag 'input:not([value])[name=?]', 'search[price][gt]'
+        with_tag 'input[name=?][value=?]', 'search[price][lt]', 5000
         without_tag 'input[type=checkbox]'
       end
     end
@@ -139,13 +139,13 @@ describe Admin::Products2Controller do
     end
     
     before :each do
-      get :index, :search => {"price(gt)" => "1000", "price(lt)" => "10000"}
+      get :index, :search => {:price => {:gt => "1000", :lt => "10000"}}
     end
 
     it 'should prefill the search form fields' do
       response.should have_tag('form#search_form') do
-        with_tag 'input[name=?][value=?]', 'search[price(gt)]', 1000
-        with_tag 'input[name=?][value=?]', 'search[price(lt)]', 10000
+        with_tag 'input[name=?][value=?]', 'search[price][gt]', 1000
+        with_tag 'input[name=?][value=?]', 'search[price][lt]', 10000
         without_tag 'input[type=checkbox]'
       end
     end

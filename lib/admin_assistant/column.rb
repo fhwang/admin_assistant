@@ -270,12 +270,12 @@ class AdminAssistant
           if @compare_to_range
             input << "Greater than "
             input << @action_view.send(
-              :text_field_tag, "search[#{name}(gt)]",
+              :text_field_tag, "search[#{name}][gt]",
               form.object.send(name)[:gt]
             )
             input << "&nbsp;&nbsp;&nbsp;Less than "
             input << @action_view.send(
-              :text_field_tag, "search[#{name}(lt)]",
+              :text_field_tag, "search[#{name}][lt]",
               form.object.send(name)[:lt]
             )
           else

@@ -9,11 +9,13 @@ class AdminAssistant
       columns.each do |c|
         if c.respond_to?(:name) and compare_to_range?(c.name)
           val = {}
-          unless @params["#{c.name}(gt)"].blank?
-            val[:gt] = @params["#{c.name}(gt)"]
-          end
-          unless @params["#{c.name}(lt)"].blank?
-            val[:lt] = @params["#{c.name}(lt)"]
+          if col_params = @params[c.name]
+            unless col_params['gt'].blank?
+              val[:gt] = col_params['gt']
+            end
+            unless col_params['lt'].blank?
+              val[:lt] = col_params['lt']
+            end
           end
           @attributes[c.name] = val
         else
