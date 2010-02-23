@@ -7,22 +7,11 @@ class AdminAssistant
       @params ||= {}
       @attributes = HashWithIndifferentAccess.new
       columns.each do |c|
-        if c.respond_to?(:name) and compare_to_range?(c.name)
-          val = {}
-          if col_params = @params[c.name]
-            unless col_params['gt'].blank?
-              val[:gt] = col_params['gt']
-            end
-            unless col_params['lt'].blank?
-              val[:lt] = col_params['lt']
-            end
-          end
-          @attributes[c.name] = val
-        else
-          c.verify_for_search
-          c.attributes_for_search_object(@params).each do |key, value|
-            @attributes[key] = value
-          end
+        c.verify_for_search
+        compare_to_range = compare_to_range?(c.name) if c.respond_to?(:name)
+        attributes = c.attributes_for_search_object(@params, compare_to_range)
+        attributes.each do |key, value|
+          @attributes[key] = value
         end
       end
     end
@@ -76,7 +65,7 @@ class AdminAssistant
     def compare_to_range?(column_name)
       settings[column_name].compare_to_range
     end
-    
+
     def id
       @attributes[:id] if @attributes.has_key?(:id)
     end

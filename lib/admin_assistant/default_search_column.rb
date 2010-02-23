@@ -9,11 +9,6 @@ class AdminAssistant
       unless search.params.blank?
         ar_query_condition.ar_query.boolean_join = :and
         ar_query_condition.boolean_join = :or
-#        names_to_search = Model.new(@model_class).searchable_columns.map(
- #         &:name
-  #      )
-   #     names_to_search.concat @fields_to_include
-#        names_to_search.uniq.each do |field_name|
         @fields_to_match.each do |field_name|
           ar_query_condition.sqls << "LOWER(#{field_name}) like LOWER(?)"
           ar_query_condition.bind_vars << "%#{search.params}%"
@@ -21,7 +16,7 @@ class AdminAssistant
       end
     end
     
-    def attributes_for_search_object(search_params)
+    def attributes_for_search_object(search_params, compare_to_range)
       {}
     end
       

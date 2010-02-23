@@ -24,7 +24,7 @@ class AdminAssistant
       @belongs_to_assoc.association_foreign_key
     end
     
-    def attributes_for_search_object(search_params)
+    def attributes_for_search_object(search_params, compare_to_range)
       atts = {}
       atts[association_foreign_key.to_sym] = 
           search_params[association_foreign_key]

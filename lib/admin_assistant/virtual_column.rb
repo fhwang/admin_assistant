@@ -13,7 +13,7 @@ class AdminAssistant
       end
     end
     
-    def attributes_for_search_object(search_params)
+    def attributes_for_search_object(search_params, compare_to_range)
       value = if search_params[@name.to_s] == 'true'
         true
       elsif search_params[@name.to_s] == 'false'

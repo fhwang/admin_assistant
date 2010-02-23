@@ -8,6 +8,57 @@ class AdminAssistant
       ConditionUpdate.new(ar_query_condition, search, name, field_type).run
     end
       
+    def attributes_for_search_object(search_params, compare_to_range)
+      attrs = {}
+      if compare_to_range
+        val = {}
+        if col_params = search_params[name]
+          unless col_params['gt'].blank?
+            val[:gt] = col_params['gt']
+          end
+          unless col_params['lt'].blank?
+            val[:lt] = col_params['lt']
+          end
+        end
+        attrs[name] = val
+      else
+        attrs[name] = if field_type == :datetime
+          datetime_attributes_for_search_object search_params
+        else
+          terms = search_params[@ar_column.name]
+          unless terms.blank?
+            case field_type
+              when :boolean
+                terms.blank? ? nil : (terms == 'true')
+              else
+                terms
+            end
+          end
+        end
+      end
+      attrs
+    end
+    
+    def contains?(column_name)
+      column_name.to_s == @ar_column.name
+    end
+    
+    def datetime_attributes_for_search_object(search_params)
+      begin
+        Time.utc(
+          *(1..5).to_a.map { |i| search_params["#{name}(#{i}i)"].to_i }
+        )
+      rescue ArgumentError; end
+    end
+    
+    def field_type
+      @ar_column.type
+    end
+    
+    def name
+      @ar_column.name
+    end
+      
     class ConditionUpdate
       def initialize(ar_query_condition, search, name, field_type)
         @ar_query_condition, @search, @name, @field_type =
@@ -86,43 +137,6 @@ class AdminAssistant
       def value_for_query
         @search.send @name
       end
-    end
-      
-    def attributes_for_search_object(search_params)
-      value = if field_type == :datetime
-        datetime_attributes_for_search_object search_params
-      else
-        terms = search_params[@ar_column.name]
-        unless terms.blank?
-          case field_type
-            when :boolean
-              terms.blank? ? nil : (terms == 'true')
-            else
-              terms
-          end
-        end
-      end
-      {name => value}
-    end
-    
-    def contains?(column_name)
-      column_name.to_s == @ar_column.name
-    end
-    
-    def datetime_attributes_for_search_object(search_params)
-      begin
-        Time.utc(
-          *(1..5).to_a.map { |i| search_params["#{name}(#{i}i)"].to_i }
-        )
-      rescue ArgumentError; end
-    end
-    
-    def field_type
-      @ar_column.type
-    end
-    
-    def name
-      @ar_column.name
     end
     
     class FormView < AdminAssistant::Column::View

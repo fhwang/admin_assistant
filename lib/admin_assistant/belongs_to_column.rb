@@ -46,7 +46,7 @@ class AdminAssistant
           @belongs_to_assoc.association_foreign_key
     end
       
-    def attributes_for_search_object(search_params)
+    def attributes_for_search_object(search_params, compare_to_range)
       atts = {}
       if @match_text_fields_in_search
         atts[name.to_sym] = search_params[name]
