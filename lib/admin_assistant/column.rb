@@ -251,11 +251,42 @@ class AdminAssistant
       
       def datetime_input(form)
         input = ''
-        input << comparator_html(form.object) << ' ' if @comparators == :all
-        input << form.datetime_select(name, :include_blank => true)
+        if @compare_to_range
+          input = datetime_range_input(form)
+        else
+          input << comparator_html(form.object) << ' ' if @comparators == :all
+          input << form.datetime_select(name, :include_blank => true)
+          input << @action_view.send(
+            :link_to_function, 'Clear',
+            "AdminAssistant.clear_datetime_select('search_#{name.underscore}')"
+          )
+        end
+        input
+      end
+      
+      def datetime_range_input(form)
+        input = ''
+        input << "After "
+        input << DateTimeRangeEndPointSelector.new(
+          form.object.send(name)[:gt],
+          :prefix => "search", :field_name => 'gt',
+          :include_position => true, :index => name, :include_blank => true,
+          :datetime_separator => ' &mdash; ', :time_separator => ' : '
+        ).select_datetime
         input << @action_view.send(
           :link_to_function, 'Clear',
-          "AdminAssistant.clear_datetime_select('search_#{name.underscore}')"
+          "AdminAssistant.clear_datetime_select('search_#{name.underscore}_gt')"
+        )
+        input << "&nbsp;&nbsp;&nbsp;Before "
+        input << DateTimeRangeEndPointSelector.new(
+          form.object.send(name)[:lt],
+          :prefix => "search", :field_name => 'lt',
+          :include_position => true, :index => name, :include_blank => true,
+          :datetime_separator => ' &mdash; ', :time_separator => ' : '
+        ).select_datetime
+        input << @action_view.send(
+          :link_to_function, 'Clear',
+          "AdminAssistant.clear_datetime_select('search_#{name.underscore}_lt')"
         )
         input
       end

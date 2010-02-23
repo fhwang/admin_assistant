@@ -11,19 +11,10 @@ class AdminAssistant
     def attributes_for_search_object(search_params, compare_to_range)
       attrs = {}
       if compare_to_range
-        val = {}
-        if col_params = search_params[name]
-          unless col_params['gt'].blank?
-            val[:gt] = col_params['gt']
-          end
-          unless col_params['lt'].blank?
-            val[:lt] = col_params['lt']
-          end
-        end
-        attrs[name] = val
+        attrs[name] = range_attribute_for_search_object search_params[name]
       else
         attrs[name] = if field_type == :datetime
-          datetime_attributes_for_search_object search_params
+          datetime_attributes_for_search_object search_params, name
         else
           terms = search_params[@ar_column.name]
           unless terms.blank?
@@ -43,10 +34,10 @@ class AdminAssistant
       column_name.to_s == @ar_column.name
     end
     
-    def datetime_attributes_for_search_object(search_params)
+    def datetime_attributes_for_search_object(search_params, prefix)
       begin
         Time.utc(
-          *(1..5).to_a.map { |i| search_params["#{name}(#{i}i)"].to_i }
+          *(1..5).to_a.map { |i| search_params["#{prefix}(#{i}i)"].to_i }
         )
       rescue ArgumentError; end
     end
@@ -57,6 +48,22 @@ class AdminAssistant
     
     def name
       @ar_column.name
+    end
+    
+    def range_attribute_for_search_object(column_params)
+      range = {}
+      if column_params
+        %w(gt lt).each do |comparator|
+          if column_params.keys.any? { |k| k.to_s =~ /^#{comparator}/ }
+            range[comparator.to_sym] = if field_type == :datetime
+              datetime_attributes_for_search_object(column_params, comparator)
+            else
+              column_params[comparator] unless column_params[comparator].blank?
+            end
+          end
+        end
+      end
+      range
     end
       
     class ConditionUpdate
@@ -119,10 +126,10 @@ class AdminAssistant
           unless value_for_query.nil?
             if comparator
               add_comparative_condition
-            elsif column_is_a_string_type?
-              add_case_insensitive_string_comparison
             elsif compare_to_range?
               add_range_condition
+            elsif column_is_a_string_type?
+              add_case_insensitive_string_comparison
             else
               add_equality_condition
             end
