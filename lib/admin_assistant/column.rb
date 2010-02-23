@@ -264,30 +264,26 @@ class AdminAssistant
         input
       end
       
+      def datetime_range_end_point_input(form, comparator, label)
+        input = "#{label} "
+        input << DateTimeRangeEndPointSelector.new(
+          form.object.send(name)[comparator],
+          :prefix => "search", :field_name => comparator.to_s,
+          :include_position => true, :index => name, :include_blank => true,
+          :datetime_separator => ' &mdash; ', :time_separator => ' : '
+        ).select_datetime
+        input << @action_view.send(
+          :link_to_function, 'Clear',
+          "AdminAssistant.clear_datetime_select('search_#{name.underscore}_#{comparator}')"
+        )
+        input
+      end
+      
       def datetime_range_input(form)
         input = ''
-        input << "After "
-        input << DateTimeRangeEndPointSelector.new(
-          form.object.send(name)[:gt],
-          :prefix => "search", :field_name => 'gt',
-          :include_position => true, :index => name, :include_blank => true,
-          :datetime_separator => ' &mdash; ', :time_separator => ' : '
-        ).select_datetime
-        input << @action_view.send(
-          :link_to_function, 'Clear',
-          "AdminAssistant.clear_datetime_select('search_#{name.underscore}_gt')"
-        )
-        input << "&nbsp;&nbsp;&nbsp;Before "
-        input << DateTimeRangeEndPointSelector.new(
-          form.object.send(name)[:lt],
-          :prefix => "search", :field_name => 'lt',
-          :include_position => true, :index => name, :include_blank => true,
-          :datetime_separator => ' &mdash; ', :time_separator => ' : '
-        ).select_datetime
-        input << @action_view.send(
-          :link_to_function, 'Clear',
-          "AdminAssistant.clear_datetime_select('search_#{name.underscore}_lt')"
-        )
+        input << datetime_range_end_point_input(form, :gt, 'After')
+        input << "&nbsp;&nbsp;&nbsp;"
+        input << datetime_range_end_point_input(form, :lt, 'Before')
         input
       end
       
