@@ -92,6 +92,12 @@ class AdminAssistant
       # skip it, actually
     elsif (ar_column = @model_class.columns_hash[name.to_s])
       ActiveRecordColumn.new ar_column
+    elsif has_many_assoc = @model.has_many_assoc(name)
+      HasManyColumn.new(
+        has_many_assoc,
+        :match_text_fields_in_search => 
+            search_settings[name].match_text_fields_for_association?
+      )
     else
       VirtualColumn.new name, @model_class, self
     end
@@ -204,6 +210,13 @@ class AdminAssistant
     def initialize(ar_model)
       @ar_model = ar_model
     end
+    
+    def accessors
+      @ar_model.instance_methods.
+          select { |m| m =~ /=$/ }.
+          map { |m| m.gsub(/=/, '')}.
+          select { |m| @ar_model.instance_methods.include?(m) }
+    end
   
     def belongs_to_associations
       @ar_model.reflect_on_all_associations.select { |assoc|
@@ -236,13 +249,6 @@ class AdminAssistant
         %w(id created_at updated_at).include?(ar_column.name)
       }.map { |ar_column| ar_column.name }
     end
-    
-    def accessors
-      @ar_model.instance_methods.
-          select { |m| m =~ /=$/ }.
-          map { |m| m.gsub(/=/, '')}.
-          select { |m| @ar_model.instance_methods.include?(m) }
-    end
   
     def file_columns
       unless @file_columns
@@ -257,6 +263,14 @@ class AdminAssistant
         end
       end
       @file_columns
+    end
+    
+    def has_many_assoc(association_name)
+      @ar_model.reflect_on_all_associations.select { |assoc|
+        assoc.macro == :has_many
+      }.detect { |assoc|
+        assoc.name.to_s == association_name.to_s
+      }
     end
     
     def paperclip_attachments
