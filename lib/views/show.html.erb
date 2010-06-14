@@ -1,3 +1,4 @@
+<% show_view = AdminAssistant::ShowView.new(@record, @admin_assistant, self) %>
 <div class="admin_assistant show <%=
   @admin_assistant.controller_css_class(controller)
 %>">
@@ -5,11 +6,10 @@
     <h2><%=
       h("#{request.model_class_name(@record).capitalize} #{@record.id}")
     %></h2>
-    <%= link_to 'Edit', :action => 'edit', :id => @record.id %>
+    <% if @admin_assistant.edit? %>
+      <%= link_to 'Edit', :action => 'edit', :id => @record.id %>
+    <% end %>
   </div>
-  <%
-  show_view = AdminAssistant::ShowView.new(@record, @admin_assistant, self)
-  %>
   <% show_view.columns.each do |column| %>
     <div class="column">
     <label><%= h(column.label) %></label>

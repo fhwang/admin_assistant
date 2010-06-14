@@ -61,6 +61,12 @@ describe Admin::BlogPostsReadOnlyController do
         'h2', :text => "Published blog post #{@blog_post.id}"
       )
     end
+    
+    it 'should not show an edit link' do
+      response.should_not have_tag(
+        'a[href=?]', "/admin/blog_posts_read_only/edit/#{@blog_post.id}"
+      )
+    end
   end
   
   describe '#show for an unpublished blog post' do
