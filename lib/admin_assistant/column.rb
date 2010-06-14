@@ -41,17 +41,6 @@ class AdminAssistant
           end
         end
       end
-    
-      def controller
-        @action_view.controller
-      end
-      
-      def custom_template_file_path(slug)
-        File.join(
-          RAILS_ROOT, 'app/views', controller.controller_path, 
-          "#{slug}.html.erb"
-        )
-      end
       
       def description
         @description
@@ -59,14 +48,6 @@ class AdminAssistant
       
       def errors(record)
         record.errors.on name
-      end
-      
-      def file_option_for_custom_template_render(slug)
-        if RAILS_GEM_VERSION == '2.1.0'
-          File.join(controller.controller_path, "#{slug}.html.erb")
-        else
-          custom_template_file_path slug
-        end
       end
 
       def html(rails_form)
@@ -319,7 +300,18 @@ class AdminAssistant
     
     module ShowViewMethods
       def html(record)
-        @action_view.send(:h, string(record))
+        slug = "_#{name}_for_show"
+        if File.exist?(custom_template_file_path(slug))
+          varname = @model_class.name.underscore
+          @action_view.instance_variable_set("@#{varname}".to_sym, record)
+          locals = {varname.to_sym => record}
+          @action_view.render(
+            :file => file_option_for_custom_template_render(slug),
+            :locals => locals
+          )
+        else
+          @action_view.send(:h, string(record))
+        end
       end
     end
 
@@ -352,6 +344,25 @@ class AdminAssistant
         else
           @action_view.send(:check_box_tag, input_name, '1', value) +
               @action_view.send(:hidden_field_tag, input_name, '0', :id => "#{input_name}_hidden")
+        end
+      end
+    
+      def controller
+        @action_view.controller
+      end
+      
+      def custom_template_file_path(slug)
+        File.join(
+          RAILS_ROOT, 'app/views', controller.controller_path, 
+          "#{slug}.html.erb"
+        )
+      end
+      
+      def file_option_for_custom_template_render(slug)
+        if RAILS_GEM_VERSION == '2.1.0'
+          File.join(controller.controller_path, "#{slug}.html.erb")
+        else
+          custom_template_file_path slug
         end
       end
       

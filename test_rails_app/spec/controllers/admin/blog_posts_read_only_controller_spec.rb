@@ -44,7 +44,8 @@ describe Admin::BlogPostsReadOnlyController do
   describe '#show for a published blog post' do
     before :all do
       @blog_post = BlogPost.create!(
-        :title => 'published', :user => @user, :published_at => Time.now.utc
+        :title => 'published', :user => @user, :published_at => Time.now.utc,
+        :body => 'Today I ate a sandwich.'
       )
     end
     
@@ -66,6 +67,10 @@ describe Admin::BlogPostsReadOnlyController do
       response.should_not have_tag(
         'a[href=?]', "/admin/blog_posts_read_only/edit/#{@blog_post.id}"
       )
+    end
+    
+    it 'should use the custom partial to render the body' do
+      response.should have_tag('strong', :text => 'Today I ate a sandwich.')
     end
   end
   

@@ -14,3 +14,9 @@ Show configuration affects what is displayed in a show page, e.g. `/admin/blog_p
     end
 
 Shows only these columns in the show page.
+
+### Partials
+
+#### \_\[column\]\_for_show.html.erb
+
+If this partial is present, it will be rendered instead of the default HTML for the column.
