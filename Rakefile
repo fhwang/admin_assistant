@@ -45,3 +45,20 @@ task :spec do
   end
 end
 
+begin
+  require 'jeweler'
+  Jeweler::Tasks.new do |gem|
+    gem.name = "admin_assistant"
+    gem.summary = %Q{admin_assistant is a Rails plugin that automates a lot of features typically needed in admin interfaces.}
+    gem.description = %Q{admin_assistant is a Rails plugin that automates a lot of features typically needed in admin interfaces.}
+    gem.email = "sera@fhwang.net"
+    gem.homepage = "http://github.com/fhwang/admin_assistant"
+    gem.authors = ["Francis Hwang"]
+    gem.add_dependency "will_paginate"
+    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
+  end
+  Jeweler::GemcutterTasks.new
+rescue LoadError
+  puts "Jeweler (or a dependency) not available. Install it with: gem install jeweler"
+end
+
