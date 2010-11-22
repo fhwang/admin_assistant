@@ -241,7 +241,7 @@ describe Admin::AppointmentsController do
       @yesterdays_appt ||= Appointment.create!(
         :subject => random_word, :user => @user, :time => @yesterday
       )
-      @today = Time.now.to_date.to_time.utc
+      @today = 0.minutes.ago.to_date.to_time.utc
       @todays_appt = Appointment.find_by_time @today
       @todays_appt ||= Appointment.create!(
         :subject => random_word, :user => @user, :time => @today
@@ -310,7 +310,7 @@ describe Admin::AppointmentsController do
       @yesterdays_appt ||= Appointment.create!(
         :subject => random_word, :user => @user, :time => @yesterday
       )
-      @today = Time.now.to_date.to_time.utc
+      @today = 0.minutes.ago.to_date.to_time.utc
       @todays_appt = Appointment.find_by_time @today
       @todays_appt ||= Appointment.create!(
         :subject => random_word, :user => @user, :time => @today
