@@ -264,4 +264,104 @@ class Admin::AppointmentsIntegrationTest < ActionController::IntegrationTest
     # should not show an appointment after that time
     assert_no_match(/#{@tomorrows_appt.subject}/, response.body)
   end
+  
+  def test_index_when_searching_for_an_appointment_within_a_time_range
+    Appointment.destroy_all if Appointment.count > 20
+    @user = User.first
+    @user ||= User.create! :username => random_word
+    @yesterday = 1.day.ago.to_date.to_time.utc
+    @yesterdays_appt = Appointment.find_by_time @yesterday
+    @yesterdays_appt ||= Appointment.create!(
+      :subject => random_word, :user => @user, :time => @yesterday
+    )
+    @today = 0.minutes.ago.to_date.to_time.utc
+    @todays_appt = Appointment.find_by_time @today
+    @todays_appt ||= Appointment.create!(
+      :subject => random_word, :user => @user, :time => @today
+    )
+    @tomorrow = 1.day.from_now.to_date.to_time.utc
+    @tomorrows_appt = Appointment.find_by_time @tomorrow
+    @tomorrows_appt ||= Appointment.create!(
+      :subject => random_word, :user => @user, :time => @tomorrow
+    )
+    get(
+      "/admin/appointments",
+      :search => {:time => {
+        'gt(1i)' => @yesterday.year, 'gt(2i)' => @yesterday.month,
+        'gt(3i)' => @yesterday.day, 'gt(4i)' => @yesterday.hour,
+        'gt(5i)' => '', 'lt(1i)' => @tomorrow.year,
+        'lt(2i)' => @tomorrow.month, 'lt(3i)' => @tomorrow.day,
+        'lt(4i)' => @tomorrow.hour, 'lt(5i)' => '00'
+      }}
+    )
+    assert_response :success
+    
+    # should prefill the search form fields
+    assert_select('form#search_form') do
+      assert_select('select[name=?]', 'search[time][gt(1i)]') do
+        assert_select('option[value=?][selected=selected]', @yesterday.year)
+      end
+      assert_select('select[name=?]', 'search[time][gt(2i)]') do
+        assert_select('option[value=?][selected=selected]', @yesterday.month)
+      end
+      assert_select('select[name=?]', 'search[time][gt(3i)]') do
+        assert_select('option[value=?][selected=selected]', @yesterday.day)
+      end
+      assert_select('select[name=?]', 'search[time][gt(4i)]') do
+        assert_select(
+          'option[value=?][selected=selected]',
+          sprintf('%02d', @yesterday.hour)
+        )
+      end
+      assert_select('select[name=?]', 'search[time][gt(5i)]') do
+        assert_select('option[value=?][selected=selected]', '00')
+      end
+      assert_select('select[name=?]', 'search[time][lt(1i)]') do
+        assert_select('option[value=?][selected=selected]', @tomorrow.year)
+      end
+      assert_select('select[name=?]', 'search[time][lt(2i)]') do
+        assert_select('option[value=?][selected=selected]', @tomorrow.month)
+      end
+      assert_select('select[name=?]', 'search[time][lt(3i)]') do
+        assert_select('option[value=?][selected=selected]', @tomorrow.day)
+      end
+      assert_select('select[name=?]', 'search[time][lt(4i)]') do
+        assert_select(
+          'option[value=?][selected=selected]',
+          sprintf('%02d', @tomorrow.hour)
+        )
+      end
+      assert_select('select[name=?]', 'search[time][lt(5i)]') do
+        assert_select('option[value=?][selected=selected]', '00')
+      end
+    end
+    
+    # should not show an appointment before that range
+    assert_no_match(/#{@yesterdays_appt.subject}/, response.body)
+    
+    # should show an appointment in that range
+    assert_select('td', :text => @todays_appt.subject)
+    
+    # should not show an appointment after that range
+    assert_no_match(/#{@tomorrows_appt.subject}/, response.body)
+  end
+
+  def test_new
+    User.destroy_all
+    @user = User.create! :username => random_word
+    get "/admin/appointments/new"
+    
+    # should show prefixes in the subject field
+    assert_select('td', :text => /Prefix a/) do
+      assert_select('input[name=?]', 'appointment[a][subject]')
+    end
+    
+    # should sensibly prefix the datetime fields
+    assert_select('select[name=?]', 'appointment[a][time(1i)]')
+    
+    # should include a user selector
+    assert_select('select[name=?]', 'appointment[a][user_id]') do
+      assert_select 'option[value=?]', @user.id, :text => /#{@user.username}/
+    end
+  end
 end
