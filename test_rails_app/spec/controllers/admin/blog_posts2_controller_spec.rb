@@ -3,6 +3,11 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 describe Admin::BlogPosts2Controller do
   integrate_views
   
+  before :all do
+    User.destroy_all
+    @user = User.create! :username => 'soren'
+  end
+
   describe '#create with a bad tag and a missing title' do
     before :each do
       @orig_count = BlogPost.count
