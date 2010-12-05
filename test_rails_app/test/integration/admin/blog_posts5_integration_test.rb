@@ -1,6 +1,6 @@
-require File.expand_path(File.dirname(__FILE__) + "/../test_helper")
+require File.expand_path(File.dirname(__FILE__) + "/../../test_helper")
 
-class AdminBlogPosts5IntegrationTest < ActionController::IntegrationTest
+class Admin::BlogPosts5IntegrationTest < ActionController::IntegrationTest
   def test_search_retains_filter
     user1 = User.find_or_create_by_username 'friedrich'
     user2 = User.find_or_create_by_username 'rene'

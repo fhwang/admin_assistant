@@ -1,6 +1,6 @@
-require File.expand_path(File.dirname(__FILE__) + "/../test_helper")
+require File.expand_path(File.dirname(__FILE__) + "/../../test_helper")
 
-class AdminBlogPosts2IntegrationTest < ActionController::IntegrationTest
+class Admin::BlogPosts2IntegrationTest < ActionController::IntegrationTest
   def test_comes_back_to_index_sorted_by_published_at_after_preview_then_create
     user = User.find_or_create_by_username 'soren'
     BlogPost.create! :title => random_word, :user => user
