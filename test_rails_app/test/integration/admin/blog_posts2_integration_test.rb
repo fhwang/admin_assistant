@@ -749,4 +749,89 @@ class Admin::BlogPosts2IntegrationTest < ActionController::IntegrationTest
     # should say 'Author' instead of 'User'
     assert_match(/Author/, response.body)
   end
+  
+  def test_show
+    @blog_post = BlogPost.create! :title => random_word, :user => @user
+    get "/admin/blog_posts2/show/#{@blog_post.id}"
+    assert_response :success
+
+    # should show user
+    assert_match(/soren/, response.body)
+    
+    # should not show created at
+    assert_no_match(/Created at/, response.body)
+  end
+  
+  def test_update_when_there_are_no_validation_errors
+    @blog_post = BlogPost.create! :title => random_word, :user => @user
+    post(
+      "/admin/blog_posts2/update/#{@blog_post.id}",
+      :blog_post => {:tags => 'tag1 tag2 tag3'}
+    )
+    
+    # should set the tags_string
+    @blog_post.reload
+    assert_match(/tag1,tag2,tag3/, @blog_post.tags_string)
+  end
+  
+  def test_update_when_the_user_has_clicked_Preview
+    @blog_post = BlogPost.create! :title => random_word, :user => @user
+    title2 = random_word
+    post(
+      "/admin/blog_posts2/update/#{@blog_post.id}",
+      :blog_post => {:title => title2},
+      :commit => 'Preview'
+    )
+      
+    # should redirect to the edit page with the preview flag
+    assert_redirected_to(
+      :action => 'edit', :id => @blog_post.id, :preview => '1'
+    )
+  end
+  
+  def test_update_with_a_bad_tag
+    @blog_post = BlogPost.create! :title => random_word, :user => @user
+    post(
+      "/admin/blog_posts2/update/#{@blog_post.id}",
+      :blog_post => {:tags => "foo bar! baz"}
+    )
+    
+    # should render a useful error
+    assert_select("div.errorExplanation") do
+      assert_select 'li', :text => "Tags contain invalid string 'bar!'"
+    end
+    
+    # should highlight the tag string entry
+    assert_select("div.fieldWithErrors") do
+      assert_select "input[name=?][value=?]", "blog_post[tags]", "foo bar! baz"
+    end
+  end
+  
+  def test_update_with_a_bad_tag_and_a_missing_title
+    @blog_post = BlogPost.create! :title => random_word, :user => @user
+    post(
+      "/admin/blog_posts2/update/#{@blog_post.id}",
+      :blog_post => {:tags => "foo bar! baz", :title => ''}
+    )
+    
+    # should render a useful tags error
+    assert_select("div.errorExplanation") do
+      assert_select 'li', :text => "Tags contain invalid string 'bar!'"
+    end
+    
+    # should highlight the tag string entry
+    assert_select("div.fieldWithErrors") do
+      assert_select "input[name=?][value=?]", "blog_post[tags]", "foo bar! baz"
+    end
+    
+    # should render a useful title error
+    assert_select("div.errorExplanation") do
+      assert_select 'li', :text => "Title can't be blank"
+    end
+    
+    # should highlight the title string entry
+    assert_select("div.fieldWithErrors") do
+      assert_select "input[name=?][value=?]", "blog_post[title]", ""
+    end
+  end
 end
