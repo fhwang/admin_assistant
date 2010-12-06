@@ -329,4 +329,89 @@ class Admin::BlogPosts3IntegrationTest < ActionController::IntegrationTest
     # should not match a record with an ID that has the ID as a substring
     assert_select("tr[id=?]", "blog_post_#{@blog_post2.id}", false)
   end
+  
+  def test_index_when_the_blank_body_count_has_been_cached_in_memcache_but_the_request_is_looking_for_the_default_index
+    $cache.flush
+    another_key = 
+        "AdminAssistant::Admin::BlogPosts3Controller_count__body_is_null_or_body______"
+    $cache.write another_key, 1_000_000, :expires_in => 12.hours
+    get "/admin/blog_posts3"
+    
+    # should not read a value from memcache
+    assert_no_match(/1000000 posts found/, response.body)
+
+    # should set the count in memcache
+    key =
+        "AdminAssistant::Admin::BlogPosts3Controller_count_published_at_is_null_"
+    assert $cache.read(key)
+    assert_in_delta(12.hours, $cache.expires_in(key), 5.seconds)
+  end
+  
+  def test_index_when_the_count_has_been_cached_in_memcache
+    key =
+        "AdminAssistant::Admin::BlogPosts3Controller_count_published_at_is_null_"
+    $cache.write key, 1_000_000, :expires_in => 12.hours
+    $cache.raise_on_write
+    get "/admin/blog_posts3"
+    
+    # should read memcache and not hit the database
+    assert_match(/1000000 posts found/, response.body)
+  end
+  
+  def test_index_with_more_than_one_pages_worth_of_unpublished_blog_posts
+    $cache.flush
+    BlogPost.destroy_all
+    1.upto(26) do |i|
+      BlogPost.create!(
+        :title => "unpublished blog post #{i}", :user => @user,
+        :published_at => nil
+      )
+    end
+    @unpub_count = BlogPost.count "published_at is null"
+    $cache.flush
+    get "/admin/blog_posts3"
+    
+    # should cache the total number of entries, not the entries on just this page
+    key =
+        "AdminAssistant::Admin::BlogPosts3Controller_count_published_at_is_null_"
+    assert_equal(@unpub_count, $cache.read(key))
+    assert_in_delta(12.hours, $cache.expires_in(key), 5.seconds)
+  end
+  
+  def test_new
+    @request_time = Time.now.utc
+    get "/admin/blog_posts3/new"
+    
+    # should not have a body field
+    assert_select('textarea[name=?]', 'blog_post[body]', false)
+    
+    # should have a published_at select that starts in the year 2009
+    name = 'blog_post[published_at(1i)]'
+    assert_select('select[name=?]', name) do
+      assert_select "option[value='2009']"
+      assert_select "option[value='2010']"
+      assert_select "option[value='2008']", false
+    end
+    
+    # should have a published_at select that is set to now
+    name = 'blog_post[published_at(3i)]'
+    assert_select('select[name=?]', name) do
+      assert_select "option[value=?][selected=selected]", @request_time.day
+    end
+    
+    # should not show a nullify link for published_at
+    assert_no_match(%r|<a [^>]*>Set "published at" to nil</a>|, response.body)
+    
+    # should say 'New post'
+    assert_select('h2', :text => 'New post')
+  end
+  
+  def test_show
+    @blog_post = BlogPost.create! :title => "title", :user => @user
+    get "/admin/blog_posts3/show/#{@blog_post.id}"
+    assert_response :success
+    
+    # should say 'Post [ID]'
+    assert_select('h2', :text => "Post #{@blog_post.id}")
+  end
 end
