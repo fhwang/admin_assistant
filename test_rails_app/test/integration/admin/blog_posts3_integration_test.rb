@@ -177,4 +177,156 @@ class Admin::BlogPosts3IntegrationTest < ActionController::IntegrationTest
     # should sort by username
     assert_match(%r|AARDVARKS!!!!!1.*Wanna go climbing|m, response.body)
   end
+  
+  def test_index_when_searching_for_a_blank_body
+    BlogPost.destroy_all
+    @nil_body_post = BlogPost.create!(
+      :title => "nil", :user => @user, :body => nil
+    )
+    @empty_string_body_post = BlogPost.create!(
+      :title => "empty string", :user => @user, :body => ''
+    )
+    @non_blank_body_post = BlogPost.create!(
+      :title => "non-blank", :user => @user, :body => 'foo'
+    )
+    get(
+      "/admin/blog_posts3",
+      :search => {
+        "body(blank)" => '1', :user => '', :body => '', :title => '', 
+        :textile => '', :id => '', '(all_or_any)' => 'all',
+        :has_short_title => ''
+      }
+    )
+    
+    # should retrieve a blog post with a nil body
+    assert_select("tr[id=?]", "blog_post_#{@nil_body_post.id}")
+    
+    # should retrieve a blog post with a space-only string body
+    assert_select(
+      "tr[id=?]", "blog_post_#{@empty_string_body_post.id}"
+    )
+    
+    # should not retrieve a blog post with a non-blank body
+    assert_select(
+      "tr[id=?]", "blog_post_#{@non_blank_body_post.id}", false
+    )
+      
+    # should have a checked blank checkbox for the body search field
+    assert_select('form[id=search_form][method=get]') do
+      assert_select(
+        "input[type=checkbox][checked=checked][name=?]", 
+        "search[body(blank)]"
+      )
+    end
+  end
+  
+  def test_index_when_searching_for_short_title_blog_posts
+    BlogPost.destroy_all
+    @bp1 = BlogPost.create!(
+      :title => 'short', :body => 'foobar', :user => @user
+    )
+    @bp2 = BlogPost.create!(
+      :title => "longer title", :body => 'foobar', :user => @user
+    )
+    get(
+      "/admin/blog_posts3",
+      :search => {
+        :body => "", "body(blank)" => '0', :textile => "", :id => "",
+        :user => '', :has_short_title => 'true'
+      }
+    )
+    
+    # should return a short-titled blog post
+    assert_select('td', :text => 'short')
+    
+    # should not return a longer-title blog post
+    assert_no_match(%r|<td[^>]*>longer title</td>|, response.body)
+    
+    # should pre-select 'true' in the has_short_title search field
+    assert_select('form[id=search_form][method=get]') do
+      assert_select('select[name=?]', 'search[has_short_title]') do
+        assert_select("option[value='']", :text => '')
+        assert_select("option[value='true'][selected=selected]", :text => 'Yes')
+        assert_select("option[value='false']", :text => 'No')
+      end
+    end
+  end
+    
+  def test_index_when_searching_for_long_titled_blog_posts
+    BlogPost.destroy_all
+    @bp1 = BlogPost.create!(
+      :title => 'short', :body => 'foobar', :user => @user
+    )
+    @bp2 = BlogPost.create!(
+      :title => "longer title", :body => 'foobar', :user => @user
+    )
+    get(
+      "/admin/blog_posts3",
+      :search => {
+        :body => "", "body(blank)" => '0', :textile => "", :id => "",
+        :user => '', :has_short_title => 'false'
+      }
+    )
+
+    # should not return a short-titled blog post
+    assert_no_match(%r|<td[^>]*>short</td>|, response.body)
+    
+    # should return a longer-title blog post
+    assert_select('td', :text => 'longer title')
+    
+    # should pre-select 'false' in the has_short_title search field
+    assert_select('form[id=search_form][method=get]') do
+      assert_select('select[name=?]', 'search[has_short_title]') do
+        assert_select("option[value='']", :text => '')
+        assert_select("option[value='true']", :text => 'Yes')
+        assert_select("option[value='false'][selected=selected]", :text => 'No')
+      end
+    end
+  end
+  
+  def test_index_when_searching_for_blog_posts_of_any_title_length
+    BlogPost.destroy_all
+    @bp1 = BlogPost.create!(
+      :title => 'short', :body => 'foobar', :user => @user
+    )
+    @bp2 = BlogPost.create!(
+      :title => "longer title", :body => 'foobar', :user => @user
+    )
+    get(
+      "/admin/blog_posts3",
+      :search => {
+        :body => 'foobar', "body(blank)" => '0', :textile => "", :id => "",
+        :user => '', :has_short_title => ''
+      }
+    )
+      
+    # should return a short-titled blog post
+    assert_select('td', :text => 'short')
+  
+    # should return a longer-title blog post
+    assert_select('td', :text => 'longer title')
+  end
+  
+  def test_index_when_searching_by_id
+    BlogPost.destroy_all
+    @blog_post1 = BlogPost.create! :title => random_word, :user => @user
+    blog_post2 = BlogPost.create! :title => random_word, :user => @user
+    BlogPost.update_all(
+      "id = #{@blog_post1.id * 10}", "id = #{blog_post2.id}"
+    )
+    @blog_post2 = BlogPost.find(@blog_post1.id * 10)
+    get(
+      "/admin/blog_posts3",
+      :search => {
+        :body => '', "body(blank)" => '0', :textile => "",
+        :id => @blog_post1.id.to_s, :user => '', :has_short_title => ''
+      }
+    )
+    
+    # should match the record with that ID
+    assert_select("tr[id=?]", "blog_post_#{@blog_post1.id}")
+    
+    # should not match a record with an ID that has the ID as a substring
+    assert_select("tr[id=?]", "blog_post_#{@blog_post2.id}", false)
+  end
 end
