@@ -546,4 +546,207 @@ class Admin::BlogPosts2IntegrationTest < ActionController::IntegrationTest
       end
     end
   end
+  
+  def test_index_when_searching_by_user_and_there_are_less_than_15_users
+    @user2 = User.create! :username => 'Jean-Paul'
+    User.count.downto(14) do
+      user = User.find(
+        :first,
+        :conditions => [
+          'username != ? and username != ?', @user.username, @user.username
+        ]
+      )
+      user.destroy
+    end
+    BlogPost.destroy_all
+    BlogPost.create! :title => "Soren's first post", :user => @user
+    BlogPost.create! :title => "Soren's second post", :user => @user
+    BlogPost.create! :title => "Jean-Paul's post", :user => @user2
+    get(
+      "/admin/blog_posts2",
+      :search => {:textile => '', :title => '', :user_id => @user2.id.to_s}
+    )
+    assert_response :success
+    
+    # should show blog posts by Jean-Paul
+    assert_select('td', :text => "Jean-Paul's post")
+    
+    # should not show blog posts by Soren
+    assert_no_match(%r|<td[^>]*>Soren's first post</td>|, response.body)
+    assert_no_match(%r|<td[^>]*>Soren's second post</td>|, response.body)
+    
+    # should show the user field pre-set
+    assert_select(
+      'form[id=search_form][method=get]', :text => /Title/
+    ) do
+      assert_select('select[name=?]', 'search[user_id]') do
+        assert_select("option[value='']", :text => '')
+        assert_select("option[value=?][selected=selected]", @user2.id)
+      end
+    end
+  end
+  
+  def test_index_when_searching_by_user_and_there_are_more_than_15_users
+    @blog_post = BlogPost.create! :title => random_word, :user => @user
+    User.count.upto(16) do |i|
+      User.create! :username => "--user #{i}--"
+    end
+    get(
+      "/admin/blog_posts2",
+      :search => {:textile => '', :title => '', :user_id => @user.id.to_s}
+    )
+    assert_response :success
+    
+    # should show pre-populated user autocomplete in the search form
+    assert_select("select[name=?]", "search[user_id]]", false)
+    assert_select(
+      "input[id=user_autocomplete_input][value=?]", @user.username
+    )
+    assert_select(
+      "input[type=hidden][name=?][id=search_user_id][value=?]",
+      "search[user_id]", @user.id.to_s
+    )
+    assert_select("div[id=user_autocomplete_palette]")
+    assert_select('div[id=clear_user_link]')
+    assert_match(
+      %r|
+        new\s*AdminAssistant.RestrictedAutocompleter\(
+        \s*"user",
+        \s*"search_user_id",
+        \s*"/admin/blog_posts2/autocomplete_user",
+        [^)]*"includeBlank":\s*true
+      |mx,
+      response.body
+    )
+  end
+  
+  def test_index_with_a_blank_search
+    get(
+      "/admin/blog_posts2",
+      :search => {
+        :body => '', :title => '', :textile => '', :id => '', :user_id => '',
+        '(all_or_any)' => 'all', 'id(comparator)' => ''
+      }
+    )
+    
+    # should be successful
+    assert_response :success
+  end
+  
+  def test_index_with_one_record_with_a_false_textile_field
+    BlogPost.destroy_all
+    @blog_post = BlogPost.create!(
+      :title => random_word, :user => @user, :textile => false
+    )
+    get "/admin/blog_posts2"
+      
+    # should make the textile field an Ajax toggle
+    toggle_div_id = "blog_post_#{@blog_post.id}_textile"
+    post_url =
+        "/admin/blog_posts2/update/#{@blog_post.id}?" +
+        CGI.escape('blog_post[textile]') + "=1&amp;from=#{toggle_div_id}"
+    assert_select("div[id=?]", toggle_div_id) do
+      ajax_substr = "new Ajax.Updater('#{toggle_div_id}', '#{post_url}'"
+      assert_select("a[href=#][onclick*=?]", ajax_substr, :text => 'No')
+    end
+  end
+  
+  def test_index_with_11_blog_posts
+    BlogPost.destroy_all
+    1.upto(11) do |i|
+      BlogPost.create!(
+        :title => "--post #{i}--", :user => @user
+      )
+    end
+    get "/admin/blog_posts2"
+    
+    # should show link to page 2
+    assert_select("a[href=/admin/blog_posts2?page=2]")
+    
+    # should say 11 blog posts found
+    assert_match(/11 blog posts found/, response.body)
+
+    # should mark the table rows with custom CSS class
+    assert_select('tr[class~="custom_tr_css_class"]')
+
+    # should mark the user cells with custom CSS class
+    assert_select('td[class~="custom_td_css_class"]', :text => @user.username)
+  end
+  
+  def test_new
+    Tag.find_or_create_by_tag 'tag_from_yesterday'
+    get "/admin/blog_posts2/new"
+    
+    # should show a field for tags
+    assert_match(%r|<input.*name="blog_post\[tags\]"|m, response.body)
+    
+    # should show current tags
+    assert_match(/tag_from_yesterday/, response.body)
+    
+    # should show a checkbox for the 'publish' virtual field
+    if %w(2.3.2 2.3.3 2.3.4).include?(RAILS_GEM_VERSION)
+      assert_match(
+        %r!
+          <input[^>]*
+          (name="blog_post\[publish\][^>]*type="hidden"[^>]value="0"|
+          type="hidden"[^>]*name="blog_post\[publish\][^>]value="0")
+          .*
+          <input[^>]*
+          (name="blog_post\[publish\][^>]*type="checkbox"[^>]value="1"|
+           type="checkbox"[^>]*name="blog_post\[publish\][^>]value="1")
+        !x,
+        response.body
+      )
+    elsif %w(2.1.0 2.1.2 2.2.2).include?(RAILS_GEM_VERSION)
+      assert_match(
+        %r!
+          <input[^>]*
+          (name="blog_post\[publish\][^>]*type="checkbox"[^>]value="1"|
+           type="checkbox"[^>]*name="blog_post\[publish\][^>]value="1")
+          .*
+          <input[^>]*
+          (name="blog_post\[publish\][^>]*type="hidden"[^>]value="0"|
+          type="hidden"[^>]*name="blog_post\[publish\][^>]value="0")
+        !x,
+        response.body
+      )
+    else
+      raise "I don't have a specified behavior for #{RAILS_GEM_VERSION}"
+    end
+    
+    # should not duplicate the DOM ID of the 'publish' checkbox on the page
+    assert_equal(
+      1,
+      response.body.scan(
+        /id="blog_post_publish"|id="blog_post\[publish\]"/
+      ).size
+    )
+    
+    # should show the description for the 'publish' virtual field
+    assert_match(
+      /Click this and published_at will be set automatically/,
+      response.body
+    )
+    
+    # should show a preview button
+    assert_select('input[type=submit][value=Preview]')
+    
+    # should use a textarea for the body field
+    assert_select(
+      'textarea[name=?][cols=20][rows=40]', 'blog_post[body]'
+    )
+    
+    # should use a checkbox for the boolean field 'textile'
+    assert_match(
+      %r!
+        <input[^>]*
+        (name="blog_post\[textile\][^>]*type="checkbox"|
+         type="checkbox"[^>]*name="blog_post\[textile\])
+      !x,
+      response.body
+    )
+    
+    # should say 'Author' instead of 'User'
+    assert_match(/Author/, response.body)
+  end
 end
