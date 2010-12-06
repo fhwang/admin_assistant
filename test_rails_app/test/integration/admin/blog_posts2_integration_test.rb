@@ -5,6 +5,29 @@ class Admin::BlogPosts2IntegrationTest < ActionController::IntegrationTest
     @user = User.find_or_create_by_username 'soren'
   end
   
+  def create_foobar_blog_posts
+    BlogPost.destroy_all
+    BlogPost.create!(
+      :title => 'textile_false_foobar', :textile => false, :user => @user
+    )
+    BlogPost.create!(
+      :title => 'textile_true_foobar', :textile => true, :user => @user
+    )
+    BlogPost.create!(
+      :title => 'not_in_the_title', :textile => false,
+      :body => 'foobar here though', :user => @user
+    )
+    BlogPost.create!(
+      :title => 'textile is false', :textile => false,
+      :body => "body doesn't say f**bar", :user => @user
+    )
+    BlogPost.create!(
+      :title => 'already published', :textile => false,
+      :body => "body doesn't say f**bar", :user => @user,
+      :published_at => Time.now.utc
+    )
+  end
+  
   def test_comes_back_to_index_sorted_by_published_at_after_preview_then_create
     BlogPost.create! :title => random_word, :user => @user
     visit "/admin/blog_posts2"
@@ -388,5 +411,139 @@ class Admin::BlogPosts2IntegrationTest < ActionController::IntegrationTest
       |mx,
       response.body
     )
+  end
+  
+  def test_index_all_1
+    BlogPost.create!(
+      :title => "--published--", :published_at => Time.now.utc,
+      :user => @user
+    )
+    get "/admin/blog_posts2", :all => '1'
+    assert_response :success
+
+    # should show published posts
+    assert_match(/--published--/, response.body)
+    
+    # should show a sort link for titles that includes all=1
+    assert_a_tag_with_get_args(
+      'Title', '/admin/blog_posts2',
+      {:sort => 'title', :sort_order => 'asc', :all => '1'}, response.body
+    )
+      
+    # should have a header of 'Blog posts (all)'
+    assert_select('h2', :text => 'Blog posts (all)')
+  end
+  
+  def test_index_all_1_with_two_published_posts
+    BlogPost.create!(
+      :title => 'published later', :published_at => Time.utc(2009, 2, 1),
+      :user => @user
+    )
+    BlogPost.create!(
+      :title => 'published earlier', :published_at => Time.utc(2009, 1, 1),
+      :user => @user
+    )
+    get "/admin/blog_posts2", :all => '1'
+    
+    # should order by published_at desc
+    assert_match(/published later.*published earlier/m, response.body)
+  end
+  
+  def test_index_when_searching_for_title_with_foobar
+    create_foobar_blog_posts
+    get(
+      "/admin/blog_posts2",
+      :search => {
+        :body => "", :title => "foobar", :textile => "", :id => "",
+        :user => ''
+      }
+    )
+    assert_response :success
+    
+    # should match records where textile=true
+    assert_select('td', :text => 'textile_true_foobar')
+    
+    # should match records where textile=false
+    assert_select('td', :text => 'textile_false_foobar')
+      
+    # should show the textile and title search fields pre-set
+    assert_select('form[id=search_form][method=get]') do
+      assert_select('input[name=?][value=foobar]', 'search[title]')
+      assert_select('select[name=?]', 'search[textile]') do
+        assert_select("option[value=''][selected=selected]", :text => '')
+        assert_select("option[value='true']", :text => 'Yes')
+        assert_select("option[value='false']", :text => 'No')
+      end
+    end
+  end
+  
+  def test_index_when_searching_for_title_with_foobar_and_textile_false
+    create_foobar_blog_posts
+    get(
+      "/admin/blog_posts2",
+      :search => {
+        :textile => 'false', :title => 'foobar', '(all_or_any)' => 'all',
+        :user => ''
+      }
+    )
+    assert_response :success
+  
+    # should show blog posts with textile=false and the word 'foobar' in the title
+    assert_select('td', :text => 'textile_false_foobar')
+  
+    # should not show a blog post with textile=true
+    assert_no_match(%r|<td[^>]*>textile_true_foobar</td>|, response.body)
+  
+    # should not show a blog post just 'cause it has 'foobar' in the body
+    assert_no_match(%r|<td[^>]*>not_in_the_title</td>|, response.body)
+    
+    # should show the textile, title, and all-or-any search fields pre-set
+    assert_select('form[id=search_form][method=get]') do
+      assert_select(
+        'input[type=radio][name=?][value=all][checked=checked]',
+        'search[(all_or_any)]'
+      )
+      assert_select('input[name=?][value=foobar]', 'search[title]')
+      assert_select('select[name=?]', 'search[textile]') do
+        assert_select("option[value='']", :text => '')
+        assert_select("option[value='true']", :text => 'Yes')
+        assert_select("option[value='false'][selected=selected]", :text => 'No')
+      end
+    end
+  end
+  
+  def test_index_for_title_with_foobar_and_textile_false
+    create_foobar_blog_posts
+    get(
+      "/admin/blog_posts2",
+      :search => {
+        :textile => 'false', :title => 'foobar', '(all_or_any)' => 'any',
+        :user => ''
+      }
+    )
+    assert_response :success
+      
+    # should show a blog post with 'foobar' in the title
+    assert_select('td', :text => 'textile_true_foobar')
+    
+    # should show a blog post with textile=false
+    assert_select('td', :text => 'textile is false')
+    
+    # should not show a blog post that's already published, because of the conditions set in controller
+    assert_no_match(%r|<td[^>]*>already published</td>|, response.body)
+    
+    # should show the textile, title, and all-or-any search fields pre-set
+    assert_select('form[id=search_form][method=get]') do
+      assert_select(
+        'input[type=radio][name=?][value=any][checked=checked]',
+        'search[(all_or_any)]'
+      )
+      assert_select('input[name=?][value=foobar]', 'search[title]')
+      assert_select('select[name=?]', 'search[textile]') do
+        assert_select("option[value='']", :text => '')
+        assert_select("option[value='true']", :text => 'Yes')
+        assert_select("option[value='false'][selected=selected]", :text => 'No')
+      end
+    end
   end
 end
