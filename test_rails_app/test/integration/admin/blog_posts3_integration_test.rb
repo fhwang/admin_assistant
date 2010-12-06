@@ -348,6 +348,7 @@ class Admin::BlogPosts3IntegrationTest < ActionController::IntegrationTest
   end
   
   def test_index_when_the_count_has_been_cached_in_memcache
+    BlogPost.create!(:title => "title", :user => @user)
     key =
         "AdminAssistant::Admin::BlogPosts3Controller_count_published_at_is_null_"
     $cache.write key, 1_000_000, :expires_in => 12.hours

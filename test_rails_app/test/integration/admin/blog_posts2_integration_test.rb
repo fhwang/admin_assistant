@@ -81,7 +81,8 @@ class Admin::BlogPosts2IntegrationTest < ActionController::IntegrationTest
 
     # should redirect to the edit page with the preview flag
     assert_redirected_to(
-      :action => 'edit', :id => @blog_post.id, :preview => '1'
+      :controller => 'admin/blog_posts2', :action => 'edit',
+      :id => @blog_post.id, :preview => '1'
     )
   end
   
@@ -785,7 +786,8 @@ class Admin::BlogPosts2IntegrationTest < ActionController::IntegrationTest
       
     # should redirect to the edit page with the preview flag
     assert_redirected_to(
-      :action => 'edit', :id => @blog_post.id, :preview => '1'
+      :controller => 'admin/blog_posts2', :action => 'edit',
+      :id => @blog_post.id, :preview => '1'
     )
   end
   
