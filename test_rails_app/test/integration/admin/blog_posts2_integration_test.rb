@@ -2,6 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + "/../../test_helper")
 
 class Admin::BlogPosts2IntegrationTest < ActionController::IntegrationTest
   def setup
+    User.destroy_all
     @user = User.find_or_create_by_username 'soren'
   end
   
