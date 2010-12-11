@@ -19,7 +19,6 @@ class Admin::FileColumnImagesIntegrationTest <
 
   def test_create
     FileColumnImage.destroy_all
-    file = File.new './spec/data/ruby_throated.jpg'
     post(
       "/admin/file_column_images/create",
       :file_column_image => {
