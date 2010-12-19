@@ -35,7 +35,7 @@ task :spec do
   if !missing.empty?
     puts "Missing Rails versions #{missing.join(',')}; please install and then re-run tests"
   else
-    cmd = "cd test_rails_app && " + (
+    cmd = "cd rails_2_test && " + (
       supported_versions.map { |version|
         "echo '===== Testing #{version} =====' && RAILS_GEM_VERSION=#{version} rake"
       }.join(" && ")
@@ -55,7 +55,7 @@ begin
     gem.homepage = "http://github.com/fhwang/admin_assistant"
     gem.authors = ["Francis Hwang"]
     gem.add_dependency "will_paginate"
-    gem.files.exclude "test_rails_app"
+    gem.files.exclude "rails_2_test"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new
