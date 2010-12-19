@@ -5,7 +5,7 @@ class Admin::FileColumnImages2IntegrationTest <
   
   def test_index
     @file_column_image = FileColumnImage.create!(
-      :image => File.open("./spec/data/ruby_throated.jpg")
+      :image => File.open("./test/data/ruby_throated.jpg")
     )
     get "/admin/file_column_images2"
     assert_response :success

@@ -225,7 +225,7 @@ class Admin::UsersIntegrationTest < ActionController::IntegrationTest
     post(
       "/admin/users/update/#{@user.id}",
       :user => {
-        :tmp_avatar => fixture_file_upload('../../spec/data/tweenbot.jpg')
+        :tmp_avatar => fixture_file_upload('../../test/data/tweenbot.jpg')
       },
       :html => {:multipart => true}
     )
@@ -253,7 +253,7 @@ class Admin::UsersIntegrationTest < ActionController::IntegrationTest
     post(
       "/admin/users/update/#{@user.id}",
       :user => {
-        :tmp_avatar => fixture_file_upload('../../spec/data/tweenbot.jpg'),
+        :tmp_avatar => fixture_file_upload('../../test/data/tweenbot.jpg'),
         'tmp_avatar(destroy)' => '1'
       },
       :html => {:multipart => true}

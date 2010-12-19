@@ -20,11 +20,11 @@ class Admin::ImagesIntegrationTest < ActionController::IntegrationTest
   end
   
   def test_create
-    file = File.new './spec/data/ruby_throated.jpg'
+    file = File.new './test/data/ruby_throated.jpg'
     post(
       "/admin/images/create",
       :image => {
-        :image => fixture_file_upload('../../spec/data/ruby_throated.jpg')
+        :image => fixture_file_upload('../../test/data/ruby_throated.jpg')
       },
       :html => {:multipart => true}
     )

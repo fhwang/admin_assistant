@@ -5,7 +5,7 @@ class Admin::FileColumnImagesIntegrationTest <
   
   def test_index
     @file_column_image = FileColumnImage.create!(
-      :image => File.open("./spec/data/ruby_throated.jpg")
+      :image => File.open("./test/data/ruby_throated.jpg")
     )
     get "/admin/file_column_images"
     assert_response :success
@@ -22,7 +22,7 @@ class Admin::FileColumnImagesIntegrationTest <
     post(
       "/admin/file_column_images/create",
       :file_column_image => {
-        :image => fixture_file_upload('../../spec/data/ruby_throated.jpg')
+        :image => fixture_file_upload('../../test/data/ruby_throated.jpg')
       },
       :html => {:multipart => true}
     )
@@ -55,7 +55,7 @@ class Admin::FileColumnImagesIntegrationTest <
   
   def test_show
     @file_column_image = FileColumnImage.create!(
-      :image => File.open("./spec/data/ruby_throated.jpg")
+      :image => File.open("./test/data/ruby_throated.jpg")
     )
     get "/admin/file_column_images/show/#{@file_column_image.id}"
     assert_response :success

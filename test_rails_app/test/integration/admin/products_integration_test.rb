@@ -108,7 +108,7 @@ class Admin::ProductsIntegrationTest < ActionController::IntegrationTest
     @product = Product.find_or_create_by_name 'a bird'
     @product.update_attributes(
       :name => 'a bird', :price => 100_00,
-      :file_column_image => File.open("./spec/data/ruby_throated.jpg"),
+      :file_column_image => File.open("./test/data/ruby_throated.jpg"),
       :percent_off => 25
     )
     get "/admin/products/edit/#{@product.id}"
@@ -143,14 +143,14 @@ class Admin::ProductsIntegrationTest < ActionController::IntegrationTest
     @product = Product.find_or_create_by_name 'a bird'
     @product.update_attributes(
       :name => 'a bird', :price => 100_00,
-      :file_column_image => File.open("./spec/data/ruby_throated.jpg")
+      :file_column_image => File.open("./test/data/ruby_throated.jpg")
     )
-    file = File.new './spec/data/tweenbot.jpg'
+    file = File.new './test/data/tweenbot.jpg'
     post(
       "/admin/products/update/#{@product.id}", 
       :product => {
         :file_column_image => fixture_file_upload(
-          "../../spec/data/tweenbot.jpg"
+          "../../test/data/tweenbot.jpg"
         )
       },
       :html => {:multipart => true}
@@ -172,7 +172,7 @@ class Admin::ProductsIntegrationTest < ActionController::IntegrationTest
     @product = Product.find_or_create_by_name 'a bird'
     @product.update_attributes(
       :name => 'a bird', :price => 100_00,
-      :file_column_image => File.open("./spec/data/ruby_throated.jpg")
+      :file_column_image => File.open("./test/data/ruby_throated.jpg")
     )
     post(
       "/admin/products/update/#{@product.id}",
@@ -190,13 +190,13 @@ class Admin::ProductsIntegrationTest < ActionController::IntegrationTest
     @product = Product.find_or_create_by_name 'a bird'
     @product.update_attributes(
       :name => 'a bird', :price => 100_00,
-      :file_column_image => File.open("./spec/data/ruby_throated.jpg")
+      :file_column_image => File.open("./test/data/ruby_throated.jpg")
     )
     post(
       "/admin/products/update/#{@product.id}", 
       :product => {
         :file_column_image => fixture_file_upload(
-          "../../spec/data/tweenbot.jpg"
+          "../../test/data/tweenbot.jpg"
         ),
         'file_column_image(destroy)' => '1'
       },
