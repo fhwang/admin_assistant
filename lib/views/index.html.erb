@@ -4,7 +4,9 @@
 %>">
 <div class="aa_header">
 <div class="actions">
-<%= link_to_function('Search', 'AdminAssistant.show_search_form()') if index_view.render_search_link? %>
+<% if index_view.render_search_link? %>
+  <%= link_to('Search', '#', :id => 'show_search_form') %>
+<% end %>
 <% if index_view.render_new_link? %>
   <%= index_view.new_link %>
 <% end %>
@@ -44,7 +46,11 @@
 <% end %>
 
 <% if @index.search_requested? %>
-<script type="text/javascript">AdminAssistant.show_search_form();</script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#show_search_form').click();
+  });
+</script>
 <% end %>
 
 <% if !@index.records.empty? %>

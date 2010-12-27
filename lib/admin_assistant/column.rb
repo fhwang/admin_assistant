@@ -238,8 +238,9 @@ class AdminAssistant
           input << comparator_html(form.object) << ' ' if @comparators == :all
           input << form.datetime_select(name, :include_blank => true)
           input << @action_view.send(
-            :link_to_function, 'Clear',
-            "AdminAssistant.clear_datetime_select('search_#{name.underscore}')"
+            :link_to, 'Clear', '#',
+            :rel => "search_#{name.underscore}",
+            :class => 'clear_datetime_select'
           )
         end
         input
@@ -254,8 +255,9 @@ class AdminAssistant
           :datetime_separator => ' &mdash; ', :time_separator => ' : '
         ).select_datetime
         input << @action_view.send(
-          :link_to_function, 'Clear',
-          "AdminAssistant.clear_datetime_select('search_#{name.underscore}_#{comparator}')"
+          :link_to, 'Clear', '#',
+          :rel => "search_#{name.underscore}_#{comparator}",
+          :class => 'clear_datetime_select'
         )
         input
       end

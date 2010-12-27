@@ -37,8 +37,7 @@ class Admin::BlogPosts4IntegrationTest < ActionController::IntegrationTest
         end
       end
       assert_select(
-        "a[onclick=?]", 
-        "AdminAssistant.clear_datetime_select('search_published_at'); return false;",
+        "a.clear_datetime_select[rel=search_published_at]",
         :text => 'Clear'
       )
     end

@@ -166,8 +166,8 @@ class AdminAssistant
           js_name = "#{form.object.class.name.underscore}_#{name}"
           name = @clear_link || "Clear"
           h << @action_view.send(
-            :link_to_function, name,
-            "AdminAssistant.clear_datetime_select('#{js_name}')"
+            :link_to, name, '#',
+            :rel => js_name, :class => 'clear_datetime_select'
           )
         end
         h

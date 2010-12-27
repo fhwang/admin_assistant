@@ -1,7 +1,7 @@
 <html>
   <head>
     <title>Admin</title>
-    <%= javascript_include_tag("prototype", "effects", "controls") %>
+    <%= javascript_include_tag("jquery-1.4.4.min") %>
     <% if controller.is_a?(Admin::BlogPosts3Controller) %>
       <%= admin_assistant_includes :theme => 'activescaffold' %>
     <% else %>

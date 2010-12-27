@@ -214,10 +214,7 @@ class Admin::BlogPostsIntegrationTest < ActionController::IntegrationTest
     )
       
     # should have a search form
-    assert_match(
-      %r|<a.*onclick="AdminAssistant.show_search_form\(\);.*>Search</a>|,
-      response.body
-    )
+    assert_select("a#show_search_form", :text => 'Search')
       
     # should use the admin layout
     assert_match(/admin_assistant sample Rails app/, response.body)
@@ -456,8 +453,9 @@ class Admin::BlogPostsIntegrationTest < ActionController::IntegrationTest
     assert_match(/No blog posts found/, response.body)
     
     # should display the search with the terms
+    assert_select("form#search_form");
     assert_match(
-      %r|<form[^>]*id="search_form".*show_search_form\(\)|m,
+      %r|<script.*\$\('#show_search_form'\).click\(\);|m,
       response.body
     )
     assert_match(%r|input.*value="foo"|, response.body)
