@@ -167,7 +167,7 @@ class AdminAssistant
           name = @clear_link || "Clear"
           h << @action_view.send(
             :link_to, name, '#',
-            :rel => js_name, :class => 'clear_datetime_select'
+            'data-prefix' => js_name, :class => 'clear_datetime_select'
           )
         end
         h
@@ -278,7 +278,7 @@ class AdminAssistant
               name => (!value(record) ? '1' : '0')
             }
           },
-          {:class => 'toggle'}
+          {:class => 'toggle', :rel => 'nofollow'}
         )
       end
       

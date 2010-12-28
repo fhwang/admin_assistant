@@ -37,7 +37,7 @@ class Admin::BlogPosts4IntegrationTest < ActionController::IntegrationTest
         end
       end
       assert_select(
-        "a.clear_datetime_select[rel=search_published_at]",
+        "a.clear_datetime_select[data-prefix=search_published_at]",
         :text => 'Clear'
       )
     end

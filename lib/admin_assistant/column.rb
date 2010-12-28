@@ -239,7 +239,7 @@ class AdminAssistant
           input << form.datetime_select(name, :include_blank => true)
           input << @action_view.send(
             :link_to, 'Clear', '#',
-            :rel => "search_#{name.underscore}",
+            'data-prefix' => "search_#{name.underscore}",
             :class => 'clear_datetime_select'
           )
         end
@@ -256,7 +256,7 @@ class AdminAssistant
         ).select_datetime
         input << @action_view.send(
           :link_to, 'Clear', '#',
-          :rel => "search_#{name.underscore}_#{comparator}",
+          'data-prefix' => "search_#{name.underscore}_#{comparator}",
           :class => 'clear_datetime_select'
         )
         input
