@@ -3,8 +3,7 @@ rails_2_test/db/*.sqlite3
 rails_2_test/log/*.log
 rails_2_test/db/schema.rb
 rails_2_test/public/images/*
-rails_2_test/public/javascripts/admin_assistant.js
-rails_2_test/public/stylesheets/admin_assistant*.css
+rails_2_test/public/javascripts/admin_assistant/*.js
 rails_2_test/public/stylesheets/admin_assistant/*.css
 rails_2_test/public/file_column_image/*
 rails_2_test/public/product/*
