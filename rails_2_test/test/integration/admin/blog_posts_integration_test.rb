@@ -287,8 +287,7 @@ class Admin::BlogPostsIntegrationTest < ActionController::IntegrationTest
         "/admin/blog_posts/update/#{@blog_post.id}?" +
         CGI.escape('blog_post[textile]') + "=1&amp;from=#{toggle_div_id}"
     assert_select("div[id=?]", toggle_div_id) do
-      ajax_substr = "new Ajax.Updater('#{toggle_div_id}', '#{post_url}'"
-      assert_select("a[href=#][onclick*=?]", ajax_substr, :text => 'false')
+      assert_select('a.toggle[href=?]', post_url, :text => 'false')
     end
 
     # should not show the page selector form
@@ -805,10 +804,7 @@ class Admin::BlogPostsIntegrationTest < ActionController::IntegrationTest
         "/admin/blog_posts/update/#{@blog_post.id}?" +
         CGI.escape('blog_post[textile]') + "=0&amp;from=#{toggle_div_id}"
     assert_select('div[id=?]', toggle_div_id, false)
-    ajax_substr = "new Ajax.Updater('#{toggle_div_id}', '#{post_url}'"
-    assert_select(
-      "a[href=#][onclick*=?]", ajax_substr, :text => 'true'
-    )
+    assert_select('a.toggle[href=?]', post_url, :text => 'true')
     assert_no_match(%r|<title>Admin</title>|, response.body)
   end
 end

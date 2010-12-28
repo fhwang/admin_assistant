@@ -647,8 +647,7 @@ class Admin::BlogPosts2IntegrationTest < ActionController::IntegrationTest
         "/admin/blog_posts2/update/#{@blog_post.id}?" +
         CGI.escape('blog_post[textile]') + "=1&amp;from=#{toggle_div_id}"
     assert_select("div[id=?]", toggle_div_id) do
-      ajax_substr = "new Ajax.Updater('#{toggle_div_id}', '#{post_url}'"
-      assert_select("a[href=#][onclick*=?]", ajax_substr, :text => 'No')
+      assert_select("a.toggle[href=?]", post_url, :text => 'No')
     end
   end
   

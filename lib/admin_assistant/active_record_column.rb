@@ -270,16 +270,15 @@ class AdminAssistant
       
       def ajax_toggle_inner_html(record)
         div_id = ajax_toggle_div_id record
-        @action_view.link_to_remote(
+        @action_view.link_to(
           string(record),
-          :update => div_id,
-          :url => {
+          {
             :action => 'update', :id => record.id, :from => div_id,
             record.class.name.underscore.to_sym => {
               name => (!value(record) ? '1' : '0')
             }
           },
-          :success => "$(#{div_id}).hide(); $(#{div_id}).appear()"
+          {:class => 'toggle'}
         )
       end
       
