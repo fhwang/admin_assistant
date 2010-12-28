@@ -216,13 +216,13 @@ class AdminAssistant
       end
       
       def delete_link(record)
-        @action_view.link_to_remote(
+        @action_view.link_to(
           'Delete',
-          :url => {:action => 'destroy', :id => record.id},
-          :confirm => 'Are you sure?',
-          :success =>
-            "Effect.Fade('#{@admin_assistant.model_class.name.underscore}_#{record.id}', {duration: 0.25})",
-          :method => :delete
+          {:action => 'destroy', :id => record.id},
+          {
+            'data-confirm' => 'Are you sure?', :rel => 'nofollow',
+            'data-method' => 'delete', :class => 'destroy'
+          }
         )
       end
       

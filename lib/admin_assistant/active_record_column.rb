@@ -278,7 +278,7 @@ class AdminAssistant
               name => (!value(record) ? '1' : '0')
             }
           },
-          {:class => 'toggle', :rel => 'nofollow'}
+          {:class => 'toggle', :rel => 'nofollow', 'data-method' => 'put'}
         )
       end
       

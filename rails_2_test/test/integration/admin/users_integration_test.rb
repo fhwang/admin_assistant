@@ -78,9 +78,8 @@ class Admin::UsersIntegrationTest < ActionController::IntegrationTest
     # should show a Delete link and a link to the profile page
     assert_select('td') do
       assert_select(
-        "a[href=#][onclick*=?][onclick*=?][onclick*=?]",
-        "new Ajax.Request", "method:'delete'",
-        "Effect.Fade('user_#{@user.id}'",
+        "a.destroy[href=?][data-method=?]",
+        "/admin/users/destroy/#{@user.id}", 'delete',
         :text => 'Delete'
       )
       assert_select(

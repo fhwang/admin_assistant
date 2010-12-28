@@ -31,7 +31,12 @@ class Admin::BlogPostsCustomNewAndEditIntegrationTest <
 
     # should have a destroy link
     assert_select('td.actions') do
-      assert_select("a[href=#]", 'Delete')
+      assert_select(
+        "a.destroy[href=?][data-method=?]",
+        "/admin/blog_posts_custom_new_and_edit/destroy/#{@blog_post.id}",
+        'delete',
+        :text => 'Delete'
+      )
     end
 
     # should have a show link
