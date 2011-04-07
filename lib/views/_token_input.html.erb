@@ -1,0 +1,26 @@
+<%
+record = form.object
+associated_class_name = column.associated_class.name.underscore
+class_name = record.class.name.gsub(/.*::/, '').underscore.downcase
+text_field_id = "#{class_name}_#{column.association_foreign_key}"
+token_url =
+  "/#{controller.controller_path}/autocomplete_#{associated_class_name }"
+token_input_options = {'crossDomain' => false, 'tokenLimit' => 1}
+if current_value = record.send(column.name)
+  default_name_method = AdminAssistant::AssociationTarget.new(
+    current_value.class
+  ).default_name_method
+  token_input_options['prePopulate'] = [{
+    'id' => current_value.id, 'name' => current_value.send(default_name_method)
+  }]
+end
+%>
+<%= form.text_field(column.association_foreign_key) %>
+<script type="text/javascript">
+$(document).ready(function() {
+  $("#<%= text_field_id %>").tokenInput(
+    "<%= token_url %>", <%= token_input_options.to_json %>
+  );
+});
+</script>
+

@@ -21,30 +21,26 @@ class Admin::BlogPostsIntegrationTest < ActionController::IntegrationTest
     end
     User.create! :username => 'Bob'
 
-    get "/admin/blog_posts/autocomplete_user?user_autocomplete_input=Jane"
-
-    # should return empty results
-    assert_select('ul')
-    assert_select('ul > li', false)
+    get "/admin/blog_posts/autocomplete_user?q=Jane"
+    results = JSON.parse(response.body)
+    assert results.empty?
       
-    # should not render the admin layout
-    assert_select('head > title', false)
+    get "/admin/blog_posts/autocomplete_user?q=Bill"
+    results = JSON.parse(response.body)
+    assert_equal(2, results.size)
+    assert(
+      results.any? { |r| r['id'] == @bill1.id.to_s && r['name'] == 'Bill 1' }
+    )
+    assert(
+      results.any? { |r| r['id'] == @bill2.id.to_s && r['name'] == 'Bill 2' }
+    )
     
-    get "/admin/blog_posts/autocomplete_user?user_autocomplete_input=Bill"
-      
-    # should return those two matches
-    assert_select('ul') do
-      assert_select "li[id=user#{@bill1.id}]", :text => 'Bill 1'
-      assert_select "li[id=user#{@bill2.id}]", :text => 'Bill 2'
-    end
-    
-    get "/admin/blog_posts/autocomplete_user?user_autocomplete_input=Bob"
-      
+    get "/admin/blog_posts/autocomplete_user?q=Bob"
+    results = JSON.parse(response.body)
     # should return a max of ten users
-    assert_select('ul > li', :count => 10)
-    
+    assert_equal(10, results.size)
     # should make sure the shortest matches are included in the results
-    assert_select('ul > li', :text => 'Bob')
+    assert(results.any? { |r| r['name'] == 'Bob' })
   end
   
   def test_back_to_index_comes_back_to_index_sorted_by_published_at
@@ -158,24 +154,15 @@ class Admin::BlogPostsIntegrationTest < ActionController::IntegrationTest
     end
     get "/admin/blog_posts/edit/#{@blog_post.id}"
     
-    # should use the restricted autocompleter instead of a drop-down
+    # should use the token input instead of a drop-down
     assert_select("select[name=?]", "blog_post[user_id]", false)
-    assert_select(
-      "input[id=user_autocomplete_input][value=soren]"
-    )
-    assert_select(
-      "input[type=hidden][name=?][id=blog_post_user_id][value=?]",
-      "blog_post[user_id]", @user.id.to_s
-    )
-    assert_select("div[id=user_autocomplete_palette]")
-    assert_select('div[id=clear_user_link]')
+    assert_select("input[name=?][value=?]", 'blog_post[user_id]', @user.id)
     assert_match(
       %r|
-        new\s*AdminAssistant.RestrictedAutocompleter\(
-        \s*"user",
-        \s*"blog_post_user_id",
+        \$\("\#blog_post_user_id"\)\.tokenInput\(
         \s*"/admin/blog_posts/autocomplete_user",
-        [^)]*"includeBlank":\s*true
+        .*prePopulate
+        .*"id":\s*#{@user.id}
       |mx,
       response.body
     )
@@ -692,22 +679,13 @@ class Admin::BlogPostsIntegrationTest < ActionController::IntegrationTest
     end
     get "/admin/blog_posts/new"
     
-    # should use the restricted autocompleter instead of a drop-down
+    # should use the token input instead of a drop-down
     assert_select("select[name=?]", "blog_post[user_id]", false)
-    assert_select("input[id=user_autocomplete_input]")
-    assert_select(
-      "input[type=hidden][name=?][id=blog_post_user_id]",
-      "blog_post[user_id]"
-    )
-    assert_select("div[id=user_autocomplete_palette]")
-    assert_select('div[id=clear_user_link]')
+    assert_select("input[name=?]", 'blog_post[user_id]')
     assert_match(
       %r|
-        new\s*AdminAssistant.RestrictedAutocompleter\(
-        \s*"user",
-        \s*"blog_post_user_id",
-        \s*"/admin/blog_posts/autocomplete_user",
-        [^)]*"includeBlank":\s*true
+        \$\("\#blog_post_user_id"\)\.tokenInput\(
+        \s*"/admin/blog_posts/autocomplete_user"
       |mx,
       response.body
     )

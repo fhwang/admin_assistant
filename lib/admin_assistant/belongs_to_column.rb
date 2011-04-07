@@ -142,7 +142,7 @@ class AdminAssistant
       def render_autocompleter(form)
         @action_view.send(
           :render,
-          :file => AdminAssistant.template_file('_restricted_autocompleter'),
+          :file => AdminAssistant.template_file('_token_input'),
           :use_full_path => false,
           :locals => {
             :form => form, :column => @column,
@@ -176,7 +176,7 @@ class AdminAssistant
       def render_autocompleter(form)
         @action_view.send(
           :render,
-          :file => AdminAssistant.template_file('_restricted_autocompleter'),
+          :file => AdminAssistant.template_file('_token_input'),
           :use_full_path => false,
           :locals => {
             :form => form, :column => @column,

@@ -1,4 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + "/../../test_helper")
+require 'json'
 
 class Admin::BookmarksIntegrationTest < ActionController::IntegrationTest
   def setup
@@ -40,16 +41,15 @@ class Admin::BookmarksIntegrationTest < ActionController::IntegrationTest
 
   def test_autocomplete_blog_post_with_one_match  
     get(
-      "/admin/bookmarks/autocomplete_blog_post",
-      :blog_post_autocomplete_input => @blog_post.title
+      "/admin/bookmarks/autocomplete_blog_post", :q => @blog_post.title
     )
+    results = JSON.parse(response.body)
       
-    # should return that match
-    assert_select('ul') do
-      assert_select(
-        "li[id=blog_post#{@blog_post.id}]", :text => @blog_post.title
-      )
-    end
+    assert(
+      results.any? { |r|
+        r['id'] == @blog_post.id.to_s && r['name'] == @blog_post.title
+      }
+    )
   end
   
   def test_index_while_not_searching

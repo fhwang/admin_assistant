@@ -209,24 +209,15 @@ class Admin::BlogPosts2IntegrationTest < ActionController::IntegrationTest
     end
     get "/admin/blog_posts2/edit",:id => @blog_post.id
     
-    # should use the restricted autocompleter instead of a drop-down
+    # should use the token input instead of a drop-down
     assert_select("select[name=?]", "blog_post[user_id]", false)
-    assert_select(
-      "input[id=user_autocomplete_input][value=soren]"
-    )
-    assert_select(
-      "input[type=hidden][name=?][id=blog_post_user_id][value=?]",
-      "blog_post[user_id]", @user.id.to_s
-    )
-    assert_select("div[id=user_autocomplete_palette]")
-    assert_select('div[id=clear_user_link]')
+    assert_select("input[name=?][value=?]", 'blog_post[user_id]', @user.id)
     assert_match(
       %r|
-        new\s*AdminAssistant.RestrictedAutocompleter\(
-        \s*"user",
-        \s*"blog_post_user_id",
+        \$\("\#blog_post_user_id"\)\.tokenInput\(
         \s*"/admin/blog_posts2/autocomplete_user",
-        [^)]*"includeBlank":\s*false
+        .*prePopulate
+        .*"id":\s*#{@user.id}
       |mx,
       response.body
     )
@@ -391,24 +382,13 @@ class Admin::BlogPosts2IntegrationTest < ActionController::IntegrationTest
     end
     get "/admin/blog_posts2"
     
-    # should use the autocompleter in the search form for users
+    # should use the token input in the search form for users
     assert_select("select[name=?]", "search[user_id]]", false)
-    assert_select(
-      "input:not([value])[id=user_autocomplete_input]"
-    )
-    assert_select(
-      "input:not([value])[type=hidden][name=?][id=search_user_id]",
-      "search[user_id]"
-    )
-    assert_select("div[id=user_autocomplete_palette]")
-    assert_select('div[id=clear_user_link]')
+    assert_select("input:not([value])[name=?]", 'search[user_id]')
     assert_match(
       %r|
-        new\s*AdminAssistant.RestrictedAutocompleter\(
-        \s*"user",
-        \s*"search_user_id",
-        \s*"/admin/blog_posts2/autocomplete_user",
-        [^)]*"includeBlank":\s*true
+        \$\("\#search_user_id"\)\.tokenInput\(
+        \s*"/admin/blog_posts2/autocomplete_user"
       |mx,
       response.body
     )
@@ -598,24 +578,15 @@ class Admin::BlogPosts2IntegrationTest < ActionController::IntegrationTest
     )
     assert_response :success
     
-    # should show pre-populated user autocomplete in the search form
+    # should show pre-populated user token input in the search form
     assert_select("select[name=?]", "search[user_id]]", false)
-    assert_select(
-      "input[id=user_autocomplete_input][value=?]", @user.username
-    )
-    assert_select(
-      "input[type=hidden][name=?][id=search_user_id][value=?]",
-      "search[user_id]", @user.id.to_s
-    )
-    assert_select("div[id=user_autocomplete_palette]")
-    assert_select('div[id=clear_user_link]')
+    assert_select("input[name=?][value=?]", 'search[user_id]', @user.id)
     assert_match(
       %r|
-        new\s*AdminAssistant.RestrictedAutocompleter\(
-        \s*"user",
-        \s*"search_user_id",
+        \$\("\#search_user_id"\)\.tokenInput\(
         \s*"/admin/blog_posts2/autocomplete_user",
-        [^)]*"includeBlank":\s*true
+        .*prePopulate
+        .*"id":\s*#{@user.id}
       |mx,
       response.body
     )

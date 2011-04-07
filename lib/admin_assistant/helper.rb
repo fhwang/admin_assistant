@@ -3,6 +3,7 @@ class AdminAssistant
     def admin_assistant_includes(opts = {})
       theme = opts[:theme] || 'default'
       tags = stylesheet_link_tag("admin_assistant/#{theme}")
+      tags << stylesheet_link_tag("admin_assistant/token-input")
       js_dir = Pathname.new(Rails.root) + "public/javascripts/admin_assistant"
       Dir.entries(js_dir).each do |entry|
         if entry =~ /\.js$/
