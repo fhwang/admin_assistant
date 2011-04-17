@@ -1,3 +1,82 @@
+<%
+associated = record.send(column.name)
+if associated
+  associated_id = associated.id
+  associated_type = associated.class.name
+else
+  associated_id = nil
+  associated_type = nil
+end
+%>
+<div class="polymorphic" id="polymorphic_search_<%= column.name %>">
+<%= hidden_field_tag(
+  "search[#{column.association_foreign_key}]", associated_id,
+  :id => "search_#{column.association_foreign_key}"
+) %>
+<%= hidden_field_tag(
+  "search[#{column.foreign_type_field}]", associated_type,
+  :id => "search_#{column.foreign_type_field}"
+) %>
+<% polymorphic_types.each do |polymorphic_type| %>
+<%
+  name = polymorphic_type.name.underscore
+  association_target = AdminAssistant::AssociationTarget.new polymorphic_type
+%>
+<div class="polymorphic_type" id="polymorphic_search_<%= column.name %>_<%= name %>">
+  <%
+  label = association_target.name.capitalize
+  label << " ID" unless association_target.default_name_method
+  %>
+  <label><%= label %></label>
+  <br />
+  <% if association_target.default_name_method %>
+    <% if polymorphic_type.count > 15 %>
+      <%
+      data_fields = {
+        "data-behavior" => 'autocomplete',
+        'data-autocomplete-url' => 
+          "/#{controller.controller_path}/autocomplete_#{name}",
+        'data-value-type' => polymorphic_type.name
+      }
+      if associated.class == polymorphic_type
+        data_fields['data-initial-id'] = associated.id
+        data_fields['data-initial-name'] =
+          association_target.assoc_value(associated)
+      end
+      %>
+      <%= text_field_tag("#{column.name}_#{name}_id", nil, data_fields) %>
+    <% else %>
+      <%
+        option_tags = "<option value=''></option>"
+        option_tags << options_for_select(
+          association_target.options_for_select,
+          (associated.id if associated.class == polymorphic_type)
+        )
+      %>
+      <%= select_tag(
+        "#{column.name}_#{name}_id", option_tags,
+        'data-behavior' => 'select',
+        'data-value-type' => polymorphic_type.name
+      ) %> 
+    <% end  # if polymorphic_type.count > 15 %>
+  <% else # if association_target.default_name_method %>
+    <%= text_field_tag(
+      "#{column.name}_#{name}_id",
+      (associated.id if associated.class == polymorphic_type),
+      'data-behavior' => 'id', 'data-value-type' => polymorphic_type.name
+    ) %>
+  <% end %>
+</div>
+<% end %>
+<br style="clear:both" />
+</div>
+<script type="text/javascript">
+new AdminAssistant.PolymorphicFieldSearch('<%= column.name %>');
+</script>
+
+
+
+<!--
 <div class="polymorphic">
 <%
 hidden_field_id = "search_#{column.association_foreign_key}"
@@ -87,3 +166,4 @@ new AdminAssistant.PolymorphicFieldSearch(
   '<%= column.name %>', <%= js_args.to_json %>
 );
 </script>
+-->

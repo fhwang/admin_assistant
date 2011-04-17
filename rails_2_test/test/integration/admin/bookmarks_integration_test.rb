@@ -76,17 +76,17 @@ class Admin::BookmarksIntegrationTest < ActionController::IntegrationTest
       [Product, User].each do |model_class|
         name = model_class.name.downcase
         assert_select(
-          "input:not([value])[id=bookmarkable_#{name}_autocomplete_input]"
+          "input:not([data-initial-name])[id=bookmarkable_#{name}_id]" + 
+          "[data-behavior=autocomplete]"
         )
-        assert_select "div[id=bookmarkable_#{name}_autocomplete_palette]"
-        assert_select "div[id=clear_bookmarkable_#{name}_link]"
       end
     end
   
     # should show drop-downs for blog posts in its search form
     assert_select('form#search_form') do
       assert_select(
-        "input[id=bookmarkable_blog_post_autocomplete_input]", false
+        "input[id=bookmarkable_blog_post_id][data-behavior=autocomplete]",
+        false
       )
       assert_select('select[name=?]', 'bookmarkable_blog_post_id') do
         assert_select("option[value='']", :text => '')
@@ -154,17 +154,17 @@ class Admin::BookmarksIntegrationTest < ActionController::IntegrationTest
       [Product, User].each do |model_class|
         name = model_class.name.downcase
         assert_select(
-          "input:not([value])[id=bookmarkable_#{name}_autocomplete_input]"
+          "input:not([value])[id=bookmarkable_#{name}_id]" + 
+          "[data-behavior=autocomplete]"
         )
-        assert_select "div[id=bookmarkable_#{name}_autocomplete_palette]"
-        assert_select "div[id=clear_bookmarkable_#{name}_link]"
       end
     end
   
     # should show drop-downs for blog posts in its search form
     assert_select('form#search_form') do
       assert_select(
-        "input[id=bookmarkable_blog_post_autocomplete_input]", false
+        "input[id=bookmarkable_blog_post_id][data-behavior=autocomplete]",
+        false
       )
       assert_select('select[name=?]', 'bookmarkable_blog_post_id') do
         assert_select("option[value='']", :text => '')
@@ -219,22 +219,17 @@ class Admin::BookmarksIntegrationTest < ActionController::IntegrationTest
     # should show autocompleters for products and users in its search form
     assert_select('form#search_form') do
       assert_select(
-        "input[id=bookmarkable_product_autocomplete_input][value=?]",
+        "input[id=bookmarkable_product_id][data-initial-name=?]",
         "#{@product_bookmark.bookmarkable.name}"
       )
-      assert_select "div[id=bookmarkable_product_autocomplete_palette]"
-      assert_select "div[id=clear_bookmarkable_product_link]"
-      assert_select(
-        "input:not([value])[id=bookmarkable_user_autocomplete_input]"
-      )
-      assert_select "div[id=bookmarkable_user_autocomplete_palette]"
-      assert_select "div[id=clear_bookmarkable_user_link]"
+      assert_select("input:not([data-initial-name])[id=bookmarkable_user_id]")
     end
   
     # should show drop-downs for blog posts in its search form
     assert_select('form#search_form') do
       assert_select(
-        "input[id=bookmarkable_blog_post_autocomplete_input]", false
+        "input[id=bookmarkable_blog_post_id][data-behavior=autocomplete]",
+        false
       )
       assert_select('select[name=?]', 'bookmarkable_blog_post_id') do
         assert_select("option[value='']", :text => '')
@@ -291,16 +286,18 @@ class Admin::BookmarksIntegrationTest < ActionController::IntegrationTest
       [Product, User].each do |model_class|
         name = model_class.name.downcase
         assert_select(
-          "input:not([value])[id=bookmarkable_#{name}_autocomplete_input]"
+          "input:not([data-initial-name])[id=bookmarkable_#{name}_id]" + 
+          "[data-behavior=autocomplete]"
         )
-        assert_select "div[id=bookmarkable_#{name}_autocomplete_palette]"
-        assert_select "div[id=clear_bookmarkable_#{name}_link]"
       end
     end
   
     # should show drop-downs for blog posts in its search form
     assert_select('form#search_form') do
-      assert_select("input[id=blog_post_autocomplete_input]", false)
+      assert_select(
+        "input[id=bookmarkable_blog_post_id][data-behavior=autocomplete]", 
+        false
+      )
       assert_select('select[name=?]', 'bookmarkable_blog_post_id') do
         assert_select("option[value='']", :text => '')
         assert_select 'option[value=?]', @blog_post.id
