@@ -1,0 +1,31 @@
+<html>
+  <head>
+    <title>Admin</title>
+    <%= javascript_include_tag("jquery-1.4.4.min") %>
+    <% if controller.is_a?(Admin::BlogPosts3Controller) %>
+      <%= admin_assistant_includes :theme => 'activescaffold' %>
+    <% else %>
+      <%= admin_assistant_includes %>
+    <% end %>
+    <%= stylesheet_link_tag 'admin' %>
+  </head>
+  <body>
+    <h1>admin_assistant sample Rails app</h1>
+    <p>
+      <%
+      admin_controllers_dir = "#{Rails.root}/app/controllers/admin/"
+      controller_names = Dir.entries(admin_controllers_dir).select { |entry|
+        entry =~ /_controller.rb$/
+      }.map { |entry|
+        entry =~ /(.*)_controller.rb$/
+        $1
+      }.sort
+      %>
+      <% controller_names.each_with_index do |c_name, i| %>
+        <%= "|" unless i == 0 %>
+        <%= link_to_unless_current(c_name, :controller => "admin/#{c_name}") %>
+      <% end %>
+    </p>
+    <%= yield %>
+  </body>
+</html>

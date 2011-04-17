@@ -24,14 +24,14 @@ class AdminAssistant
       
       def after_template_file(template_name)
         File.join(
-          RAILS_ROOT, 'app/views/', @controller.controller_path, 
+          Rails.root, 'app/views/', @controller.controller_path, 
           "_after_#{template_name}.html.erb"
         )
       end
       
       def before_template_file(template_name)
         File.join(
-          RAILS_ROOT, 'app/views/', @controller.controller_path, 
+          Rails.root, 'app/views/', @controller.controller_path, 
           "_before_#{template_name}.html.erb"
         )
       end

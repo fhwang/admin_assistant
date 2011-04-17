@@ -87,14 +87,13 @@ class AdminAssistant
     end
     
     def form_for_args
+      opts = {
+        :builder => AdminAssistant::MultiFormView::Builder,
+        :sub_form_views => @sub_form_views, :url => {:action => action}
+      }
       [
-        @records.first.class.name.underscore.to_sym,
-        @records,
-        {
-          :url => {:action => action},
-          :builder => AdminAssistant::MultiFormView::Builder,
-          :sub_form_views => @sub_form_views
-        }
+        RecordsForForm.new(@records),
+        opts.merge(:as => @records.first.class.name.underscore.to_sym)
       ]
     end
     
@@ -161,6 +160,17 @@ class AdminAssistant
             objectify_options(options), @default_options.merge(html_options)
           )
         end
+      end
+    end
+    
+    # Passing an array as the object to form_for confuses it, so we hide that 
+    # this is an array with a DelegateClass.
+    class RecordsForForm < DelegateClass(Array)
+      def initialize(records)
+        super(records)
+      end
+      
+      def id
       end
     end
   end

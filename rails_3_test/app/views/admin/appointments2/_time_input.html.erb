@@ -1,0 +1,31 @@
+<%
+date_tuples = [[]]
+(Date.new(2010,1,1)).upto(Date.new(2010,2,1)) do |date|
+  date_tuples << [date.strftime("%a %b %d %Y"), date.strftime("%Y-%m-%d")]
+end
+options = options_for_select(
+  date_tuples,
+  (@appointment.time.strftime("%Y-%m-%d") if @appointment.time)
+)
+name = 'appointment'
+name << "[#{@prefix}]" if @prefix
+%>
+<%= select_tag "#{name}[time(1-3i)]", options %>
+
+&mdash;
+<%= select_tag(
+  "#{name}[time(4i)]",
+  options_for_select(
+    [nil] + ("00".."23").to_a,
+    (@appointment.time.strftime("%H") if @appointment.time)
+  )
+) %>
+ :
+<%= select_tag(
+  "#{name}[time(5i)]",
+  options_for_select(
+    [nil] + ("00".."59").to_a,
+    (@appointment.time.strftime("%M") if @appointment.time)
+  )
+) %>
+

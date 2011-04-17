@@ -47,7 +47,7 @@ class AdminAssistant
       end
       
       def errors(record)
-        record.errors.on name
+        record.errors[name]
       end
 
       def html(rails_form)
@@ -338,15 +338,8 @@ class AdminAssistant
       end
       
       def check_box_and_hidden_tags(input_name, value)
-        # Rails 2.3 wants the hidden tag to come before the checkbox, but it's
-        # the opposite for Rails 2.2 and 2.1
-        if RAILS_GEM_VERSION =~ /^2.3/
-          @action_view.send(:hidden_field_tag, input_name, '0', :id => "#{input_name}_hidden") +
-              @action_view.send(:check_box_tag, input_name, '1', value)
-        else
-          @action_view.send(:check_box_tag, input_name, '1', value) +
-              @action_view.send(:hidden_field_tag, input_name, '0', :id => "#{input_name}_hidden")
-        end
+        @action_view.send(:hidden_field_tag, input_name, '0', :id => "#{input_name}_hidden") +
+            @action_view.send(:check_box_tag, input_name, '1', value)
       end
     
       def controller
@@ -355,17 +348,13 @@ class AdminAssistant
       
       def custom_template_file_path(slug)
         File.join(
-          RAILS_ROOT, 'app/views', controller.controller_path, 
+          Rails.root, 'app/views', controller.controller_path, 
           "#{slug}.html.erb"
         )
       end
       
       def file_option_for_custom_template_render(slug)
-        if RAILS_GEM_VERSION == '2.1.0'
-          File.join(controller.controller_path, "#{slug}.html.erb")
-        else
-          custom_template_file_path slug
-        end
+        custom_template_file_path slug
       end
       
       def label

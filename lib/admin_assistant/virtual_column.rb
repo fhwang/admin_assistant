@@ -57,8 +57,8 @@ class AdminAssistant
       end
       
       def has_matching_errors?(record)
-        record.respond_to?(:errors) && record.errors.respond_to?(:on) && 
-           record.errors.on(name)
+        record.respond_to?(:errors) && record.errors.respond_to?(:[]) && 
+           record.errors[name]
       end
     end
     

@@ -11,5 +11,17 @@ rails_2_test/public/system/*
 rails_2_test/public/user/*
 rails_2_test/tmp/*
 rails_2_test/webrat-*.html
+rails_3_test/db/*.sqlite3
+rails_3_test/log/*.log
+rails_3_test/db/schema.rb
+rails_3_test/public/images/*
+rails_3_test/public/javascripts/admin_assistant/*.js
+rails_3_test/public/stylesheets/admin_assistant/*.css
+rails_3_test/public/file_column_image/*
+rails_3_test/public/product/*
+rails_3_test/public/system/*
+rails_3_test/public/user/*
+rails_3_test/tmp/*
+rails_3_test/webrat-*.html
 website/_site
 *~

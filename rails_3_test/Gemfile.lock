@@ -39,6 +39,9 @@ GEM
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
     mime-types (1.16)
+    paperclip (2.3.3)
+      activerecord
+      activesupport
     polyglot (0.3.1)
     rack (1.2.2)
     rack-mount (0.6.14)
@@ -64,10 +67,13 @@ GEM
     treetop (1.4.9)
       polyglot (>= 0.3.1)
     tzinfo (0.3.26)
+    will_paginate (2.3.15)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  paperclip
   rails (= 3.0.6)
   sqlite3
+  will_paginate
