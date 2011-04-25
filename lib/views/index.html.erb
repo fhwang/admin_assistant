@@ -97,7 +97,7 @@
     <%= will_paginate @index.records, :container => false %>
   </div>
 <% if @index.records.total_pages > 10 %>
-  <% form_tag({:action => 'index'}, :method => 'get') do %>
+  <%= form_tag({:action => 'index'}, :method => 'get') do %>
     <%= text_field_tag('page', nil, :size => 2) %>
     <%= submit_tag('Jump') %>
   <% end %>

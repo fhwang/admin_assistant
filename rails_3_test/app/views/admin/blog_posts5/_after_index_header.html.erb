@@ -1,0 +1,8 @@
+<ul class="aa_filter">
+  <li>By user:</li>
+  <% User.all.each do |user| %>
+    <li><%= link_to_unless_current user.username, :filter => user.id  %></li>
+  <% end %>
+</ul>
+
+<div style="clear: both;"></div>

@@ -28,10 +28,65 @@ class ActiveSupport::TestCase
     end
   end
 
+  def assert_no_a_tag_with_get_args(
+    content, href_base, href_get_args, response_body
+  )
+    regex = %r|<a href="#{ href_base }\?([^"]*)"[^>]*>#{ content }</a>|
+    if response_body =~ regex
+      get_args_string = $1.gsub( /&amp;/, '&' )
+      response_h = HashWithIndifferentAccess.new
+      CGI::parse( get_args_string ).each do |key, values|
+        response_h[key] = values.first
+      end
+      if href_get_args.size == response_h.size
+        raise if href_get_args.all? { |key, value|
+          response_h[key] == value
+        }
+      end
+    end
+  end
+  
   def random_word( length = 25 )
     letters = 'abcdefghijklmnopqrstuvwxyz_'.split //
     ( 1..length ).to_a.map { letters[rand(letters.size)] }.join( '' )
   end
+end
+
+class CacheStoreStub
+  def initialize
+    flush
+  end
+  
+  def expires_in(key)
+    @expirations[key.to_s]
+  end
+  
+  def flush
+    @cache = {}
+    @expirations = {}
+    @raise_on_write = false
+  end
+  
+  def raise_on_write
+    @raise_on_write = true
+  end
+  
+  def read(key, options = nil)
+    @cache[key.to_s]
+  end
+  
+  def write(key, value, options = nil)
+    raise if @raise_on_write
+    @cache[key.to_s] = value
+    @expirations[key.to_s] = options[:expires_in]
+  end
+end
+
+$cache = CacheStoreStub.new
+
+module Rails
+  mattr_accessor :cache
+  self.cache = $cache
 end
 
 include Webrat::Methods 

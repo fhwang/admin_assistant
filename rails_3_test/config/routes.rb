@@ -56,6 +56,10 @@ Rails3Test::Application.routes.draw do
     resources :appointments
     resources :appointments2
     resources :blog_posts2
+    resources :blog_posts3
+    resources :blog_posts4
+    resources :blog_posts5
+    resources :blog_posts6
   end
   
   # This is a legacy wild controller route that's not recommended for RESTful applications.
