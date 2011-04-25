@@ -2,8 +2,9 @@ class AdminAssistant
   # Copied (and then streamlined) from Rails 2.3.5 in an effort to provide 
   # consistent functionality all the way back to Rails 2.1.0
   class DateTimeRangeEndPointSelector
+    include ActionView::Helpers::RawOutputHelper
     include ActionView::Helpers::TagHelper
-
+  
     DEFAULT_PREFIX = 'date'.freeze unless const_defined?('DEFAULT_PREFIX')
     POSITION = {
       :year => 1, :month => 2, :day => 3, :hour => 4, :minute => 5, :second => 6
@@ -259,7 +260,7 @@ class AdminAssistant
         select_html << prompt_option_tag(type, @options[:prompt]) + "\n" if @options[:prompt]
         select_html << select_options_as_html.to_s
 
-        content_tag(:select, select_html, select_options) + "\n"
+        content_tag(:select, raw(select_html), select_options) + "\n"
       end
 
       # Builds a prompt option tag with supplied options or from default options

@@ -1,0 +1,16 @@
+<p>
+  <strong>Current tags</strong>
+  <br /><% Tag.find( :all ).sort_by { |t| t.tag.upcase }.each do |tag| %>
+  <%= link_to_function( h( tag.tag ), "add_tag( '#{ tag.tag }' )" ) %>
+  <% end %>
+</p>
+<script type="text/javascript">
+function add_tag( new_tag ) {
+  tag_str = $('blog_post_tags').value;
+  tags = tag_str.split( ' ' );
+  if ( !tags.include( new_tag ) ) { tags.push( new_tag ); }
+  tags = tags.reject(function(v) { return (v == '') });
+  $('blog_post_tags').value = tags.join( ' ' );
+}
+</script>
+

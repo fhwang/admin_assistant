@@ -1,3 +1,12 @@
+GIT
+  remote: http://github.com/kalv/webrat.git
+  revision: 66130e4b9e903e07cfa86286655bde439c7b376e
+  specs:
+    webrat (0.7.2.pre)
+      nokogiri (>= 1.2.0)
+      rack (>= 1.0)
+      rack-test (>= 0.5.3)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -30,6 +39,7 @@ GEM
     activesupport (3.0.6)
     arel (2.0.9)
     builder (2.1.2)
+    dynamic_form (1.1.4)
     erubis (2.6.6)
       abstract (>= 1.0.0)
     i18n (0.5.0)
@@ -39,6 +49,7 @@ GEM
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
     mime-types (1.16)
+    nokogiri (1.4.4)
     paperclip (2.3.3)
       activerecord
       activesupport
@@ -67,13 +78,15 @@ GEM
     treetop (1.4.9)
       polyglot (>= 0.3.1)
     tzinfo (0.3.26)
-    will_paginate (2.3.15)
+    will_paginate (3.0.pre2)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  dynamic_form
   paperclip
   rails (= 3.0.6)
   sqlite3
-  will_paginate
+  webrat (>= 0.7.2.pre)!
+  will_paginate (~> 3.0.pre2)

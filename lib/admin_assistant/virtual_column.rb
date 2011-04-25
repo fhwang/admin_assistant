@@ -51,7 +51,7 @@ class AdminAssistant
           @action_view.send("#{input}_tag", input_name, string(object))
         end
         if has_matching_errors?(object)
-          html = "<div class=\"fieldWithErrors\">#{html}</div>"
+          html = "<div class=\"field_with_errors\">#{html}</div>"
         end
         html
       end

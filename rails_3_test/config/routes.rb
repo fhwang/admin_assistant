@@ -52,11 +52,13 @@ Rails3Test::Application.routes.draw do
 
   # See how all your routes lay out with "rake routes"
 
+  namespace :admin do
+    resources :appointments
+    resources :appointments2
+    resources :blog_posts2
+  end
+  
   # This is a legacy wild controller route that's not recommended for RESTful applications.
   # Note: This route will make all actions in every controller accessible via GET requests.
   match ':controller(/:action(/:id(.:format)))'
-
-  namespace :admin do
-    resources :appointments2
-  end
 end

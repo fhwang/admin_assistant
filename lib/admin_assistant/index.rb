@@ -260,7 +260,9 @@ class AdminAssistant
         else
           "New #{@admin_assistant.model_class_name}"
         end
-        @action_view.link_to new_link_name, @admin_assistant.url_params(:new)
+        @action_view.link_to(
+          new_link_name, @admin_assistant.url_params(:new)
+        )
       end
 
       def right_column?

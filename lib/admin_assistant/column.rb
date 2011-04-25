@@ -218,7 +218,7 @@ class AdminAssistant
           opt << ">#{text}</option>"
         }.join("\n")
         @action_view.select_tag(
-          "search[#{name}(comparator)]", option_tags
+          "search[#{name}(comparator)]", @action_view.raw(option_tags)
         )
       end
       

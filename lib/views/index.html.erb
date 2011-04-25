@@ -18,9 +18,9 @@
 <%= index_view.render_after_index_header %>
 </div>
 
-<% form_for(
-  :search, @index.search,
-  :url => {:action => 'index'},
+<%= form_for(
+  @index.search,
+  :as => :search, :url => {:action => 'index'},
   :html => {:id => 'search_form', :style => 'display:none', :method => 'get'}
 ) do |form| %>
   <% @index.hidden_fields_for_search_form.each do |name, value| -%>
@@ -37,7 +37,7 @@
     ) %>
   <% end %>
   <% column_views.each do |column_view| %>
-    <%= column_view.html(form) %>
+    <%= raw(column_view.html(form)) %>
   <% end %>
   <%= submit_tag('Search') %>
   <%=
@@ -59,7 +59,7 @@
     <tr>
     <% index_view.columns.each do |column| %>
       <% th_class = column.header_css_class %>
-      <th<%= " class=\"#{th_class}\"" if th_class %>><%=
+      <th<%= raw(" class=\"#{th_class}\"") if th_class %>><%=
         if column.sort_possible?(@index.records.total_entries)
           link_to(h(column.label), column.next_sort_params)
         else
@@ -77,12 +77,14 @@
     %>_<%= record.id %>">
       <% index_view.columns.each do |column| %>
         <% td_class = column.td_css_classes(column, record) %>
-        <td<%= " class=\"#{td_class}\"" unless td_class.blank? %>><%=
-          column.html(record)
+        <td<%= raw(" class=\"#{td_class}\"") unless td_class.blank? %>><%=
+          raw(column.html(record))
         %></td>
       <% end %>
       <% if index_view.right_column? %>
-      <td class="actions"><%= index_view.right_column_links(record) %></td>
+      <td class="actions">
+        <%= raw(index_view.right_column_links(record)) %>
+      </td>
       <% end %>
     </tr>
   <% end %>

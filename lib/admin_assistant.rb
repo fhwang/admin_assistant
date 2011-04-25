@@ -81,9 +81,7 @@ class AdminAssistant
   end
   
   def column(name)
-    if @model.file_columns.include?(name.to_s)
-      FileColumnColumn.new name
-    elsif @model.paperclip_attachments.include?(name)
+    if @model.paperclip_attachments.include?(name)
       PaperclipColumn.new name
     elsif (belongs_to_assoc = @model.belongs_to_assoc(name) or
            belongs_to_assoc = @model.belongs_to_assoc_by_foreign_key(name))
@@ -134,10 +132,6 @@ class AdminAssistant
   
   def default_column_names
     @model.default_column_names
-  end
-  
-  def file_columns
-    @model.file_columns
   end
   
   def method_missing(meth, *args)
@@ -250,21 +244,6 @@ class AdminAssistant
       }.map { |ar_column| ar_column.name }
     end
   
-    def file_columns
-      unless @file_columns
-        @file_columns = []
-        if @ar_model.respond_to?(:file_column)
-          names_to_check = @ar_model.columns.map(&:name).concat(accessors).uniq
-          @file_columns = names_to_check.select { |name|
-            %w( relative_path dir relative_dir temp ).all? { |suffix|
-              @ar_model.method_defined? "#{name}_#{suffix}".to_sym
-            }
-          }
-        end
-      end
-      @file_columns
-    end
-    
     def has_many_assoc(association_name)
       @ar_model.reflect_on_all_associations.select { |assoc|
         assoc.macro == :has_many

@@ -53,7 +53,7 @@ multi_form_view = AdminAssistant::MultiFormView.new(
         <% end %>
         <tr>
         <% sub_form_view.columns.each do |column| %>
-          <td<%= " class='fieldWithErrors'" if column.errors(record) %>>
+          <td<%= " class='field_with_errors'" if column.errors(record) %>>
             <%= column.html(rails_sub_form) %>
           </td>
         <% end %>

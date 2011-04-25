@@ -24,4 +24,5 @@ rails_3_test/public/user/*
 rails_3_test/tmp/*
 rails_3_test/webrat-*.html
 website/_site
+*.log
 *~
