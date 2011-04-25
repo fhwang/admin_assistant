@@ -1,13 +1,17 @@
 $: << File.join(File.dirname(__FILE__), '../vendor/ar_query/lib')
 require 'find'
-require 'admin_assistant/column'
-Find.find(File.dirname(__FILE__)) do |path|
-  if path =~ %r|\.rb$| && path !~ %r|admin_assistant\.rb$| &&
-     path !~ %r|admin_assistant/column\.rb$|
-    require path
-  end
-end
 require 'will_paginate'
+files = %w(
+  column virtual_column active_record_column association_target
+  belongs_to_column builder date_time_range_end_point_selector 
+  default_search_column form_view has_many_column helper index paperclip_column 
+  polymorphic_belongs_to_column request/base request/autocomplete
+  request/create request/destroy request/edit request/index request/new 
+  request/show request/update search show_view
+)
+files.each do |file|
+  require "#{File.dirname(__FILE__)}/admin_assistant/#{file}"
+end
 
 class AdminAssistant
   cattr_accessor :request_start_time

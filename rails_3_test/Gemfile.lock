@@ -7,6 +7,12 @@ GIT
       rack (>= 1.0)
       rack-test (>= 0.5.3)
 
+PATH
+  remote: ../../admin_assistant
+  specs:
+    admin_assistant (1.0.2)
+      will_paginate
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -84,6 +90,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  admin_assistant!
   dynamic_form
   paperclip
   rails (= 3.0.6)
