@@ -37,7 +37,9 @@ class AdminAssistant
         else
           helper_method = "after_#{name}_input"
           if @action_view.respond_to?(helper_method)
-            @action_view.send(helper_method, rails_form.object)
+            @action_view.raw(
+              @action_view.send(helper_method, rails_form.object)
+            )
           end
         end
       end
