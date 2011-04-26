@@ -52,16 +52,11 @@ Rails3Test::Application.routes.draw do
 
   # See how all your routes lay out with "rake routes"
 
-  namespace :admin do
-    resources :appointments
-    resources :appointments2
-    resources :blog_posts2
-    resources :blog_posts3
-    resources :blog_posts4
-    resources :blog_posts5
-    resources :blog_posts6
-    resources :comments
-    resources :users
+  Rails.application.routes.draw do |map|
+    namespace :admin do
+      resources :comments
+      resources :users
+    end
   end
   
   resources :blog_posts

@@ -7,15 +7,16 @@ files = %w(
   default_search_column form_view has_many_column helper index model 
   paperclip_column polymorphic_belongs_to_column request/base 
   request/autocomplete request/create request/destroy request/edit
-  request/index request/new request/show request/update search show_view
+  request/index request/new request/show request/update route search show_view
 )
 files.each do |file|
   require "#{File.dirname(__FILE__)}/admin_assistant/#{file}"
 end
 
 class AdminAssistant
-  cattr_accessor :request_start_time
-
+  cattr_accessor :request_start_time, :routes
+  self.routes = []
+  
   def self.profile(msg)
     if self.request_start_time
       Rails.logger.info "#{msg}: #{Time.now - self.request_start_time}"
@@ -198,12 +199,17 @@ class AdminAssistant
             self.class.admin_assistant.send(action, self)
           end
         end
+        AdminAssistant.routes << Route.new(self.admin_assistant)
       rescue ActiveRecord::StatementInvalid
         Rails.logger.info "Skipping admin_assistant_for for #{self.name} because the table doesn't exist in the DB. Hopefully that's because you're deploying with a migration."
       end
     end
   end
-end
 
+  # So we can hook into routing
+  class Engine < ::Rails::Engine
+  end
+end
+  
 ActionController::Base.send :include, AdminAssistant::ControllerMethods
 
