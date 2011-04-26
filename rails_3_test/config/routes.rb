@@ -60,9 +60,9 @@ Rails3Test::Application.routes.draw do
     resources :blog_posts4
     resources :blog_posts5
     resources :blog_posts6
+    resources :comments
+    resources :users
   end
   
-  # This is a legacy wild controller route that's not recommended for RESTful applications.
-  # Note: This route will make all actions in every controller accessible via GET requests.
-  match ':controller(/:action(/:id(.:format)))'
+  resources :blog_posts
 end

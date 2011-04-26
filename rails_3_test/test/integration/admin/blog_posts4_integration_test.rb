@@ -180,7 +180,7 @@ class Admin::BlogPosts4IntegrationTest < ActionController::IntegrationTest
       :published_at => Time.utc(2009, 9, 1, 12, 30, 0), :user => @user,
       :title => 'whatever'
     )
-    get "/admin/blog_posts4/show/#{@blog_post.id}"
+    get "/admin/blog_posts4/#{@blog_post.id}"
     assert_response :success
     
     # should use strftime_format for displaying published_at

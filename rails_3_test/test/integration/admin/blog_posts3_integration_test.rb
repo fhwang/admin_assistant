@@ -21,7 +21,7 @@ class Admin::BlogPosts3IntegrationTest < ActionController::IntegrationTest
   
   def test_edit
     @blog_post = BlogPost.create! :title => random_word, :user => @user
-    get "/admin/blog_posts3/edit/#{@blog_post.id}"
+    get "/admin/blog_posts3/#{@blog_post.id}/edit"
     
     # should have a body field
     assert_select('textarea[name=?]', 'blog_post[body]')
@@ -409,7 +409,7 @@ class Admin::BlogPosts3IntegrationTest < ActionController::IntegrationTest
   
   def test_show
     @blog_post = BlogPost.create! :title => "title", :user => @user
-    get "/admin/blog_posts3/show/#{@blog_post.id}"
+    get "/admin/blog_posts3/#{@blog_post.id}"
     assert_response :success
     
     # should say 'Post [ID]'

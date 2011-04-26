@@ -6,10 +6,7 @@ module Admin::BlogPosts6Helper
     else
       link_to(
         'New comment',
-        {
-          :controller => 'admin/comments', :action => 'new',
-          :comment => {:blog_post_id => blog_post.id}
-        }
+        new_admin_comment_path(:comment => {:blog_post_id => blog_post.id})
       )
     end
   end

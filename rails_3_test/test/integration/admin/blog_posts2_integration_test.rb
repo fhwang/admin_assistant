@@ -294,7 +294,7 @@ class Admin::BlogPosts2IntegrationTest < ActionController::IntegrationTest
     # should render the author as a username with a link
     assert_select('td') do
       assert_select(
-        "a[href=?]", "/admin/users/edit/#{@user.id}", :text => 'soren'
+        "a[href=?]", "/admin/users/#{@user.id}/edit", :text => 'soren'
       )
     end
     
@@ -706,7 +706,7 @@ class Admin::BlogPosts2IntegrationTest < ActionController::IntegrationTest
   
   def test_show
     @blog_post = BlogPost.create! :title => random_word, :user => @user
-    get "/admin/blog_posts2/show/#{@blog_post.id}"
+    get "/admin/blog_posts2/#{@blog_post.id}"
     assert_response :success
 
     # should show user
@@ -718,8 +718,8 @@ class Admin::BlogPosts2IntegrationTest < ActionController::IntegrationTest
   
   def test_update_when_there_are_no_validation_errors
     @blog_post = BlogPost.create! :title => random_word, :user => @user
-    post(
-      "/admin/blog_posts2/update/#{@blog_post.id}",
+    put(
+      "/admin/blog_posts2/#{@blog_post.id}",
       :blog_post => {:tags => 'tag1 tag2 tag3'}
     )
     
@@ -731,8 +731,8 @@ class Admin::BlogPosts2IntegrationTest < ActionController::IntegrationTest
   def test_update_when_the_user_has_clicked_Preview
     @blog_post = BlogPost.create! :title => random_word, :user => @user
     title2 = random_word
-    post(
-      "/admin/blog_posts2/update/#{@blog_post.id}",
+    put(
+      "/admin/blog_posts2/#{@blog_post.id}",
       :blog_post => {:title => title2},
       :commit => 'Preview'
     )
@@ -743,8 +743,8 @@ class Admin::BlogPosts2IntegrationTest < ActionController::IntegrationTest
   
   def test_update_with_a_bad_tag
     @blog_post = BlogPost.create! :title => random_word, :user => @user
-    post(
-      "/admin/blog_posts2/update/#{@blog_post.id}",
+    put(
+      "/admin/blog_posts2/#{@blog_post.id}",
       :blog_post => {:tags => "foo bar! baz"}
     )
     
@@ -761,8 +761,8 @@ class Admin::BlogPosts2IntegrationTest < ActionController::IntegrationTest
   
   def test_update_with_a_bad_tag_and_a_missing_title
     @blog_post = BlogPost.create! :title => random_word, :user => @user
-    post(
-      "/admin/blog_posts2/update/#{@blog_post.id}",
+    put(
+      "/admin/blog_posts2/#{@blog_post.id}",
       :blog_post => {:tags => "foo bar! baz", :title => ''}
     )
     
