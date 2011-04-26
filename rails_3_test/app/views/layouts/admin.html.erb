@@ -15,7 +15,8 @@
       <%
       admin_controllers_dir = "#{Rails.root}/app/controllers/admin/"
       controller_names = Dir.entries(admin_controllers_dir).select { |entry|
-        entry =~ /_controller.rb$/
+        entry =~ /_controller.rb$/ &&
+          entry != "not_migrated_yets_controller.rb"
       }.map { |entry|
         entry =~ /(.*)_controller.rb$/
         $1

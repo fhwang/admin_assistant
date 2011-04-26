@@ -49,12 +49,12 @@ end
       <%
         option_tags = "<option value=''></option>"
         option_tags << options_for_select(
-          association_target.options_for_select,
-          (associated.id if associated.class == polymorphic_type)
+            association_target.options_for_select,
+            (associated.id if associated.class == polymorphic_type)
         )
       %>
       <%= select_tag(
-        "#{column.name}_#{name}_id", option_tags,
+        "#{column.name}_#{name}_id", raw(option_tags),
         'data-behavior' => 'select',
         'data-value-type' => polymorphic_type.name
       ) %> 

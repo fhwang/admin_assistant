@@ -1,0 +1,2 @@
+module Admin::TelevisionTimeSlotsHelper
+end
