@@ -11,7 +11,8 @@ PATH
   remote: ../../admin_assistant
   specs:
     admin_assistant (1.0.2)
-      will_paginate
+      dynamic_form
+      will_paginate (~> 3.0.pre2)
 
 GEM
   remote: http://rubygems.org/
@@ -92,10 +93,8 @@ PLATFORMS
 
 DEPENDENCIES
   admin_assistant!
-  dynamic_form
   json
   paperclip (= 2.3.11)
   rails (= 3.0.6)
   sqlite3
   webrat (>= 0.7.2.pre)!
-  will_paginate (~> 3.0.pre2)

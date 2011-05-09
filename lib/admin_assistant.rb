@@ -1,6 +1,8 @@
 $: << File.join(File.dirname(__FILE__), '../vendor/ar_query/lib')
-require 'find'
+require 'dynamic_form'
 require 'will_paginate'
+
+require 'find'
 files = %w(
   column virtual_column active_record_column association_target
   belongs_to_column builder date_time_range_end_point_selector 

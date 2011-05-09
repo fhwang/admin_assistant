@@ -6,12 +6,6 @@ gem 'admin_assistant', :path => "../../admin_assistant"
 gem 'paperclip', '2.3.11'
 gem 'sqlite3'
 
-# In actual use, these gems will be admin_assistant dependencies, but we have
-# to put them here for now since we're not using admin_assistant as a gem in 
-# development
-gem 'dynamic_form'
-gem 'will_paginate', "~> 3.0.pre2"
-
 group :development, :test do
   gem 'json'
   gem 'webrat', '>=0.7.2.pre', :git => 'http://github.com/kalv/webrat.git'

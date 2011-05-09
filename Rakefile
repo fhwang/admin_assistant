@@ -5,7 +5,7 @@ require 'rake/rdoctask'
 require 'spec/rake/spectask'
 
 desc 'Default: run all specs across all supported Rails gem versions.'
-task :default => :spec
+task :default => :test
 
 # run with rake publish
 Grancher::Task.new do |g|
@@ -25,8 +25,8 @@ Rake::RDocTask.new(:rdoc) do |rdoc|
 end
 
 desc 'Run all specs across all supported Rails gem versions.'
-task :spec do
-  supported_versions = %w(2.1.0 2.1.2 2.2.2 2.3.2 2.3.3 2.3.4)
+task :test do
+  supported_versions = %w(3.0.6)
   locally_installed_versions =
       `gem list --local rails`.split(/\n/).
           detect { |l| l=~ /^rails / }.strip.
@@ -35,7 +35,7 @@ task :spec do
   if !missing.empty?
     puts "Missing Rails versions #{missing.join(',')}; please install and then re-run tests"
   else
-    cmd = "cd rails_2_test && " + (
+    cmd = "cd rails_3_test && " + (
       supported_versions.map { |version|
         "echo '===== Testing #{version} =====' && RAILS_GEM_VERSION=#{version} rake"
       }.join(" && ")
@@ -54,8 +54,9 @@ begin
     gem.email = "sera@fhwang.net"
     gem.homepage = "http://github.com/fhwang/admin_assistant"
     gem.authors = ["Francis Hwang"]
-    gem.add_dependency "will_paginate"
-    gem.files.exclude "rails_2_test"
+    gem.add_dependency "will_paginate", "~> 3.0.pre2"
+    gem.add_dependency "dynamic_form"
+    gem.files.exclude "rails_3_test"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new
