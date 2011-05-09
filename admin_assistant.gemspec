@@ -5,9 +5,9 @@
 
 Gem::Specification.new do |s|
   s.name = %q{admin_assistant}
-  s.version = "1.0.2"
+  s.version = "2.0.0.pre1"
 
-  s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
+  s.required_rubygems_version = Gem::Requirement.new("> 1.3.1") if s.respond_to? :required_rubygems_version=
   s.authors = ["Francis Hwang"]
   s.date = %q{2011-05-08}
   s.description = %q{admin_assistant is a Rails plugin that automates a lot of features typically needed in admin interfaces.}
