@@ -19,7 +19,7 @@ end
 <script type="text/javascript">
 $(document).ready(function() {
   $("#<%= text_field_id %>").tokenInput(
-    "<%= token_url %>", <%= token_input_options.to_json %>
+    "<%= raw(token_url) %>", <%= raw(token_input_options.to_json) %>
   );
 });
 </script>

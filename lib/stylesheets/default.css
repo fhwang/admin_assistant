@@ -104,7 +104,7 @@ Don't edit this file: It gets re-copied every time the server starts.
   font-size: small;
 }
 
-.admin_assistant.form .fieldWithErrors {
+.admin_assistant.form .field_with_errors {
   background: red;
 }
 

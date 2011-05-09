@@ -1,17 +1,24 @@
 $: << File.join(File.dirname(__FILE__), '../vendor/ar_query/lib')
-require 'find'
-require 'admin_assistant/column'
-Find.find(File.dirname(__FILE__)) do |path|
-  if path =~ %r|\.rb$| && path !~ %r|admin_assistant\.rb$| &&
-     path !~ %r|admin_assistant/column\.rb$|
-    require path
-  end
-end
+require 'dynamic_form'
 require 'will_paginate'
 
-class AdminAssistant
-  cattr_accessor :request_start_time
+require 'find'
+files = %w(
+  column virtual_column active_record_column association_target
+  belongs_to_column builder date_time_range_end_point_selector 
+  default_search_column form_view has_many_column helper index init model 
+  paperclip_column polymorphic_belongs_to_column request/base 
+  request/autocomplete request/create request/destroy request/edit
+  request/index request/new request/show request/update route search show_view
+)
+files.each do |file|
+  require "#{File.dirname(__FILE__)}/admin_assistant/#{file}"
+end
 
+class AdminAssistant
+  cattr_accessor :request_start_time, :routes
+  self.routes = []
+  
   def self.profile(msg)
     if self.request_start_time
       Rails.logger.info "#{msg}: #{Time.now - self.request_start_time}"
@@ -81,9 +88,7 @@ class AdminAssistant
   end
   
   def column(name)
-    if @model.file_columns.include?(name.to_s)
-      FileColumnColumn.new name
-    elsif @model.paperclip_attachments.include?(name)
+    if @model.paperclip_attachments.include?(name)
       PaperclipColumn.new name
     elsif (belongs_to_assoc = @model.belongs_to_assoc(name) or
            belongs_to_assoc = @model.belongs_to_assoc_by_foreign_key(name))
@@ -134,10 +139,6 @@ class AdminAssistant
   
   def default_column_names
     @model.default_column_names
-  end
-  
-  def file_columns
-    @model.file_columns
   end
   
   def method_missing(meth, *args)
@@ -200,98 +201,19 @@ class AdminAssistant
             self.class.admin_assistant.send(action, self)
           end
         end
+        AdminAssistant.routes << Route.new(self.admin_assistant)
       rescue ActiveRecord::StatementInvalid
         Rails.logger.info "Skipping admin_assistant_for for #{self.name} because the table doesn't exist in the DB. Hopefully that's because you're deploying with a migration."
       end
     end
   end
-  
-  class Model
-    def initialize(ar_model)
-      @ar_model = ar_model
-    end
-    
-    def accessors
-      @ar_model.instance_methods.
-          select { |m| m =~ /=$/ }.
-          map { |m| m.gsub(/=/, '')}.
-          select { |m| @ar_model.instance_methods.include?(m) }
-    end
-  
-    def belongs_to_associations
-      @ar_model.reflect_on_all_associations.select { |assoc|
-        assoc.macro == :belongs_to
-      }
-    end
-    
-    def belongs_to_assoc(association_name)
-      belongs_to_associations.detect { |assoc|
-        assoc.name.to_s == association_name.to_s
-      }
-    end
-    
-    def belongs_to_assoc_by_foreign_key(foreign_key)
-      belongs_to_associations.detect { |assoc|
-        assoc.association_foreign_key == foreign_key
-      }
-    end
-    
-    def belongs_to_assoc_by_polymorphic_type(name)
-      if name =~ /^(.*)_type/
-        belongs_to_associations.detect { |assoc|
-          assoc.options[:polymorphic] && $1 == assoc.name.to_s
-        }
-      end
-    end
-    
-    def default_column_names
-      @ar_model.columns.reject { |ar_column|
-        %w(id created_at updated_at).include?(ar_column.name)
-      }.map { |ar_column| ar_column.name }
-    end
-  
-    def file_columns
-      unless @file_columns
-        @file_columns = []
-        if @ar_model.respond_to?(:file_column)
-          names_to_check = @ar_model.columns.map(&:name).concat(accessors).uniq
-          @file_columns = names_to_check.select { |name|
-            %w( relative_path dir relative_dir temp ).all? { |suffix|
-              @ar_model.method_defined? "#{name}_#{suffix}".to_sym
-            }
-          }
-        end
-      end
-      @file_columns
-    end
-    
-    def has_many_assoc(association_name)
-      @ar_model.reflect_on_all_associations.select { |assoc|
-        assoc.macro == :has_many
-      }.detect { |assoc|
-        assoc.name.to_s == association_name.to_s
-      }
-    end
-    
-    def paperclip_attachments
-      pa = []
-      if @ar_model.respond_to?(:attachment_definitions)
-        if @ar_model.attachment_definitions
-          pa = @ar_model.attachment_definitions.map { |name, definition|
-            name
-          }
-        end
-      end
-      pa
-    end
-  
-    def searchable_columns
-      @ar_model.columns.select { |column|
-        [:string, :text].include?(column.type)
-      }
+
+  class Engine < ::Rails::Engine
+    initializer "admin_assistant.init" do
+      AdminAssistant.init
     end
   end
 end
-
+  
 ActionController::Base.send :include, AdminAssistant::ControllerMethods
 

@@ -14,7 +14,7 @@ form_view = AdminAssistant::FormView.new(@record, @admin_assistant, self)
   <% if !@record.errors.empty? %>
     <%= error_messages_for 'record' %>
   <% end %>
-  <% form_for(@record, form_view.form_for_args) do |rails_form| %>
+  <%= form_for(@record, form_view.form_for_args) do |rails_form| %>
     <% if @origin %>
       <%= hidden_field_tag 'origin', @origin %>
     <% end %>
@@ -25,7 +25,7 @@ form_view = AdminAssistant::FormView.new(@record, @admin_assistant, self)
       <% if column.description %>
         <p class="description"><%= h(column.description) %></p>
       <% end %>
-      <%= column.html(rails_form) %>
+      <%= raw(column.html(rails_form)) %>
       </div>
     <% end %>
       <div>

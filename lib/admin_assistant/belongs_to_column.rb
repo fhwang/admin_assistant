@@ -136,7 +136,7 @@ class AdminAssistant
       end
       
       def errors(record)
-        record.errors.on @column.association_foreign_key
+        record.errors[@column.association_foreign_key]
       end
       
       def render_autocompleter(form)
