@@ -17,6 +17,7 @@ admin\_assistant is being used on the following sites:
 * [fhwang.net](http://fhwang.net) by [Francis Hwang][fhwang]
 * [sling.com](http://www.sling.com) by [Diversion Media](http://www.diversionmedia.com/)
 * [stockblotter.com](http://stockblotter.com) by [Alex Farrill][afarrill]
+* [weplay.com](http://www.weplay.com) by [Weplay][http://www.weplay.com/]
 
 If you're also using admin\_assistant, and would like to be listed here, please get in touch with us on the mailing list.
 
