@@ -4,31 +4,32 @@ layout:   default
 
 admin\_assistant is a Rails plugin that automates a lot of features typically needed in admin controllers. It is written and maintained by [Francis Hwang][fhwang].
 
-admin\_assistant is in beta, meaning that it is stable, and being used in production sites, but there may be small API changes in the future.
-
-It currently supports Rails 2.1.0, 2.1.2, 2.2.2, 2.3.2, 2.3.3, and 2.3.4. There are no plans to support Rails 2.0 or earlier.
-
-
 ## Features
 
 * Built-in model creation, updating, and deletion.
 * Live querying of models, which allows incremental development of controllers without the maintenance problems of generated code.
-* Paginated indexes with built field-ordering.
+* Paginated indexes with built-in field-ordering.
 * Highly customizable search that allows customization of individual fields, numerical comparators, and boolean operators.
 * Built-in Ajax autocompleters for handling belongs-to associations.
 * Built-in widgets for handling polymorphic belongs-to associations.
-* Built-in support for images with either [Paperclip](http://thoughtbot.com/projects/paperclip) or [FileColumn](http://www.kanthak.net/opensource/file_column/).
+* Built-in support for images with [Paperclip](http://thoughtbot.com/projects/paperclip).
 * Heavily hookable interface allows customization of columns, search parameters, form inputs, parameter handling, and model creation.
+
+
+## Rails support
+As of June 2011, the bulk of development on admin\_assistant is for Rails 3.
+
+If you'd like to get admin\_assistant for Rails 2.1.x through Rails 2.3.x, you can install the most recent version of admin\_assistant 1.x. The full list of admin\_assistant versions can be seen [here](https://rubygems.org/gems/admin_assistant/versions).
 
 
 ## Still not convinced?
 
-Check out our [screenshots](./screenshots.html), [who's using admin\_assistant](./community.html#whos_using), or our [design principles](./design_principles.html).
+Check out our [screenshots](/admin_assistant/screenshots.html), [who's using admin\_assistant](/admin_assistant/community.html#whos_using), or our [design principles](/admin_assistant/design_principles.html).
 
 
 ## Ready to give it a try?
 
-[Getting started](./getting_started.html) is easy.
+[Getting started](/admin_assistant/getting_started.html) is easy.
 
 [afarrill]: http://github.com/alexfarrill
 [fhwang]: http://fhwang.net/

@@ -7,14 +7,9 @@ admin\_assistant is built with a few design principles in mind:
 
 ### Relentless full-stack testing
 
-admin\_assistant is tested against a complete, self-contained Rails app in the `test_rails_app` directory. This app serves as the reference implementation of admin\_assistant, so new features can be added with minimal worry of breaking old features.
+admin\_assistant is tested against a complete, self-contained Rails app. This app serves as the reference implementation of admin\_assistant, so new features can be added with minimal worry of breaking old features.
 
 In addition, this test suite can be run against multiple versions of Rails, making multi-version support possible.
-
-
-### Wide support of Rails versions
-
-admin\_assistant currently supports six versions of Rails: 2.1.0, 2.1.2, 2.2.2, 2.3.2, 2.3.3, and 2.3.4. We offer this support by writing a test suite that can be run with different versions of Rails. After all, it doesn't make any sense to release a plugin intended for other programmers' convenience, and then tell them to drop everything and spend the next two weeks upgrading their whole app.
 
 
 ### Deeply customizable API
@@ -30,7 +25,7 @@ It's great to be able to do the quick boilerplate CRUD operations, but it doesn'
 * Custom options for date selects, datetime selects, textarea tags, etc. can be set up on a per-column level and passed through to the underlying Rails method.
 * Custom redirecting after successful saves
 
-If you're copying and pasting something out of `vendor/plugins/admin_assistant`, that's a design flaw.
+If you're copying and pasting out of the admin\_assistant source, that's a design flaw.
 
 
 ### Minimally invasive
@@ -46,5 +41,5 @@ In addition, admin\_assistant doesn't override or `alias_method_chain` anything 
 
 admin\_assistant is opinionated in its own way, much of which has to do with picking the most safe default behavior possible.
 
-* The `destroy` action is turned off by default, since the decision to allow a way to erase production data should be taken seriously.
+* The `destroy` action is turned off by default, since the deletion of production data should never be enabled without a careful consideration of what that means for the overall system.
 * Date selects and datetime selects in forms are blank by default, not the current date or time. This helps avoid a situation on models with many fields where dates and datetimes can be set by accident, changing the site's behavior in unexpected ways. The current date or time is usually not a useful default, anyway.

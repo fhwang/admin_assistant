@@ -1,6 +1,16 @@
+/*
+airmail:
+#661510
+#D9351A
+#F2C76F
+#BF9727
+#204C3F
+*/
+
 body {
   margin: 0;
-	font-family: Verdana, "Bitstream Vera Sans", sans-serif;
+	background: #F2C76F;
+  font-family: "Georgia", "Times New Roman", serif;
 }
 
 h1 {
@@ -9,13 +19,8 @@ h1 {
   padding: 10px;
 }
 
-h1 a, h1 a:visited {
-  text-decoration: none;
-  color: black;
-}
-
-h1 a:hover {
-  background: #ff3;
+h1, h2, h3, h4, h5 {
+  font-family: Courier, "Courier New", monospace
 }
 
 code {
@@ -39,10 +44,11 @@ pre code {
   width: 900px;
   margin: auto;
   padding-bottom: 25px;
+  line-height: 150%;
 }
 
 #page_header {
-  background: #ffc
+  background: #BF9727;
 }
 
 #page_header .nav {
@@ -51,13 +57,28 @@ pre code {
   padding-bottom: 10px;
 }
 
-#page_header .nav a, #page_header .nav a:visited {
+#page_header h1 a, #page_header h1 a:visited {
+  background: #BF9727;
   text-decoration: none;
   color: black;
 }
 
+#page_header h1 a:hover {
+  background: #F2C76F;
+}
+
+#page_header .nav a, #page_header .nav a:visited {
+  text-decoration: none;
+  color: white;
+  margin-right: 5px;
+  background: #AF8717;
+  padding: 5px 20px 5px 5px;
+  font-family: Courier, "Courier New", monospace
+}
+
 #page_header .nav a:hover {
-  background: #ff3;
+  background: #F2C76F;
+  color: black
 }
 
 .subnav {
@@ -67,4 +88,15 @@ pre code {
 
 .thumb {
   margin-right: 10px;
+}
+
+a, a:visited {
+  background: #DFA747;
+  color: black;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #DFA747;
+  background: black;
 }
