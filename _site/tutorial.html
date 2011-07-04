@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>admin_assistant: Tutorial</title>
+    <link rel="stylesheet" href="/admin_assistant/css/main.css" type="text/css" media="screen">
+    <script type="text/javascript" src="/admin_assistant/js/prototype.js"></script>
+    <script type="text/javascript" src="/admin_assistant/js/scriptaculous.js?load=effects,builder"></script>
+    <script type="text/javascript" src="/admin_assistant/js/lightbox.js"></script>
+    <link rel="stylesheet" href="/admin_assistant/css/lightbox.css" type="text/css" media="screen" />
+  </head>
+
+  <body>
+    <div id="page_header">
+    <h1><a href="/admin_assistant/">admin_assistant</a></h1>
+    <div class="nav">
+      <a href="/admin_assistant/quick_start.html">Quick start</a>
+      <a href="/admin_assistant/tutorial.html">Tutorial</a>
+      <a href="/admin_assistant/screenshots.html">Screenshots</a>
+      <a href="/admin_assistant/api/">API</a>
+      <a href="/admin_assistant/community.html">Community</a>
+      <a href="/admin_assistant/design_principles.html">Design&nbsp;principles</a>
+      <a href="http://github.com/fhwang/admin_assistant">Source</a>
+    </div>
+    </div>
+    <div id="body">
+    
+      
+        <h2>Tutorial</h2>
+      
+    
+    <div class='note'>
+This document assumes you are a beginning Rails user; if you are familiar with Rails you might want to check out our <a href='/admin_assistant/quick_start.html'>quick start</a>.
+</div>
+<p>1) Add the gem to <code>Gemfile</code> in the root of your Rails project.</p>
+
+<pre><code>gem &#39;admin_assistant&#39;</code></pre>
+
+<p>2) Install the gem locally.</p>
+
+<pre><code>$ bundle install</code></pre>
+
+<p>3) admin_assistant uses jQuery. You may already have jQuery installed for your project, but if not, you can get it like so:</p>
+
+<pre><code>$ curl http://code.jquery.com/jquery-1.6.2.min.js &gt; \
+    public/javascripts/jquery-1.6.2.min.js</code></pre>
+
+<p>4) If you don&#8217;t have any admin controllers in your Rails project yet, you probably need to create a separate admin layout. Create a file called <code>app/views/layouts/admin.html.erb</code> like this:</p>
+
+<pre><code>&lt;html&gt;
+  &lt;head&gt;
+    &lt;%= javascript_include_tag(&quot;jquery-1.6.2.min&quot;) %&gt;
+    &lt;%= admin_assistant_includes %&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;%= yield %&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+<p>If you&#8217;ve already created an admin layout, you should add the javascript references, and the call to <code>admin_assistant_includes</code>. This includes the standard CSS and Javascript that are packed with admin_assistant.</p>
+
+<p>5) Create your new admin controller for a pre-existing model. We&#8217;ll be using a BlogPost as an example but you should be able to use any model in your Rails app.</p>
+
+<pre><code>./script/generate controller admin/blog_posts</code></pre>
+
+<p>6) Open <code>app/controllers/admin/blog_posts_controller.rb</code> and set it up to use the admin layout and to use admin_assistant for the BlogPost model:</p>
+
+<pre><code>class Admin::BlogPostsController &lt; ApplicationController
+  layout &#39;admin&#39;
+
+  admin_assistant_for BlogPost
+end</code></pre>
+
+<p>7) If you were already running your Rails app with <code>./script/server</code> etc, you should restart it.</p>
+
+<p>8) Visit <code>/admin/blog_posts</code> in your browser and you&#8217;ll see something like this:</p>
+
+<p><img src='/admin_assistant/img/blog_posts-index.png' alt='index' /></p>
+
+<p>You can now search, paginate, create, and edit blog posts.</p>
+
+<p>Depending on the model you&#8217;re using, you might notice a few things:</p>
+
+<ul>
+<li>Boolean values can be toggled on and off in the index view.</li>
+
+<li>Any belongs-to associations are handled in the form by either a drop-down, or an Ajax autocompleter, depending on how many choices there are for the association.</li>
+
+<li>There is no <code>destroy</code> action out of the box. This is intended as a safe default, but you can add it if you like.</li>
+
+<li>If you have more than 10 pages of a given model, the pagination at the bottom includes a jump form to let you automatically jump to a page you enter.</li>
+</ul>
+
+<p>For more, check out the <a href='/admin_assistant/api/'>API reference</a>.</p>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>admin_assistant: API{% if page.title != '' %}: {{ page.title }}{% endif% %}</title>
+    <link rel="stylesheet" href="/admin_assistant/css/main.css" type="text/css" media="screen">
+    <script type="text/javascript" src="/admin_assistant/js/prototype.js"></script>
+    <script type="text/javascript" src="/admin_assistant/js/scriptaculous.js?load=effects,builder"></script>
+    <script type="text/javascript" src="/admin_assistant/js/lightbox.js"></script>
+    <link rel="stylesheet" href="/admin_assistant/css/lightbox.css" type="text/css" media="screen" />
+  </head>
+
+  <body>
+    <div id="page_header">
+    <h1><a href="/admin_assistant/">admin_assistant</a></h1>
+    <div class="nav">
+      <a href="/admin_assistant/quick_start.html">Quick start</a>
+      <a href="/admin_assistant/tutorial.html">Tutorial</a>
+      <a href="/admin_assistant/screenshots.html">Screenshots</a>
+      <a href="/admin_assistant/api/">API</a>
+      <a href="/admin_assistant/community.html">Community</a>
+      <a href="/admin_assistant/design_principles.html">Design&nbsp;principles</a>
+      <a href="http://github.com/fhwang/admin_assistant">Source</a>
+    </div>
+    </div>
+    <div id="body">
+    <h2>
+    <a href="/admin_assistant/v1/api/">API</a>
+    {% if page.title != '' %}: {{page.title}}{% endif %}
+    </h2>
+    <div class="subnav">
+      <a href="/admin_assistant/v1/api/core.html">Core</a> | 
+      <a href="/admin_assistant/v1/api/destroy.html">Destroy</a> | 
+      <a href="/admin_assistant/v1/api/form.html">Form</a> |
+      <a href="/admin_assistant/v1/api/idx.html">Index</a> |
+      <a href="/admin_assistant/v1/api/search.html">Search</a> |
+      <a href="/admin_assistant/v1/api/show.html">Show</a>
+    </div>
+
+    {{ content }}
+    </div>
+  </body>
+</html>

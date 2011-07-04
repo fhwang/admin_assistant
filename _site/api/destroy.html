@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>admin_assistant: API: Destroy</title>
+    <link rel="stylesheet" href="/admin_assistant/css/main.css" type="text/css" media="screen">
+    <script type="text/javascript" src="/admin_assistant/js/prototype.js"></script>
+    <script type="text/javascript" src="/admin_assistant/js/scriptaculous.js?load=effects,builder"></script>
+    <script type="text/javascript" src="/admin_assistant/js/lightbox.js"></script>
+    <link rel="stylesheet" href="/admin_assistant/css/lightbox.css" type="text/css" media="screen" />
+  </head>
+
+  <body>
+    <div id="page_header">
+    <h1><a href="/admin_assistant/">admin_assistant</a></h1>
+    <div class="nav">
+      <a href="/admin_assistant/quick_start.html">Quick start</a>
+      <a href="/admin_assistant/tutorial.html">Tutorial</a>
+      <a href="/admin_assistant/screenshots.html">Screenshots</a>
+      <a href="/admin_assistant/api/">API</a>
+      <a href="/admin_assistant/community.html">Community</a>
+      <a href="/admin_assistant/design_principles.html">Design&nbsp;principles</a>
+      <a href="http://github.com/fhwang/admin_assistant">Source</a>
+    </div>
+    </div>
+    <div id="body">
+    
+      <h2>
+        <a href="/admin_assistant/api/">API</a>: Destroy
+      </h2>
+      <div class="subnav">
+        <a href="/admin_assistant/api/core.html">Core</a> | 
+        <a href="/admin_assistant/api/destroy.html">Destroy</a> | 
+        <a href="/admin_assistant/api/form.html">Form</a> |
+        <a href="/admin_assistant/api/idx.html">Index</a> |
+        <a href="/admin_assistant/api/search.html">Search</a> |
+        <a href="/admin_assistant/api/show.html">Show</a>
+      </div>
+    
+    <p>Note that the <code>destroy</code> action is turned off by default. To turn it on, use the core <a href='./core.html#builder_actions'>actions</a> method.</p>
+
+<p>By default, <code>destroy</code> simply retrieves the model instance, and calls <code>ActiveRecord::Base#destroy</code>. If you&#8217;d like to define your own custom deletion semantics, you can set a block that will be called instead of the model&#8217;s built-in <code>destroy</code> method:</p>
+
+<pre><code>admin_assistant_for Product do |a|
+  a.actions &lt;&lt; :destroy
+  a.destroy do |product|
+    product.update_attribute :deleted, true
+    product.notify_admins_of_deletion
+  end
+end</code></pre>
+
+<p>You may also find plugins such as <a href='http://github.com/semanticart/is_paranoid/tree/master'>as_paranoid</a> or <a href='http://ar-paranoid.rubyforge.org/'>acts_as_paranoid</a> useful here. If you&#8217;re using a plugin such as that, which changes the behavior of <code>ActiveRecord::Base#destroy</code>, it means that you will probably not need to customize admin_assistant in this way.</p>
+    </div>
+  </body>
+</html>

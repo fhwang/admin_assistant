@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>admin_assistant: Version 1 API: Search</title>
+    <link rel="stylesheet" href="/admin_assistant/css/main.css" type="text/css" media="screen">
+    <script type="text/javascript" src="/admin_assistant/js/prototype.js"></script>
+    <script type="text/javascript" src="/admin_assistant/js/scriptaculous.js?load=effects,builder"></script>
+    <script type="text/javascript" src="/admin_assistant/js/lightbox.js"></script>
+    <link rel="stylesheet" href="/admin_assistant/css/lightbox.css" type="text/css" media="screen" />
+  </head>
+
+  <body>
+    <div id="page_header">
+    <h1><a href="/admin_assistant/">admin_assistant</a></h1>
+    <div class="nav">
+      <a href="/admin_assistant/quick_start.html">Quick start</a>
+      <a href="/admin_assistant/tutorial.html">Tutorial</a>
+      <a href="/admin_assistant/screenshots.html">Screenshots</a>
+      <a href="/admin_assistant/api/">API</a>
+      <a href="/admin_assistant/community.html">Community</a>
+      <a href="/admin_assistant/design_principles.html">Design&nbsp;principles</a>
+      <a href="http://github.com/fhwang/admin_assistant">Source</a>
+    </div>
+    </div>
+    <div id="body">
+    
+      <h2>
+        <a href="/admin_assistant/v1/api/">Version 1 API</a>: Form
+      </h2>
+      <div class="subnav">
+        <a href="/admin_assistant/v1/api/core.html">Core</a> | 
+        <a href="/admin_assistant/v1/api/destroy.html">Destroy</a> | 
+        <a href="/admin_assistant/v1/api/form.html">Form</a> |
+        <a href="/admin_assistant/v1/api/idx.html">Index</a> |
+        <a href="/admin_assistant/v1/api/search.html">Search</a> |
+        <a href="/admin_assistant/v1/api/show.html">Show</a>
+      </div>
+    
+    <p><img src='/admin_assistant/img/blog_posts-search.png' alt='index' /></p>
+
+<p>Search restricts the records viewed in <a href='/admin_assistant/v1/api/idx.html'>Index</a> by various criteria. By default, search presents a single text field, and text entered in this field will be compared to all string and text fields in the table. By setting #columns you can have the search form specify which fields are being searched on.</p>
+
+<p>Since search is closely related to <a href='/admin_assistant/v1/api/idx.html'>Index</a>, its configuration is reached through the index builder:</p>
+
+<pre><code>class Admin::BlogPostsController &lt; ApplicationController
+  admin_assistant_for BlogPost do |a|
+    a.index do |index|
+      index.search do |search|
+        search.columns :title, :user
+      end
+    end
+  end
+end</code></pre>
+
+<p>You can chain calls to get to the search builder more quickly:</p>
+
+<pre><code>class Admin::BlogPostsController &lt; ApplicationController
+  admin_assistant_for BlogPost do |a|
+    a.index.search do |search|
+      search.columns :title, :user
+    end
+  end
+end</code></pre>
+
+<h3 id='search_config_options'>Search config options</h3>
+
+<h4 id='columns'>columns</h4>
+<a name='builder_columns'> </a>
+<pre><code>search.columns :title, :user</code></pre>
+
+<p>Call this method to set the search to supply one input for each column. When you set multiple search columns, users get the option of searching on all entered columns or any of them.</p>
+
+<p>You can also call this with Index#search:</p>
+
+<pre><code>index.search :title, :user</code></pre>
+
+<h4 id='default_search_matches_on'>default_search_matches_on</h4>
+
+<p>If you don&#8217;t specify any columns, the search form is simply one field, and whatever text is entered in that field will be compared to every text and string field on the database table. If there are other fields you&#8217;d like the default search to compare with, you can add them using <code>default_search_matches_on</code>. For example, to give users the ability to search by ID:</p>
+
+<pre><code>  index.search.default_search_matches_on :id</code></pre>
+
+<p>You can also pass in SQL fragments:</p>
+
+<pre><code>  index.search.default_search_matches_on \
+        &quot;concat_ws(&#39; &#39;, users.first_name, users.last_name)&quot;</code></pre>
+
+<h4 id='include_params_in_form'>include_params_in_form</h4>
+
+<pre><code>  index.search.include_params_in_form = true</code></pre>
+
+<p>This will put any custom page params in the search form to be posted with the search parameters. You might use this if you&#8217;ve got another way of filtering, say, blog posts by user, and you want the search form on that page to only search within blog posts by that user.</p>
+
+<h3 id='column_config_options'>Column config options</h3>
+
+<p>These are configurations that can be applied to specific columns in the search.</p>
+
+<h4 id='comparators'>comparators</h4>
+
+<pre><code>search[:price].comparators = false</code></pre>
+
+<p>By default, integer and datetime fields are presented with a list of options for comparing to the entered value: &#8220;greater than&#8221;, &#8220;greater than or equal to&#8221;, &#8220;equal to&#8221;, &#8220;less than or equal to&#8221;, and &#8220;less than&#8221;. This way the user can do a search like &#8220;show me all products that cost more than $100.&#8221;</p>
+
+<p>To turn this off, set <code>comparators</code> to false.</p>
+
+<h4 id='compare_to_range'>compare_to_range</h4>
+
+<pre><code>search[:price].compare_to_range = true</code></pre>
+
+<p>If you want to offer a ranged search, set <code>compare_to_range</code> to true. This will render two fields for greater-than and less-than in the search.</p>
+
+<h4 id='conditions'>conditions</h4>
+
+<pre><code>search[:has_short_title].field_type = :boolean
+search[:has_short_title].conditions do |has_short_title|
+  if has_short_title
+    &quot;length(title) &lt; 10&quot;
+  elsif has_short_title == false
+    &quot;length(title) &gt;= 10&quot;
+  end
+end</code></pre>
+
+<p>To be used with a virtual column in search. The block should return a SQL fragment to add to the final query, or nil to not change anything.</p>
+
+<h4 id='match_text_fields_for_association'>match_text_fields_for_association</h4>
+
+<pre><code>search[:user].match_text_fields_for_association</code></pre>
+
+<p>Only applies to belongs-to associations. By default, belongs-to associations will be searchable using a dropdown of the associated records that currently exist. Calling <code>match_text_fields_for_association</code> will mean the input for that association will be a text input instead, and that text will be matched against all text or string fields on the associated record.</p>
+
+<p>For example, let&#8217;s say you have a BlogPost that belongs to a User. With this configuration on Admin::BlogPostsController:</p>
+
+<pre><code>search.columns :user
+search[:user].match_text_fields_for_association</code></pre>
+
+<p>&#8230; the search form will be one field, a text input labeled &#8220;User&#8221;. If the user enters &#8220;an&#8221; in that field, it will match against all blog posts by the users with the username field of &#8220;Andy&#8221;, &#8220;Andrew&#8221;, and &#8220;Frank&#8221;.</p>
+    </div>
+  </body>
+</html>

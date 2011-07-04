@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>admin_assistant: Quick start: admin_assistant 1</title>
+    <link rel="stylesheet" href="/admin_assistant/css/main.css" type="text/css" media="screen">
+    <script type="text/javascript" src="/admin_assistant/js/prototype.js"></script>
+    <script type="text/javascript" src="/admin_assistant/js/scriptaculous.js?load=effects,builder"></script>
+    <script type="text/javascript" src="/admin_assistant/js/lightbox.js"></script>
+    <link rel="stylesheet" href="/admin_assistant/css/lightbox.css" type="text/css" media="screen" />
+  </head>
+
+  <body>
+    <div id="page_header">
+    <h1><a href="/admin_assistant/">admin_assistant</a></h1>
+    <div class="nav">
+      <a href="/admin_assistant/quick_start.html">Quick start</a>
+      <a href="/admin_assistant/tutorial.html">Tutorial</a>
+      <a href="/admin_assistant/screenshots.html">Screenshots</a>
+      <a href="/admin_assistant/api/">API</a>
+      <a href="/admin_assistant/community.html">Community</a>
+      <a href="/admin_assistant/design_principles.html">Design&nbsp;principles</a>
+      <a href="http://github.com/fhwang/admin_assistant">Source</a>
+    </div>
+    </div>
+    <div id="body">
+    
+      
+        <h2>Quick start: admin_assistant 1</h2>
+      
+    
+    <div class='note'>
+This document assumes you are highly familiar with Ruby and Rails; if you are a beginning Rails user you might want to start with our  <a href='/admin_assistant/v1/tutorial.html'>tutorial</a>.
+</div>
+<p>1) First, install the plugin from Github.</p>
+
+<pre><code>./script/plugin install git://github.com/fhwang/admin_assistant.git</code></pre>
+
+<p>2) If you don&#8217;t have the popular will_paginate gem, you&#8217;ll need that too. See <a href='http://wiki.github.com/mislav/will_paginate/installation'>http://wiki.github.com/mislav/will_paginate/installation</a> for more info.</p>
+
+<p>3) admin_assistant comes packaged with standard CSS and Javascript that you should include in whatever layout your admin controllers will be using. You&#8217;ll also need to make sure to include prototype.js, effects.js, and controls.js, if you&#8217;re not including them already.</p>
+
+<pre><code>&lt;html&gt;
+  &lt;head&gt;
+    &lt;%= javascript_include_tag(&quot;prototype&quot;, &quot;effects&quot;, &quot;controls&quot;) %&gt;
+    &lt;%= admin_assistant_includes %&gt;
+  &lt;/head&gt;
+  ...
+&lt;/html&gt;</code></pre>
+
+<p>4) Setup an admin controller by attaching it to a model and using the admin layout:</p>
+
+<pre><code>class Admin::BlogPostsController &lt; ApplicationController
+  layout &#39;admin&#39;
+
+  admin_assistant_for BlogPost
+end</code></pre>
+
+<p>That&#8217;s it for the basic version. You should now be able to go to /admin/blog_posts in your app and search, paginate, create, and edit blog posts.</p>
+
+<p><img src='/admin_assistant/img/blog_posts-index.png' alt='index' /></p>
+
+<p>Depending on the model you&#8217;re using, you might notice a few things:</p>
+
+<ul>
+<li>Boolean values can be toggled on and off in the index view.</li>
+
+<li>Any belongs-to associations are handled in the form by either a drop-down, or an Ajax autocompleter, depending on how many choices there are for the association.</li>
+
+<li>There is no <code>destroy</code> action out of the box. This is intended as a safe default, but you can add it if you like.</li>
+
+<li>If you have more than 10 pages of a given model, the pagination at the bottom includes a jump form to let you automatically jump to a page you enter.</li>
+</ul>
+
+<p>For more, check out the <a href='/admin_assistant/v1/api/'>API reference</a>.</p>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>admin_assistant: API: Show</title>
+    <link rel="stylesheet" href="/admin_assistant/css/main.css" type="text/css" media="screen">
+    <script type="text/javascript" src="/admin_assistant/js/prototype.js"></script>
+    <script type="text/javascript" src="/admin_assistant/js/scriptaculous.js?load=effects,builder"></script>
+    <script type="text/javascript" src="/admin_assistant/js/lightbox.js"></script>
+    <link rel="stylesheet" href="/admin_assistant/css/lightbox.css" type="text/css" media="screen" />
+  </head>
+
+  <body>
+    <div id="page_header">
+    <h1><a href="/admin_assistant/">admin_assistant</a></h1>
+    <div class="nav">
+      <a href="/admin_assistant/quick_start.html">Quick start</a>
+      <a href="/admin_assistant/tutorial.html">Tutorial</a>
+      <a href="/admin_assistant/screenshots.html">Screenshots</a>
+      <a href="/admin_assistant/api/">API</a>
+      <a href="/admin_assistant/community.html">Community</a>
+      <a href="/admin_assistant/design_principles.html">Design&nbsp;principles</a>
+      <a href="http://github.com/fhwang/admin_assistant">Source</a>
+    </div>
+    </div>
+    <div id="body">
+    
+      <h2>
+        <a href="/admin_assistant/api/">API</a>: Show
+      </h2>
+      <div class="subnav">
+        <a href="/admin_assistant/api/core.html">Core</a> | 
+        <a href="/admin_assistant/api/destroy.html">Destroy</a> | 
+        <a href="/admin_assistant/api/form.html">Form</a> |
+        <a href="/admin_assistant/api/idx.html">Index</a> |
+        <a href="/admin_assistant/api/search.html">Search</a> |
+        <a href="/admin_assistant/api/show.html">Show</a>
+      </div>
+    
+    <p>Show configuration affects what is displayed in a show page, e.g. <code>/admin/blog_posts/show/5</code>.</p>
+
+<h3 id='show_config_options'>Show config options</h3>
+
+<h4 id='columns'>columns</h4>
+
+<pre><code>admin_assistant_for BlogPost do |aa|
+  aa.show.columns :user, :title, :body
+end</code></pre>
+
+<p>Shows only these columns in the show page.</p>
+
+<h3 id='partials'>Partials</h3>
+
+<h4 id='_column_for_showhtmlerb'>_[column]_for_show.html.erb</h4>
+
+<p>If this partial is present, it will be rendered instead of the default HTML for the column.</p>
+    </div>
+  </body>
+</html>

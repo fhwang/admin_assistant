@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>admin_assistant: Design principles</title>
+    <link rel="stylesheet" href="/admin_assistant/css/main.css" type="text/css" media="screen">
+    <script type="text/javascript" src="/admin_assistant/js/prototype.js"></script>
+    <script type="text/javascript" src="/admin_assistant/js/scriptaculous.js?load=effects,builder"></script>
+    <script type="text/javascript" src="/admin_assistant/js/lightbox.js"></script>
+    <link rel="stylesheet" href="/admin_assistant/css/lightbox.css" type="text/css" media="screen" />
+  </head>
+
+  <body>
+    <div id="page_header">
+    <h1><a href="/admin_assistant/">admin_assistant</a></h1>
+    <div class="nav">
+      <a href="/admin_assistant/quick_start.html">Quick start</a>
+      <a href="/admin_assistant/tutorial.html">Tutorial</a>
+      <a href="/admin_assistant/screenshots.html">Screenshots</a>
+      <a href="/admin_assistant/api/">API</a>
+      <a href="/admin_assistant/community.html">Community</a>
+      <a href="/admin_assistant/design_principles.html">Design&nbsp;principles</a>
+      <a href="http://github.com/fhwang/admin_assistant">Source</a>
+    </div>
+    </div>
+    <div id="body">
+    
+      
+        <h2>Design principles</h2>
+      
+    
+    <p>admin_assistant is built with a few design principles in mind:</p>
+
+<h3 id='relentless_fullstack_testing'>Relentless full-stack testing</h3>
+
+<p>admin_assistant is tested against a complete, self-contained Rails app. This app serves as the reference implementation of admin_assistant, so new features can be added with minimal worry of breaking old features.</p>
+
+<p>In addition, this test suite can be run against multiple versions of Rails, making multi-version support possible.</p>
+
+<h3 id='deeply_customizable_api'>Deeply customizable API</h3>
+
+<p>It&#8217;s great to be able to do the quick boilerplate CRUD operations, but it doesn&#8217;t take long before you need a lot of custom functionality. So, while admin_assistant can be set up in a few lines, its real strength is all the hooks it offers you:</p>
+
+<ul>
+<li>Labeling of models and columns</li>
+
+<li>Links at a page level, record level, or field level</li>
+
+<li>Selection of columns to include in index views and in forms</li>
+
+<li>Field value display in index views</li>
+
+<li>Custom inputs, submit buttons, descriptions in forms</li>
+
+<li>Partials can be rendered before or after forms, or column inputs.</li>
+
+<li>Custom options for date selects, datetime selects, textarea tags, etc. can be set up on a per-column level and passed through to the underlying Rails method.</li>
+
+<li>Custom redirecting after successful saves</li>
+</ul>
+
+<p>If you&#8217;re copying and pasting out of the admin_assistant source, that&#8217;s a design flaw.</p>
+
+<h3 id='minimally_invasive'>Minimally invasive</h3>
+
+<p>If you like, you can use admin_assistant in a very self-contained way, meaning that any admin functionality you add to your application doesn&#8217;t have to affect any other parts of the code.</p>
+
+<p>For example, standard ActiveRecord callbacks like <code>after_save</code> and <code>before_create</code> can be mimicked in the admin controller, in case you want to contain that code to one particular controller, instead of having to think about how it might affect other code that&#8217;s using that model.</p>
+
+<p>In addition, admin_assistant doesn&#8217;t override or <code>alias_method_chain</code> anything in Rails core, which greatly reduces the possibility that admin_assistant would conflict with another plugin.</p>
+
+<h3 id='safe_defaults'>Safe defaults</h3>
+
+<p>admin_assistant is opinionated in its own way, much of which has to do with picking the most safe default behavior possible.</p>
+
+<ul>
+<li>The <code>destroy</code> action is turned off by default, since the deletion of production data should never be enabled without a careful consideration of what that means for the overall system.</li>
+
+<li>Date selects and datetime selects in forms are blank by default, not the current date or time. This helps avoid a situation on models with many fields where dates and datetimes can be set by accident, changing the site&#8217;s behavior in unexpected ways. The current date or time is usually not a useful default, anyway.</li>
+</ul>
+    </div>
+  </body>
+</html>

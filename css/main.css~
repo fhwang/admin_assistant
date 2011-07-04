@@ -1,0 +1,125 @@
+/*
+Retro Package from Kuler:
+#f2e6ce
+#8ab29f
+#606362
+#593325
+#1d1d1f
+*/
+
+body {
+  margin: 0;
+  font-family: "Georgia", "Times New Roman", serif;
+	background: #F2E6CE;
+	color: #1d1d1f;
+}
+
+h1 {
+  width: 900px;
+  margin: auto;
+  padding: 10px;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: Courier, "Courier New", monospace
+}
+
+code {
+  background: #ffd;
+  border: #ff6 1px solid;
+  font-size: large;
+}
+
+pre {
+  background: #ffd;
+  border: #ff6 1px solid;
+  padding: 5px;
+  font-size: large;
+}
+
+pre code {
+  border: none;
+}
+
+#page_header {
+  background: #1D1D1F;
+}
+
+#page_header .nav {
+  width: 900px;
+  margin: auto;
+  padding-bottom: 10px;
+}
+
+#page_header h1 {
+  font-weight: normal;
+}
+
+#page_header h1 a, #page_header h1 a:visited {
+  text-decoration: none;
+  background: #1d1d1f;
+  color: #F2E6CE;
+  padding: 15px;
+  margin-left: -15px;
+}
+
+#page_header h1 a:hover {
+  background: #606362;
+  color: #f2e6ce;
+}
+
+#page_header .nav a, #page_header .nav a:visited {
+  text-decoration: none;
+  color: #f2e6ce;
+  margin-right: 5px;
+  background: #3d3d3f;
+  padding: 5px 20px 5px 5px;
+  font-family: Courier, "Courier New", monospace
+}
+
+#page_header .nav a:hover {
+  background: #606362;
+  color: black
+}
+
+
+
+#body {
+  width: 900px;
+  margin: auto;
+  padding-bottom: 25px;
+  line-height: 175%;
+}
+
+.subnav {
+  margin-top: -20px;
+  font-size: small;
+}
+
+.thumb {
+  margin-right: 10px;
+}
+
+#body a, a:visited {
+  background: #d2c6ae;
+  color: #1d1d1f;
+  text-decoration: none;
+  padding: 2px;
+  margin: -2px;
+}
+
+#body a:hover {
+  color: #F2E6CE;
+  background: #606362;
+}
+
+#body li {
+  margin-left: -20px;
+}
+
+.note {
+  background: #8ab29f;
+  padding: 10px;
+  border: 1px solid #593325;
+  margin: 0 100px;
+}

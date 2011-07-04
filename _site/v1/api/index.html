@@ -1,0 +1,188 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>admin_assistant: Version 1 API</title>
+    <link rel="stylesheet" href="/admin_assistant/css/main.css" type="text/css" media="screen">
+    <script type="text/javascript" src="/admin_assistant/js/prototype.js"></script>
+    <script type="text/javascript" src="/admin_assistant/js/scriptaculous.js?load=effects,builder"></script>
+    <script type="text/javascript" src="/admin_assistant/js/lightbox.js"></script>
+    <link rel="stylesheet" href="/admin_assistant/css/lightbox.css" type="text/css" media="screen" />
+  </head>
+
+  <body>
+    <div id="page_header">
+    <h1><a href="/admin_assistant/">admin_assistant</a></h1>
+    <div class="nav">
+      <a href="/admin_assistant/quick_start.html">Quick start</a>
+      <a href="/admin_assistant/tutorial.html">Tutorial</a>
+      <a href="/admin_assistant/screenshots.html">Screenshots</a>
+      <a href="/admin_assistant/api/">API</a>
+      <a href="/admin_assistant/community.html">Community</a>
+      <a href="/admin_assistant/design_principles.html">Design&nbsp;principles</a>
+      <a href="http://github.com/fhwang/admin_assistant">Source</a>
+    </div>
+    </div>
+    <div id="body">
+    
+      <h2>
+        <a href="/admin_assistant/v1/api/">Version 1 API</a>
+      </h2>
+      <div class="subnav">
+        <a href="/admin_assistant/v1/api/core.html">Core</a> | 
+        <a href="/admin_assistant/v1/api/destroy.html">Destroy</a> | 
+        <a href="/admin_assistant/v1/api/form.html">Form</a> |
+        <a href="/admin_assistant/v1/api/idx.html">Index</a> |
+        <a href="/admin_assistant/v1/api/search.html">Search</a> |
+        <a href="/admin_assistant/v1/api/show.html">Show</a>
+      </div>
+    
+    <h3 id='reference_sections'>Reference sections</h3>
+
+<p>The API reference is broken down into a few sections:</p>
+
+<ul>
+<li><a href='/admin_assistant/v1/api/core.html'>Core</a>: Settings that apply to an admin controller in general.</li>
+
+<li><a href='/admin_assistant/v1/api/destroy.html'>Destroy</a>: Settings that apply to destroying records. Note that <code>destroy</code> is turned off by default. To turn it on, use the core <a href='/admin_assistant/v1/api/core.html#builder_actions'>actions</a> method.</li>
+
+<li><a href='/admin_assistant/v1/api/form.html'>Form</a>: Settings that apply to creating or updating records.</li>
+
+<li><a href='/admin_assistant/v1/api/idx.html'>Index</a>: Settings that apply to the index view, which you use to view records, paginate, and sort.</li>
+
+<li><a href='/admin_assistant/v1/api/search.html'>Search</a>: Settings that apply to how searches work.</li>
+
+<li><a href='/admin_assistant/v1/api/show.html'>Show</a>: Settings that apply to how the show view.</li>
+</ul>
+
+<h3 id='configuration_overview'>Configuration overview</h3>
+
+<p>There are a number of ways to configure admin_assistant:</p>
+
+<h4 id='through_builder_objects'>Through builder objects</h4>
+
+<p><code>admin_assistant_for</code> takes a block that yields a core builder object:</p>
+
+<pre><code>class Admin::BlogPostsController &lt; ApplicationController
+  layout &#39;admin&#39;
+
+  admin_assistant_for BlogPost do |aa|
+    aa.model_class_name = &#39;post&#39;
+  end
+end</code></pre>
+
+<p>For the actions <code>form</code> and <code>index</code>, you can get a nested builder from the core builder, which can be used to configure those individual action types.</p>
+
+<pre><code>admin_assistant_for BlogPost do |aa|
+  aa.index do |index|
+    index.sort_by &quot;name asc&quot;
+  end
+end</code></pre>
+
+<p>The nesting is intended to help organize your configuration code, but if you&#8217;re in a hurry, you can also just chain the calls:</p>
+
+<pre><code>admin_assistant_for BlogPost do |aa|
+  aa.index.sort_by &quot;name asc&quot;
+end</code></pre>
+
+<p>Since <code>search</code> is really a subset of <code>index</code>, its configuration builder is reached through the index builder.</p>
+
+<pre><code>admin_assistant_for BlogPost do |aa|
+  aa.index do |index|
+    index.search do |search|
+      search.columns :id, :title, :body
+    end
+  end
+end</code></pre>
+
+<h4 id='columns_on_builder_objects'>Columns on builder objects</h4>
+
+<p>Columns are specified on the action-types <code>index</code>, <code>form</code>, or <code>search</code>:</p>
+
+<pre><code>admin_assistant_for BlogPost do |aa|
+  aa.index.columns :id, :title, :body
+end</code></pre>
+
+<p>There is no global <code>columns</code> setting.</p>
+
+<p>These columns can be accessed with <code>[]</code>, either globally, or specific to an action-type, depending on what sort of setting is being altered.</p>
+
+<pre><code>admin_assistant_for BlogPost do |aa|
+  # this will apply to the :title column, both on form and index views
+  aa[:title].label = &quot;Headline&quot;  
+
+  aa.form do |form|
+    form.columns :id, :title, :body
+    
+    # This will only apply to the :title column in the form view
+    form[:title].description = &quot;Enter the headline of your blog post here.&quot;
+  end
+end</code></pre>
+
+<p>If you&#8217;re dealing with an association, generally speaking, you&#8217;ll use the column of the association name, not the foreign key ID in the database.</p>
+
+<pre><code>admin_assistant_for BlogPost do |aa|
+  aa.index.columns :id, :title, :user   # as opposed to :user_id
+end</code></pre>
+
+<h4 id='protected_controller_methods'>Protected controller methods</h4>
+
+<p>For certain types of settings, the <code>form</code> and <code>index</code> action types can be customized through protected methods on the controller.</p>
+
+<pre><code>class Admin::BlogPostsController &lt; ApplicationController
+  layout &#39;admin&#39;
+
+  admin_assistant_for BlogPost
+  
+  protected
+  
+  # The index action only shows unpublished blog posts, unless somebody has
+  # clicked the custom &quot;Show All&quot; link
+  def conditions_for_index
+    &quot;published_at is null&quot; unless params[:all]
+  end
+end</code></pre>
+
+<p>Remember to make these methods protected so that Rails won&#8217;t try to use them as public-facing actions, i.e. <code>http://www.example.com/admin/blog_posts/conditions_for_index</code>.</p>
+
+<p>In a number of cases, you can get the same customization by passing a block to the builder object. For example, the code below works the same as the previous example:</p>
+
+<pre><code>class Admin::BlogPostsController &lt; ApplicationController
+  layout &#39;admin&#39;
+
+  admin_assistant_for BlogPost do |aa|
+    aa.index.conditions do |params|
+      &quot;published_at is null&quot; unless params[:all]
+    end
+  end
+end</code></pre>
+
+<p>The trade-off here is that customizing this behavior through a block is probably a little neater&#8212;fewer methods scattered all over your controller&#8212;but isn&#8217;t bound to the controller. So if you find yourself needing some convenience methods on, say, <code>ApplicationController</code>, you&#8217;ll be better off using a protected controller method.</p>
+
+<h4 id='helper_methods_and_partials'>Helper methods and partials</h4>
+
+<p>Other behaviors can be set by creating certain methods on the helper. Usually these behaviors have to do with presentation.</p>
+
+<pre><code>class Admin::UsersHelper
+  def password_input(user)
+    password_field_tag(&quot;user[password]&quot;, user.password, :disabled =&gt; true)
+  end
+end</code></pre>
+
+<p>Often you can accomplish the same thing with a partial. For example, the functionality in the above example could also be accomplished with the following saved in <code>app/views/admin/users/_password_input.html.erb</code>.</p>
+
+<pre><code>&lt;%= password_field_tag(&quot;user[password]&quot;, user.password, :disabled =&gt; true) %&gt;</code></pre>
+
+<h4 id='model_methods'>Model methods</h4>
+
+<p>admin_assistant can also look for methods to be defined on models, themselves. This is generally for behaviors that would apply across all admin controllers.</p>
+
+<pre><code>class ProductCategory &lt; ActiveRecord::Base
+  def name_for_admin_assistant
+    self.category_name
+  end
+end</code></pre>
+
+<p>Generally speaking there won&#8217;t be many of these hooks, because in practice this can make the admin_assistant API sort of invasive. Unless your Rails project is 99% the admin interface, it&#8217;s going to get annoying to keep tripping over admin_assistant-specific hooks when you&#8217;re trying to write some front-facing code.</p>
+    </div>
+  </body>
+</html>

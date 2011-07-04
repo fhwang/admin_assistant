@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>admin_assistant: Version 1 API: Core</title>
+    <link rel="stylesheet" href="/admin_assistant/css/main.css" type="text/css" media="screen">
+    <script type="text/javascript" src="/admin_assistant/js/prototype.js"></script>
+    <script type="text/javascript" src="/admin_assistant/js/scriptaculous.js?load=effects,builder"></script>
+    <script type="text/javascript" src="/admin_assistant/js/lightbox.js"></script>
+    <link rel="stylesheet" href="/admin_assistant/css/lightbox.css" type="text/css" media="screen" />
+  </head>
+
+  <body>
+    <div id="page_header">
+    <h1><a href="/admin_assistant/">admin_assistant</a></h1>
+    <div class="nav">
+      <a href="/admin_assistant/quick_start.html">Quick start</a>
+      <a href="/admin_assistant/tutorial.html">Tutorial</a>
+      <a href="/admin_assistant/screenshots.html">Screenshots</a>
+      <a href="/admin_assistant/api/">API</a>
+      <a href="/admin_assistant/community.html">Community</a>
+      <a href="/admin_assistant/design_principles.html">Design&nbsp;principles</a>
+      <a href="http://github.com/fhwang/admin_assistant">Source</a>
+    </div>
+    </div>
+    <div id="body">
+    
+      <h2>
+        <a href="/admin_assistant/v1/api/">Version 1 API</a>: Core
+      </h2>
+      <div class="subnav">
+        <a href="/admin_assistant/v1/api/core.html">Core</a> | 
+        <a href="/admin_assistant/v1/api/destroy.html">Destroy</a> | 
+        <a href="/admin_assistant/v1/api/form.html">Form</a> |
+        <a href="/admin_assistant/v1/api/idx.html">Index</a> |
+        <a href="/admin_assistant/v1/api/search.html">Search</a> |
+        <a href="/admin_assistant/v1/api/show.html">Show</a>
+      </div>
+    
+    <h3 id='includes'>Includes</h3>
+
+<p>admin_assistant comes with its own Javascript and CSS. Call <code>admin_assistant_includes</code> in your admin layout to use them:</p>
+
+<pre><code>&lt;html&gt;
+  &lt;head&gt;
+    &lt;%= admin_assistant_includes %&gt;
+  &lt;/head&gt;
+  ...
+&lt;/html&gt;</code></pre>
+
+<p>You also have the option of making admin_assistant look very similar to activescaffold CSS-wise, which might come in handy if you&#8217;re in the process of transition from one to the other:</p>
+
+<pre><code>&lt;%= admin_assistant_includes :theme =&gt; &#39;activescaffold&#39; %&gt;</code></pre>
+
+<p>Submissions of other themes are welcome.</p>
+
+<h3 id='configuring_the_core_builder_object'>Configuring the core builder object</h3>
+<a name='builder_actions'> </a>
+<h4 id='actions'>actions</h4>
+
+<p>admin_assistant uses the old-fashioned seven Rails actions: index, show, new/create, edit/update, and destroy. By default, you get all of them except destroy. To add destroy, you can simply append it to the <code>actions</code> method:</p>
+
+<pre><code>admin_assistant_for User do |aa|
+  aa.actions &lt;&lt; :destroy
+end</code></pre>
+
+<p>You can also send <code>actions</code> a list of actions and it will only allow those:</p>
+
+<pre><code># I only want to create or index images, not edit, show or destroy
+admin_assistant_for Image do |aa|
+  aa.actions :create, :index
+end</code></pre>
+
+<h3 id='model_class_name'>model_class_name</h3>
+
+<p>Use this to override what the model is named in the interface, in links like &#8220;New blog post&#8221; or &#8220;50 blog posts found&#8221;. The string passed in should be lowercase.</p>
+
+<pre><code>aa.model_class_name = &#39;post&#39;</code></pre>
+
+<h3 id='column_config_options'>Column config options</h3>
+
+<h4 id='boolean_labels'>boolean_labels</h4>
+
+<pre><code>aa[:textile].boolean_labels = %w(Yes No)</code></pre>
+
+<p>For a boolean fields, will change how the values get displayed, instead of simply &#8220;true&#8221; and &#8220;false&#8221;.</p>
+
+<h4 id='label'>label</h4>
+
+<pre><code>aa[:user].label = &#39;Author&#39;</code></pre>
+
+<p>Overrides the default label for that column in index, search, and form views.</p>
+
+<h4 id='polymorphic_types'>polymorphic_types</h4>
+
+<pre><code>aa[:bookmarkable].polymorphic_types = [BlogPost, Comment, Product, User]    </code></pre>
+
+<p>If a column is a polymorphic association, admin_assistant will offer specific widgets for searching and editing this column. With <code>polymorphic_types</code> you can tell it what possible types the association can be set to.</p>
+
+<h4 id='strftime_format'>strftime_format</h4>
+
+<pre><code>aa[:published_at].strftime_format = &quot;%b %d, %Y %H:%M:%S&quot;</code></pre>
+
+<p>If the column is a date or time, this will use the given strftime format for displaying the column in index and shows views.</p>
+
+<h3 id='helper_methods'>Helper methods</h3>
+
+<h4 id='column_value'>[column]_value</h4>
+
+<p>Determines what value is passed to form inputs, index views, etc, for the individual column. This is most useful for a virtual column.</p>
+
+<h3 id='model_methods'>Model methods</h3>
+
+<h4 id='name_for_admin_assistant'>name_for_admin_assistant</h4>
+
+<p>When dealing with associations, admin_assistant needs a convenient way to display a given record. By default, it will look for a method with the name <code>name</code>, <code>title</code>, <code>login</code>, or <code>username</code>. If you&#8217;d like to provide custom functionality across all admin_assistant controllers, define the method <code>name_for_admin_assistant</code> on the model.</p>
+
+<p>For example, let&#8217;s say you have a ProductCategory class with a field <code>category_name</code>. With the code below, any time a product category is referred to through an association, admin_assistant will display the <code>category_name</code>, in index views, form selects, etc.</p>
+
+<pre><code>class ProductCategory &lt; ActiveRecord::Base
+  def name_for_admin_assistant
+    self.category_name
+  end
+end</code></pre>
+
+<h4 id='sort_value_for_admin_assistant'>sort_value_for_admin_assistant</h4>
+
+<p>When showing associated records, admin_assistant will sort by the method <code>sort_value_for_admin_assistant</code> if it&#8217;s defined on the model. This comes in handy if you want to specify sorting on form drop-downs for belongs-to associations.</p>
+
+<pre><code>class Appointment &lt; ActiveRecord::Base
+  def sort_value_for_admin_assistant
+    self.time
+  end
+end</code></pre>
+    </div>
+  </body>
+</html>

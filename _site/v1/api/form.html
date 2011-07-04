@@ -1,0 +1,301 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>admin_assistant: Version 1 API: Form</title>
+    <link rel="stylesheet" href="/admin_assistant/css/main.css" type="text/css" media="screen">
+    <script type="text/javascript" src="/admin_assistant/js/prototype.js"></script>
+    <script type="text/javascript" src="/admin_assistant/js/scriptaculous.js?load=effects,builder"></script>
+    <script type="text/javascript" src="/admin_assistant/js/lightbox.js"></script>
+    <link rel="stylesheet" href="/admin_assistant/css/lightbox.css" type="text/css" media="screen" />
+  </head>
+
+  <body>
+    <div id="page_header">
+    <h1><a href="/admin_assistant/">admin_assistant</a></h1>
+    <div class="nav">
+      <a href="/admin_assistant/quick_start.html">Quick start</a>
+      <a href="/admin_assistant/tutorial.html">Tutorial</a>
+      <a href="/admin_assistant/screenshots.html">Screenshots</a>
+      <a href="/admin_assistant/api/">API</a>
+      <a href="/admin_assistant/community.html">Community</a>
+      <a href="/admin_assistant/design_principles.html">Design&nbsp;principles</a>
+      <a href="http://github.com/fhwang/admin_assistant">Source</a>
+    </div>
+    </div>
+    <div id="body">
+    
+      <h2>
+        <a href="/admin_assistant/v1/api/">Version 1 API</a>: Form
+      </h2>
+      <div class="subnav">
+        <a href="/admin_assistant/v1/api/core.html">Core</a> | 
+        <a href="/admin_assistant/v1/api/destroy.html">Destroy</a> | 
+        <a href="/admin_assistant/v1/api/form.html">Form</a> |
+        <a href="/admin_assistant/v1/api/idx.html">Index</a> |
+        <a href="/admin_assistant/v1/api/search.html">Search</a> |
+        <a href="/admin_assistant/v1/api/show.html">Show</a>
+      </div>
+    
+    <p><img src='/admin_assistant/img/user-form.png' alt='form' /></p>
+
+<p>Form configuration affects both creating new records and updating existing records. Most of its customization happens through the form builder object:</p>
+
+<pre><code>class Admin::BlogPostsController &lt; ApplicationController
+  admin_assistant_for BlogPost do |a|
+    a.form do |form|
+      form.columns :user, :title, :body
+    end
+  end
+end</code></pre>
+
+<h3 id='form_config_options'>Form config options</h3>
+
+<h4 id='columns'>columns</h4>
+
+<pre><code>form.columns :user, :title, :body</code></pre>
+
+<p>Shows only these columns in the form.</p>
+
+<h4 id='columns_for_edit'>columns_for_edit</h4>
+
+<pre><code>form.columns_for_edit :title, :user, :published_at, :body, :merged_into</code></pre>
+
+<p>Shows only these columns in the edit action.</p>
+
+<h4 id='columns_for_new'>columns_for_new</h4>
+
+<pre><code>form.columns_for_new  :title, :user, :published_at</code></pre>
+
+<p>Shows only these columns in the new action.</p>
+
+<h4 id='multi'>multi</h4>
+
+<pre><code>form.multi = true</code></pre>
+
+<p>Set this to true to enable multi-record creation in your form. Validation errors will be shown on top of the individual row that caused the error, and if any of the records has a validation error, none of the records will be created.</p>
+
+<p>Please note that this feature is alpha and may change significantly in the near future. As always, input is appreciated.</p>
+
+<h4 id='submit_buttons'>submit_buttons</h4>
+
+<pre><code>form.submit_buttons &lt;&lt; &#39;Preview&#39;</code></pre>
+
+<p>By default, there is one button at the bottom of the form, saying either &#8220;Create&#8221; or &#8220;Update&#8221;. By appending to this array you can specify other buttons, and then check if those buttons were clicked in <code>destination_after_save</code>, below.</p>
+
+<h3 id='column_config_options'>Column config options</h3>
+
+<h4 id='datetime_select_options'>datetime_select_options</h4>
+
+<pre><code>form[:published_at].datetime_select_options =
+    {:include_blank =&gt; false, :start_year =&gt; 2009}</code></pre>
+
+<p>Passes through these options to the datetime select for this column. By default this is set to <code>{:include_blank =&gt; true}</code>.</p>
+
+<h4 id='default'>default</h4>
+
+<pre><code>form[:published_at].default do |controller|
+  controller.default_published_at
+end</code></pre>
+
+<p>Sets a default value for the column when rendering the new form.</p>
+
+<h4 id='description'>description</h4>
+
+<pre><code>form[:publish].description = &quot;Click this check box to publish this blog post.&quot;</code></pre>
+
+<p>Sets descriptive text that will appear next to the column&#8217;s input.</p>
+
+<h4 id='image_size'>image_size</h4>
+
+<pre><code>form[:image].image_size = &#39;300x500&#39;</code></pre>
+
+<p>By default, <a href='http://thoughtbot.com/projects/paperclip'>Paperclip</a> and <a href='http://www.kanthak.net/opensource/file_column/'>FileColumn</a> image files are rendered at full-size in the form. To restrict their size, pass a size string to <code>image_size</code>.</p>
+
+<h4 id='input'>input</h4>
+
+<pre><code>form[:publish].input = :check_box</code></pre>
+
+<p>Currently supports <code>:check_box</code>, <code>:select</code>, <code>:text_area</code>, and <code>:us_state</code>. <code>:us_state</code> will render a drop-down with U.S. states.</p>
+
+<h4 id='nilify_link'>nilify_link</h4>
+
+<p>Date and datetime fields come with a javascript link the clears the value in the date or datetime selects. The text of this link is &#8220;Set [column name] to nil&#8221; by default, but you may want to customize this text:</p>
+
+<pre><code>form[:sale_starts_at].nilify_link = &#39;Not on sale&#39;</code></pre>
+
+<h4 id='read_only'>read_only</h4>
+
+<pre><code>a.form[:comment].read_only</code></pre>
+
+<p>If this is set, the given column will only be displayed, and not editable.</p>
+
+<h4 id='select_choices'>select_choices</h4>
+
+<pre><code>form[:admin_level].select_choices = %w(normal admin superuser)</code></pre>
+
+<p>Uses this with select inputs to set or override what is passed to Rails&#8217; <code>select</code> method as its <code>choices</code> argument.</p>
+
+<h4 id='select_options'>select_options</h4>
+
+<pre><code>form[:user].select_options = {:include_blank =&gt; false}</code></pre>
+
+<p>Use this with belongs-to associations to tell admin_assistant how to configure the <code>select</code> dropdown for the associated field. By default, this is set to <code>{:include_blank =&gt; true}</code>.</p>
+
+<h4 id='text_area_options'>text_area_options</h4>
+
+<pre><code>form[:body].text_area_options = {:cols =&gt; 20, :rows =&gt; 40}</code></pre>
+
+<p>Sets options to pass through to the text area that will be rendered for this column.</p>
+
+<h4 id='write_once'>write_once</h4>
+
+<pre><code>form[:body].write_once</code></pre>
+
+<p>If this is set, the given column will only be editable on the new page, not on the edit page.</p>
+
+<h3 id='controller_methods'>Controller methods</h3>
+
+<h4 id='after_save'>after_save</h4>
+
+<p>Runs after the record is saved.</p>
+
+<h4 id='before_create'>before_create</h4>
+
+<p>Runs before the record is created.</p>
+
+<h4 id='before_save'>before_save</h4>
+
+<pre><code>def before_save(blog_post)
+  if params[:blog_post][:publish] &amp;&amp; blog_post.published_at.nil?
+    blog_post.published_at = Time.now.utc
+  end
+end</code></pre>
+
+<p>Runs before the record is saved.</p>
+
+<h4 id='before_update'>before_update</h4>
+
+<p>Runs before the record is updated.</p>
+
+<h4 id='before_validation'>before_validation</h4>
+
+<p>Runs before the record is validated.</p>
+
+<h4 id='column_exists'>[column]_exists?</h4>
+
+<p>Used for image fields in generating form pages. If this method exists on the controller, it will be called to see if the image exists. You&#8217;ll probably use this in conjunction with <code>[column]_url</code> and <code>destroy_[column]_in_attributes</code>.</p>
+
+<pre><code>def tmp_avatar_exists?(user)
+  user.has_avatar?
+end</code></pre>
+
+<h4 id='column_url'>[column]_url</h4>
+
+<p>Used for image fields in generating form pages. If the existing record has an image, and this method exists on the controller, it will be called to get the URL that should be rendered. You&#8217;ll probably use this in conjunction with <code>[column]_exists?</code> and <code>destroy_[column]_in_attributes</code>.</p>
+
+<pre><code>def tmp_avatar_url(user)
+  &quot;http://my-image-server.com/users/#{user.id}.jpg?v=#{user.avatar_version}&quot;
+end</code></pre>
+
+<h4 id='column_from_form'>[column]_from_form</h4>
+
+<pre><code>def tags_from_form(tags_strings)
+  tags_strings.split(/\s+/).map { |tag_str|
+    Tag.find_by_tag(tag_str) || Tag.create(:tag =&gt; tag_str)
+  }
+end</code></pre>
+
+<p>Should return a value suitable for assignment. In the above example, a BlogPost has-many tags, and the method tags_from_form will turn the string <code>&quot;funny, video, lolcat&quot;</code> into an array of three Tag model records, so admin_assistant can set BlogPost#tags to that array.</p>
+
+<p>If you need to return a value from another parameter, you can accept a second argument, which will be the params hash for the record.</p>
+
+<pre><code>def title_from_form(title_str, record_params)
+  if title_str.blank?
+    record_params[:title_alt]
+  else
+    title_str
+  end
+end</code></pre>
+
+<p>If the value being returned is meant to be assigned through an association, you may find it useful to return custom errors to work around the strangeness of ActiveRecord&#8217;s association-assignment error-handling. So admin_assistant lets you optionally take a 3rd errors argument, which you can use to attach errors to the core model. This error object isn&#8217;t returned, but changes to it will persist outside the body of the method.</p>
+
+<pre><code>def tags_from_form(tags_string, record_params, errors)
+  tags = tags_string.split(/\s+/).map { |tag_str|
+    Tag.find_by_tag(tag_str) || Tag.create(:tag =&gt; tag_str)
+  }
+  if tags.any? { |t| !t.valid? }
+    errors.add(:tags, &quot;One or more tags was invalid&quot;)
+  end
+  tags
+end</code></pre>
+
+<h4 id='destination_after_save'>destination_after_save</h4>
+
+<pre><code>def destination_after_save(blog_post, params)
+  if params[:commit] == &#39;Preview&#39;
+    {:action =&gt; &#39;edit&#39;, :id =&gt; blog_post.id, :preview =&gt; &#39;1&#39;}
+  end
+end</code></pre>
+
+<p>This method should return a hash to redirect to after a successful save. If it returns nil, the default is to return to the index page.</p>
+
+<h4 id='destroy_column_in_attributes'>destroy_[column]_in_attributes</h4>
+
+<p>Used for image fields. If a file field already exists, and the user clicks on the checkbox to delete this file, this method will be called if it&#8217;s defined. You&#8217;ll probably use this in conjunction with <code>[column]_exists?</code> and <code>[column]_exists?</code>.</p>
+
+<pre><code>def destroy_tmp_avatar_in_attributes(attributes)
+  attributes[:has_avatar] = false
+end</code></pre>
+
+<h4 id='validate'>validate</h4>
+
+<p>Runs after the model&#8217;s built-in validation, before admin_assistant tries to save the model.</p>
+
+<h3 id='helper_methods'>Helper methods</h3>
+
+<h4 id='after_column_input'>after_[column]_input</h4>
+
+<p>If this helper method is present, whatever text it returns will be rendered after the default input for the column in the form. Takes the record as its only argument. You can also create a partial named <code>_after_[column]_input.html.erb</code>.</p>
+
+<pre><code>def after_password_input(user)
+  if user.id
+    &quot;Reset #{check_box_tag(&#39;reset_password&#39;)}&quot;
+  end
+end</code></pre>
+
+<h4 id='column_input'>[column]_input</h4>
+
+<p>If this helper method is present, whatever text it returns will be rendered instead of the default input for the column in the form. If it returns nil, the default input will be rendered instead. Takes the record as its only argument.</p>
+
+<pre><code>def password_input(user)
+  if !user.id
+    &quot;(autogenerated)&quot;
+  end
+end</code></pre>
+
+<p>You can also create a partial named <code>_[column]_input.html.erb</code>.</p>
+
+<h4 id='column_string'>[column]_string</h4>
+
+<p>If this helper method is present, its returned string will be rendered within a text field. Odds are you&#8217;ll use this with the controller method <code>[column]_from_form</code>, above.</p>
+
+<pre><code>def tags_string(blog_post)
+  blog_post.tags.map { |tag| tag.tag }.join &#39; &#39;
+end</code></pre>
+
+<h3 id='partials'>Partials</h3>
+
+<h4 id='_column_inputhtmlerb'>_[column]_input.html.erb</h4>
+
+<p>If this partial is present, it will be rendered instead of the default input for the column.</p>
+
+<h4 id='_after_column_inputhtmlerb'>_after_[column]_input.html.erb</h4>
+
+<p>If this partial is present, it will be rendered after the default input for the column. You can also use the helper method <code>after_[column]_input</code>.</p>
+
+<h4 id='_after_formhtmlerb'>_after_form.html.erb</h4>
+
+<p>If this partial is present in the controller&#8217;s views directory, it will be rendered after the normal form.</p>
+    </div>
+  </body>
+</html>
