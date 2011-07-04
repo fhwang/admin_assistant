@@ -1,8 +1,8 @@
 ---
-layout:   default
-title:    "API: Show"
-subnav:   api
+layout: default
+title:  "Version 1 API: Show"
 subtitle: Show
+subnav:   api1
 ---
 
 Show configuration affects what is displayed in a show page, e.g. `/admin/blog_posts/show/5`.

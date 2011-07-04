@@ -1,11 +1,11 @@
 ---
-layout:   default
-title:    "API: Index"
-subnav:   api
+layout: default
+title:  "Version 1 API: Index"
 subtitle: Index
+subnav:   api1
 ---
 
-![index](../img/blog_posts-index.png)
+![index](/admin_assistant/img/blog_posts-index.png)
 
 The index is the action that lets you view all records, with pagination and sorting. To customize it by getting the index builder inside of your admin\_assistant config:
 
@@ -100,7 +100,7 @@ See also the helper method [extra\_right\_column\_links\_for\_index](#helper_ext
 
     index.search :id, :title
 
-Shortcut to Search [`columns`](/admin_assistant/api/search.html#builder_columns) .
+Shortcut to Search [`columns`](/admin_assistant/v1/api/search.html#builder_columns) .
 
 #### sort\_by
 
@@ -136,7 +136,7 @@ By default, all boolean fields displayed in the index can be toggled with an Aja
 
     index[:image].image_size = '300x500'
 
-By default, [Paperclip] image files are rendered at full-size in the index. To restrict their size, pass a size string to `image_size`.
+By default, [Paperclip] and [FileColumn] image files are rendered at full-size in the index. To restrict their size, pass a size string to `image_size`.
 
 
 #### link\_to\_args
@@ -283,5 +283,6 @@ If this partial is present, it will be rendered before the entire index HTML.
 
 
 
+[FileColumn]: http://www.kanthak.net/opensource/file_column/
 [Paperclip]: http://thoughtbot.com/projects/paperclip
 

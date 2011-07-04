@@ -16,10 +16,13 @@ admin\_assistant is a Rails plugin that automates a lot of features typically ne
 * Heavily hookable interface allows customization of columns, search parameters, form inputs, parameter handling, and model creation.
 
 
-## Rails support
-As of June 2011, the bulk of development on admin\_assistant is for Rails 3.
+## Versions
 
-If you'd like to get admin\_assistant for Rails 2.1.x through Rails 2.3.x, you can install the most recent version of admin\_assistant 1.x. The full list of admin\_assistant versions can be seen [here](https://rubygems.org/gems/admin_assistant/versions).
+admin_assistant 2.x is only compatible with Rails 3.
+
+If you'd like to get admin\_assistant for Rails 2.1.x through Rails 2.3.x, you can install the most recent version of admin\_assistant 1.x. Note that admin\_assistant 1 is deprecated, and that will only see bugfixes from now on. [Click here](/admin_assistant/v1/) for admin\_assistant 1.x documentation.
+
+The full list of admin\_assistant versions can be seen [here](https://rubygems.org/gems/admin_assistant/versions).
 
 
 ## Still not convinced?

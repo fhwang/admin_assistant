@@ -1,8 +1,8 @@
 ---
-layout:   default
-title:    "API: Form"
-subnav:   api
+layout: default
+title:  "Version 1 API: Form"
 subtitle: Form
+subnav:   api1
 ---
 
 ![form](/admin_assistant/img/user-form.png)
@@ -84,7 +84,7 @@ Sets descriptive text that will appear next to the column's input.
 
     form[:image].image_size = '300x500'
 
-By default, [Paperclip] image files are rendered at full-size in the form. To restrict their size, pass a size string to `image_size`.
+By default, [Paperclip] and [FileColumn] image files are rendered at full-size in the form. To restrict their size, pass a size string to `image_size`.
 
 #### input
 
@@ -288,5 +288,6 @@ If this partial is present, it will be rendered after the default input for the 
 If this partial is present in the controller's views directory, it will be rendered after the normal form.
 
 
+[FileColumn]: http://www.kanthak.net/opensource/file_column/
 [Paperclip]: http://thoughtbot.com/projects/paperclip
 

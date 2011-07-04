@@ -1,11 +1,11 @@
 ---
-layout:   default
-title:    "API: Destroy"
-subnav:   api
+layout: default
+title:  "Version 1 API: Destroy"
 subtitle: Destroy
+subnav:   api1
 ---
 
-Note that the `destroy` action is turned off by default. To turn it on, use the core [actions](./core.html#builder_actions) method.
+Note that the `destroy` action is turned off by default. To turn it on, use the core [actions](/admin_assistant/v1/api/core.html#builder_actions) method.
 
 By default, `destroy` simply retrieves the model instance, and calls `ActiveRecord::Base#destroy`. If you'd like to define your own custom deletion semantics, you can set a block that will be called instead of the model's built-in `destroy` method:
 

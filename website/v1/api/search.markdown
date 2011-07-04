@@ -1,11 +1,11 @@
 ---
-layout:   default
-title:    "API: Search"
-subnav:   api
-subtitle: Search
+layout: default
+title:  "Version 1 API: Search"
+subtitle: Form
+subnav:   api1
 ---
 
-![index](../img/blog_posts-search.png)
+![index](/admin_assistant/img/blog_posts-search.png)
 
 Search restricts the records viewed in [Index] by various criteria. By default, search presents a single text field, and text entered in this field will be compared to all string and text fields in the table. By setting #columns you can have the search form specify which fields are being searched on.
 
@@ -107,4 +107,4 @@ For example, let's say you have a BlogPost that belongs to a User. With this con
 ... the search form will be one field, a text input labeled "User". If the user enters "an" in that field, it will match against all blog posts by the users with the username field of "Andy", "Andrew", and "Frank".
 
 
-[Index]: ./idx.html
+[Index]: /admin_assistant/v1/api/idx.html

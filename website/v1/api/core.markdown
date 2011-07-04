@@ -1,10 +1,9 @@
 ---
-layout:   default
-title:    "API: Core"
-subnav:   api
+layout: default
+title:  "Version 1 API: Core"
 subtitle: Core
+subnav:   api1
 ---
-
 
 ### Includes
 

@@ -1,11 +1,11 @@
 ---
 layout: default
-title:  Quick start
+title:  "Quick start: admin_assistant 1"
 ---
 
-<div style="border: 1px solid #ffaaff; background: #ccffcc">foo</div>
-
-*This document assumes you are highly familiar with Ruby and Rails; if you are a beginning Rails user you might want to start with our [tutorial](./tutorial.html).*
+<div class="note">
+This document assumes you are highly familiar with Ruby and Rails; if you are a beginning Rails user you might want to start with our  <a href="/admin_assistant/v1/tutorial.html">tutorial</a>.
+</div>
 
 1) First, install the plugin from Github.
 
@@ -33,7 +33,7 @@ title:  Quick start
 
 That's it for the basic version. You should now be able to go to /admin/blog\_posts in your app and search, paginate, create, and edit blog posts.
 
-![index](./img/blog_posts-index.png)
+![index](/admin_assistant/img/blog_posts-index.png)
 
 Depending on the model you're using, you might notice a few things:
 
@@ -42,5 +42,5 @@ Depending on the model you're using, you might notice a few things:
 * There is no `destroy` action out of the box. This is intended as a safe default, but you can add it if you like.
 * If you have more than 10 pages of a given model, the pagination at the bottom includes a jump form to let you automatically jump to a page you enter.
 
-For more, check out the [API reference](./api/).
+For more, check out the [API reference](/admin_assistant/v1/api/).
 

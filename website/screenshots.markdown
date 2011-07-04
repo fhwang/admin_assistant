@@ -23,5 +23,5 @@ title:  Screenshots
 
 <a href="/admin_assistant/img/screen10.png" rel="lightbox[screens]" class="thumb" title="There is an optional theme that mimics ActiveScaffold, which may come in handy if you're in the process of transitioning away from ActiveScaffold. admin_assistant does not conflict with ActiveScaffold; you can use the two in different controllers of the same Rails app."><img src="/admin_assistant/img/screen10-thumb.png"></a>
 
-<a href="/admin_assistant/img/screen11.png" rel="lightbox[screens]" class="thumb" title="admin_assistant handles images out of the box through either Paperclip or FileColumn."><img src="/admin_assistant/img/screen11-thumb.png"></a>
+<a href="/admin_assistant/img/screen11.png" rel="lightbox[screens]" class="thumb" title="admin_assistant handles images out of the box through Paperclip."><img src="/admin_assistant/img/screen11-thumb.png"></a>
 

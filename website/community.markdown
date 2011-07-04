@@ -7,7 +7,7 @@ title:    Community
 
 We have a mailing list over at [Google Groups](http://groups.google.com/group/admin_assistant). If you have a question, please consider asking it there instead of a direct email, in the hopes that the  next person who has the same question might find the answer by just Googling it.
 
-<a name="whos_using"></a>
+<a name="whos_using"> </a>
 ### Who's using admin\_assistant?
 
 admin\_assistant is being used on the following sites:

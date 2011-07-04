@@ -3,12 +3,11 @@
   <head>
     <title>admin_assistant{% if page.title %}: {{ page.title }}{% endif% %}</title>
     <link rel="stylesheet" href="/admin_assistant/css/main.css" type="text/css" media="screen">
-
     <script type="text/javascript" src="/admin_assistant/js/prototype.js"></script>
     <script type="text/javascript" src="/admin_assistant/js/scriptaculous.js?load=effects,builder"></script>
     <script type="text/javascript" src="/admin_assistant/js/lightbox.js"></script>
     <link rel="stylesheet" href="/admin_assistant/css/lightbox.css" type="text/css" media="screen" />
-    </head>
+  </head>
 
   <body>
     <div id="page_header">
@@ -24,8 +23,34 @@
     </div>
     </div>
     <div id="body">
-    {% if page.title != '' %}
-    <h2>{{ page.title }}</h2>
+    {% if page.subnav == 'api' %}
+      <h2>
+        <a href="/admin_assistant/api/">API</a>{% if page.subtitle %}: {{page.subtitle}}{% endif %}
+      </h2>
+      <div class="subnav">
+        <a href="/admin_assistant/api/core.html">Core</a> | 
+        <a href="/admin_assistant/api/destroy.html">Destroy</a> | 
+        <a href="/admin_assistant/api/form.html">Form</a> |
+        <a href="/admin_assistant/api/idx.html">Index</a> |
+        <a href="/admin_assistant/api/search.html">Search</a> |
+        <a href="/admin_assistant/api/show.html">Show</a>
+      </div>
+    {% elsif page.subnav == 'api1' %}
+      <h2>
+        <a href="/admin_assistant/v1/api/">Version 1 API</a>{% if page.subtitle %}: {{page.subtitle}}{% endif %}
+      </h2>
+      <div class="subnav">
+        <a href="/admin_assistant/v1/api/core.html">Core</a> | 
+        <a href="/admin_assistant/v1/api/destroy.html">Destroy</a> | 
+        <a href="/admin_assistant/v1/api/form.html">Form</a> |
+        <a href="/admin_assistant/v1/api/idx.html">Index</a> |
+        <a href="/admin_assistant/v1/api/search.html">Search</a> |
+        <a href="/admin_assistant/v1/api/show.html">Show</a>
+      </div>
+    {% else %}
+      {% if page.title != '' %}
+        <h2>{{ page.title }}</h2>
+      {% endif %}
     {% endif %}
     {{ content }}
     </div>

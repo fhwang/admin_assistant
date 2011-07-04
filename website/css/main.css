@@ -1,16 +1,17 @@
 /*
-airmail:
-#661510
-#D9351A
-#F2C76F
-#BF9727
-#204C3F
+Retro Package from Kuler:
+#f2e6ce
+#8ab29f
+#606362
+#593325
+#1d1d1f
 */
 
 body {
   margin: 0;
-	background: #F2C76F;
   font-family: "Georgia", "Times New Roman", serif;
+	background: #F2E6CE;
+	color: #1d1d1f;
 }
 
 h1 {
@@ -34,21 +35,15 @@ pre {
   border: #ff6 1px solid;
   padding: 5px;
   font-size: large;
+  overflow: auto;
 }
 
 pre code {
   border: none;
 }
 
-#body {
-  width: 900px;
-  margin: auto;
-  padding-bottom: 25px;
-  line-height: 150%;
-}
-
 #page_header {
-  background: #BF9727;
+  background: #1D1D1F;
 }
 
 #page_header .nav {
@@ -57,28 +52,44 @@ pre code {
   padding-bottom: 10px;
 }
 
+#page_header h1 {
+  font-weight: normal;
+}
+
 #page_header h1 a, #page_header h1 a:visited {
-  background: #BF9727;
   text-decoration: none;
-  color: black;
+  background: #1d1d1f;
+  color: #F2E6CE;
+  padding: 15px;
+  margin-left: -15px;
 }
 
 #page_header h1 a:hover {
-  background: #F2C76F;
+  background: #606362;
+  color: #f2e6ce;
 }
 
 #page_header .nav a, #page_header .nav a:visited {
   text-decoration: none;
-  color: white;
+  color: #f2e6ce;
   margin-right: 5px;
-  background: #AF8717;
+  background: #3d3d3f;
   padding: 5px 20px 5px 5px;
   font-family: Courier, "Courier New", monospace
 }
 
 #page_header .nav a:hover {
-  background: #F2C76F;
+  background: #606362;
   color: black
+}
+
+
+
+#body {
+  width: 900px;
+  margin: auto;
+  padding-bottom: 25px;
+  line-height: 175%;
 }
 
 .subnav {
@@ -90,13 +101,36 @@ pre code {
   margin-right: 10px;
 }
 
-a, a:visited {
-  background: #DFA747;
-  color: black;
+#body a, a:visited {
+  background: #d2c6ae;
+  color: #1d1d1f;
   text-decoration: none;
+  padding: 2px;
+  margin: -2px;
 }
 
-a:hover {
-  color: #DFA747;
-  background: black;
+#body a:hover {
+  color: #F2E6CE;
+  background: #606362;
+}
+
+#body .note a, a:visited {
+  color: #f2e6ce;
+  background: #8ab29f;
+}
+
+#body .note a:hover {
+  color: #606362;
+  background: #f2e6ce;
+}
+
+#body li {
+  margin-left: -20px;
+}
+
+.note {
+  background: #8ab29f;
+  padding: 10px;
+  border: 1px solid #593325;
+  margin: 0 100px;
 }

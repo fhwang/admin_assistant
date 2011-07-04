@@ -3,25 +3,25 @@ layout: default
 title:  Quick start
 ---
 
-*This document assumes you are highly familiar with Ruby and Rails; if you are a beginning Rails user you might want to start with our [tutorial](./tutorial.html).*
+<div class="note">
+This document assumes you are highly familiar with Ruby and Rails; if you are a beginning Rails user you might want to start with our <a href="/admin_assistant/tutorial.html">tutorial</a>.
+</div>
 
-1) First, install the plugin from Github.
+1) Add the gem to your Gemfile, and install it with `bundle install`.
 
-    ./script/plugin install git://github.com/fhwang/admin_assistant.git
+    gem 'admin_assistant'
 
-2) If you don't have the popular will\_paginate gem, you'll need that too. See [http://wiki.github.com/mislav/will_paginate/installation](http://wiki.github.com/mislav/will_paginate/installation) for more info.
-
-3) admin\_assistant comes packaged with standard CSS and Javascript that you should include in whatever layout your admin controllers will be using. You'll also need to make sure to include prototype.js, effects.js, and controls.js, if you're not including them already.
+2) admin\_assistant comes packaged with standard CSS and Javascript that you should include in whatever layout your admin controllers will be using. You'll also need to make sure to include jquery, if you're not including it already.
 
     <html>
       <head>
-        <%= javascript_include_tag("prototype", "effects", "controls") %>
+        <%= javascript_include_tag("jquery-1.6.2.min") %>
         <%= admin_assistant_includes %>
       </head>
       ...
     </html>
 
-4) Setup an admin controller by attaching it to a model and using the admin layout:
+3) Setup an admin controller by attaching it to a model and using the admin layout:
 
     class Admin::BlogPostsController < ApplicationController
       layout 'admin'
@@ -31,7 +31,7 @@ title:  Quick start
 
 That's it for the basic version. You should now be able to go to /admin/blog\_posts in your app and search, paginate, create, and edit blog posts.
 
-![index](./img/blog_posts-index.png)
+![index](/admin_assistant/img/blog_posts-index.png)
 
 Depending on the model you're using, you might notice a few things:
 
@@ -40,5 +40,5 @@ Depending on the model you're using, you might notice a few things:
 * There is no `destroy` action out of the box. This is intended as a safe default, but you can add it if you like.
 * If you have more than 10 pages of a given model, the pagination at the bottom includes a jump form to let you automatically jump to a page you enter.
 
-For more, check out the [API reference](./api/).
+For more, check out the [API reference](/admin_assistant/api/).
 
