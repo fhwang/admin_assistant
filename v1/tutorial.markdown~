@@ -1,9 +1,11 @@
 ---
 layout: default
-title:  Quick start
+title:  "Tutorial: admin_assistant 1"
 ---
 
-*This document assumes you are a beginning Rails user; if you are very familiar with Rails you might want to check out our [quick start](./quick_start.html).*
+<div class="note">
+This document assumes you are a beginning Rails user; if you are very familiar with Rails you might want to check out our <a href="/admin_assistant/v1/quick_start.html">quick start</a>.
+</div>
 
 1) First, install the plugin from Github.
 
@@ -41,7 +43,7 @@ If you've already created an admin layout, you should add the javascript referen
 
 7) Visit `/admin/blog_posts` in your browser and you'll see something like this:
 
-![index](./img/blog_posts-index.png)
+![index](/admin_assistant/img/blog_posts-index.png)
 
 You can now search, paginate, create, and edit blog posts.
 

@@ -31,11 +31,13 @@
     <div class='note'>
 This document assumes you are highly familiar with Ruby and Rails; if you are a beginning Rails user you might want to start with our  <a href='/admin_assistant/v1/tutorial.html'>tutorial</a>.
 </div>
-<p>1) First, install the plugin from Github.</p>
+<p>1) Include the gem in <code>config/environment.rb</code>.</p>
 
-<pre><code>./script/plugin install git://github.com/fhwang/admin_assistant.git</code></pre>
+<pre><code>config.gem &#39;admin_assistant&#39;, :version =&gt; &#39;1.0.2&#39;</code></pre>
 
-<p>2) If you don&#8217;t have the popular will_paginate gem, you&#8217;ll need that too. See <a href='http://wiki.github.com/mislav/will_paginate/installation'>http://wiki.github.com/mislav/will_paginate/installation</a> for more info.</p>
+<p>2) Install the gem and dependencies into <code>vendor/gems</code>.</p>
+
+<pre><code>rake gems:unpack:dependencies</code></pre>
 
 <p>3) admin_assistant comes packaged with standard CSS and Javascript that you should include in whatever layout your admin controllers will be using. You&#8217;ll also need to make sure to include prototype.js, effects.js, and controls.js, if you&#8217;re not including them already.</p>
 
