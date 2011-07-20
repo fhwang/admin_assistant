@@ -7,11 +7,13 @@ title:  "Tutorial: admin_assistant 1"
 This document assumes you are a beginning Rails user; if you are very familiar with Rails you might want to check out our <a href="/admin_assistant/v1/quick_start.html">quick start</a>.
 </div>
 
-1) First, install the plugin from Github.
+1) Include the gem in `config/environment.rb`.
 
-    ./script/plugin install git://github.com/fhwang/admin_assistant.git
+    config.gem 'admin_assistant', :version => '1.0.2'
 
-2) If you don't have the popular will\_paginate gem, you'll need that too. See [http://wiki.github.com/mislav/will_paginate/installation](http://wiki.github.com/mislav/will_paginate/installation) for more info.
+2) Install the gem and dependencies `vendor/gems`.
+
+    rake gems:unpack:dependencies
 
 3) If you don't have any admin controllers in your Rails project yet, you probably need to create a separate admin layout. Create a file called `app/views/layouts/admin.html.erb` like this:
 
