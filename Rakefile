@@ -37,7 +37,7 @@ task :test do
   else
     cmd = "cd rails_3_test && " + (
       supported_versions.map { |version|
-        "echo '===== Testing #{version} =====' && RAILS_GEM_VERSION=#{version} rake"
+        "echo '===== Testing #{version} =====' && RAILS_GEM_VERSION=#{version} bundle exec rake"
       }.join(" && ")
     )
     puts cmd
@@ -54,7 +54,7 @@ begin
     gem.email = "sera@fhwang.net"
     gem.homepage = "http://github.com/fhwang/admin_assistant"
     gem.authors = ["Francis Hwang"]
-    gem.add_dependency "will_paginate", "~> 3.0.pre2"
+    gem.add_dependency "will_paginate", "3.0.pre2"
     gem.add_dependency "dynamic_form"
     gem.files.exclude "rails_2_test"
     gem.files.exclude "rails_3_test"

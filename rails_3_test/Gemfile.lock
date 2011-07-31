@@ -10,9 +10,9 @@ GIT
 PATH
   remote: ../../admin_assistant
   specs:
-    admin_assistant (2.0.0.pre2)
+    admin_assistant (2.0.0)
       dynamic_form
-      will_paginate (~> 3.0.pre2)
+      will_paginate (= 3.0.pre2)
 
 GEM
   remote: http://rubygems.org/
