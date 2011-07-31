@@ -250,8 +250,8 @@ class AdminAssistant
       
       def datetime_range_end_point_input(form, comparator, label)
         input = "#{label} "
-        input << DateTimeRangeEndPointSelector.new(
-          form.object.send(name)[comparator],
+        input << ActionView::Helpers::DateTimeSelector.new(
+          form.object.send(name)[comparator], 
           :prefix => "search", :field_name => comparator.to_s,
           :include_position => true, :index => name, :include_blank => true,
           :datetime_separator => ' &mdash; ', :time_separator => ' : '

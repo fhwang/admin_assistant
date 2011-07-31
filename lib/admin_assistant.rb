@@ -5,10 +5,9 @@ require 'will_paginate'
 require 'find'
 files = %w(
   column virtual_column active_record_column association_target
-  belongs_to_column builder date_time_range_end_point_selector 
-  default_search_column form_view has_many_column helper index init model 
-  paperclip_column polymorphic_belongs_to_column request/base 
-  request/autocomplete request/create request/destroy request/edit
+  belongs_to_column builder default_search_column form_view has_many_column 
+  helper index init model paperclip_column polymorphic_belongs_to_column 
+  request/base request/autocomplete request/create request/destroy request/edit
   request/index request/new request/show request/update route search show_view
 )
 files.each do |file|
