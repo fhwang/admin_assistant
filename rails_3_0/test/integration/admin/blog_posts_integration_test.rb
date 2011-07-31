@@ -495,10 +495,8 @@ class Admin::BlogPostsIntegrationTest < ActionController::IntegrationTest
     assert_response :success
       
     # should have a link to the next page
-    assert_select(
-      "a[href=/admin/blog_posts?page=2]", 'Next &#8594;'
-    )
-    assert_select("a[href=/admin/blog_posts?page=2]", '2')
+    assert_will_paginate_link("/admin/blog_posts", 2, 'Next &#8594;')
+    assert_will_paginate_link("/admin/blog_posts", 2, '2')
       
     # should not have a link to the previous page
     assert_select(
@@ -522,16 +520,12 @@ class Admin::BlogPostsIntegrationTest < ActionController::IntegrationTest
     assert_response :success
   
     # should have a link to the next page
-    assert_select(
-      "a[href=/admin/blog_posts?page=3]", 'Next &#8594;'
-    )
-    assert_select("a[href=/admin/blog_posts?page=3]", '3')
+    assert_will_paginate_link("/admin/blog_posts", 3, 'Next &#8594;')
+    assert_will_paginate_link("/admin/blog_posts", 3, '3')
   
     # should have a link to the previous page
-    assert_select(
-      "a[href=/admin/blog_posts?page=1]", '&#8592; Previous'
-    )
-    assert_select("a[href=/admin/blog_posts?page=1]", '1')
+    assert_will_paginate_link("/admin/blog_posts", 1, '&#8592; Previous')
+    assert_will_paginate_link("/admin/blog_posts", 1, '1')
   
     # should the full number of posts found
     assert_match(/51 blog posts found/, response.body)
@@ -555,10 +549,8 @@ class Admin::BlogPostsIntegrationTest < ActionController::IntegrationTest
     assert_select("a[href=/admin/blog_posts?page=3]", false, '3')
   
     # should have a link to the previous page
-    assert_select(
-      "a[href=/admin/blog_posts?page=2]", '&#8592; Previous'
-    )
-    assert_select("a[href=/admin/blog_posts?page=2]", '2')
+    assert_will_paginate_link("/admin/blog_posts", 2, '&#8592; Previous')
+    assert_will_paginate_link("/admin/blog_posts", 2, '2')
   
     # should the full number of posts found
     assert_match(/51 blog posts found/, response.body)

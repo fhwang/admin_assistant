@@ -96,3 +96,43 @@ Webrat.configure do |config|
   config.mode = :rails  
 end
 
+class ActionController::IntegrationTest
+  
+  # Rails 3.0 renders link hrefs like:
+  #   /admin/comments/new?comment[blog_post_id]=1
+  # Rails 3.1 renders link hrefs like:
+  #   /admin/comments/new?comment%5Bblog_post_id%5D=1
+  
+  unless method_defined?(
+      :assert_select_with_preprocessed_hrefs_across_rails_versions
+  )
+    def assert_select_with_preprocessed_hrefs_across_rails_versions(*args)
+      old_args = args
+      args = []
+      args.unshift(old_args.shift)
+      until old_args.empty?
+        next_arg = old_args.shift
+        if next_arg.is_a?(String) && Rails.version =~ /^3.1/
+          next_arg.gsub!(/(\?\w+)\[/, '\1%5B')
+          next_arg.gsub!(/(\?\w+%5B\w+)\]/, '\1%5D')
+        end
+        args.push next_arg
+      end
+      assert_select_without_preprocessed_hrefs_across_rails_versions(*args)
+    end
+  
+    alias_method_chain :assert_select,
+                       :preprocessed_hrefs_across_rails_versions
+  end
+  
+  def assert_will_paginate_link(base, page, content = nil)
+    select = []
+    if Rails.version =~ /^3.1/
+      select << "a[href=#{base}?escape=false&amp;page=#{page}]"
+    else
+      select << "a[href=#{base}?page=#{page}]"
+    end
+    select << content if content
+    assert_select(select)
+  end
+end

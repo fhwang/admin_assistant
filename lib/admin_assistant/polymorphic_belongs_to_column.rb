@@ -44,7 +44,11 @@ class AdminAssistant
     end
       
     def foreign_type_field
-      @belongs_to_assoc.options[:foreign_type]
+      if @belongs_to_assoc.respond_to?(:foreign_type)
+        @belongs_to_assoc.foreign_type
+      else
+        @belongs_to_assoc.options[:foreign_type]
+      end
     end
     
     def match_text_fields_in_search

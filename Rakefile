@@ -26,20 +26,11 @@ end
 
 desc 'Run all specs across all supported Rails gem versions.'
 task :test do
-  supported_versions = %w(3.0.6)
-  locally_installed_versions =
-      `gem list --local rails`.split(/\n/).
-          detect { |l| l=~ /^rails / }.strip.
-          gsub(/^.*\((.*)\).*$/, '\1').split(/\s*,\s*/)
-  missing = supported_versions - locally_installed_versions
-  if !missing.empty?
-    puts "Missing Rails versions #{missing.join(',')}; please install and then re-run tests"
-  else
-    cmd = "cd rails_3_test && " + (
-      supported_versions.map { |version|
-        "echo '===== Testing #{version} =====' && RAILS_GEM_VERSION=#{version} bundle exec rake"
-      }.join(" && ")
-    )
+  base = Dir.pwd
+  version_dirs = %w(rails_3_0 rails_3_1)
+  version_dirs.each do |dir|
+    path = File.join(base, dir)
+    cmd = "cd #{path} && bundle exec rake"
     puts cmd
     puts `#{cmd}`
   end

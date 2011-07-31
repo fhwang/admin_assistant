@@ -324,7 +324,7 @@ class Admin::BlogPosts2IntegrationTest < ActionController::IntegrationTest
         assert_select("option[value=?]", @user.id)
       end
     end
-    
+
     # should show a link to /admin/comments/new
     assert_select('td') do
       assert_select(
@@ -632,7 +632,7 @@ class Admin::BlogPosts2IntegrationTest < ActionController::IntegrationTest
     get "/admin/blog_posts2"
     
     # should show link to page 2
-    assert_select("a[href=/admin/blog_posts2?page=2]")
+    assert_will_paginate_link("/admin/blog_posts2", 2)
     
     # should say 11 blog posts found
     assert_match(/11 blog posts found/, response.body)

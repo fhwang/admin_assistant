@@ -182,7 +182,7 @@ class AdminAssistant
   module ControllerMethods
     def self.included(controller)
       controller.extend ControllerClassMethods
-      controller.class_inheritable_accessor :admin_assistant
+      controller.class_attribute :admin_assistant
     end
   end
   

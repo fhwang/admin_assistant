@@ -14,8 +14,13 @@ class AdminAssistant
           searchable_column_comparisons = searchable_columns.map { |column|
             "LOWER(#{associated_class.table_name}.#{column.name}) like LOWER(#{sanitized_match_value})"
           }
+          foreign_key = if @has_many_assoc.respond_to?(:foreign_key)
+            @has_many_assoc.foreign_key
+          else
+            @has_many_assoc.primary_key_name
+          end
           condition_sql = <<-CONDITION_SQL
-          #{model_class.table_name}.#{model_class.primary_key} in (select #{@has_many_assoc.primary_key_name} from #{associated_class.table_name} where #{searchable_column_comparisons.join(' or ')})
+          #{model_class.table_name}.#{model_class.primary_key} in (select #{foreign_key} from #{associated_class.table_name} where #{searchable_column_comparisons.join(' or ')})
           CONDITION_SQL
           ar_query_condition.sqls << condition_sql
         end
