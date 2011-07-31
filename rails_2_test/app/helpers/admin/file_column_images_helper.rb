@@ -1,2 +1,0 @@
-module Admin::FileColumnImagesHelper
-end
