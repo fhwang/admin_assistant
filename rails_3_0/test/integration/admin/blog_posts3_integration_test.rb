@@ -24,7 +24,11 @@ class Admin::BlogPosts3IntegrationTest < ActionController::IntegrationTest
     get "/admin/blog_posts3/#{@blog_post.id}/edit"
     
     # should have a body field
-    assert_select('textarea[name=?]', 'blog_post[body]')
+    if ENV['AA_CONFIG'] == '2'
+      assert_select("input[name=?]", "blog_post[body]")
+    else
+      assert_select('textarea[name=?]', 'blog_post[body]')
+    end
     
     # should not include textile
     assert_no_match(/textile/, response.body)

@@ -46,7 +46,13 @@ class Admin::Comments2IntegrationTest < ActionController::IntegrationTest
   def test_new
     get "/admin/comments2/new"
     
-    # should have a textarea for Comment#comment
-    assert_select("textarea[name=?]", "comment[comment]")
+    if ENV['AA_CONFIG'] == '2'
+      # if you're using AA config 2, text columns are rendered as inputs, not 
+      # textareas, by default
+      assert_select("input[name=?]", "comment[comment]")
+    else
+      # by default, should have a textarea for Comment#comment
+      assert_select("textarea[name=?]", "comment[comment]")
+    end
   end
 end

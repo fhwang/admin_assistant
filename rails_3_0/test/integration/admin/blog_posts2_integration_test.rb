@@ -685,10 +685,16 @@ class Admin::BlogPosts2IntegrationTest < ActionController::IntegrationTest
     # should show a preview button
     assert_select('input[type=submit][value=Preview]')
     
-    # should use a textarea for the body field
-    assert_select(
-      'textarea[name=?][cols=20][rows=40]', 'blog_post[body]'
-    )
+    if ENV['AA_CONFIG'] == '2'
+      # if you're using AA config 2, text columns are rendered as inputs, not 
+      # textareas, by default
+      assert_select("input[name=?]", "blog_post[body]")
+    else
+      # by default, should use a textarea for the body field
+      assert_match(
+        %r|<textarea.*name="blog_post\[body\]".*>.*</textarea>|, response.body
+      )
+    end
     
     # should use a checkbox for the boolean field 'textile'
     assert_match(

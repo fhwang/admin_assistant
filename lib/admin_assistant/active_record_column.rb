@@ -179,18 +179,22 @@ class AdminAssistant
       end
       
       def default_input
-        case @column.field_type
-          when :boolean
-            :check_box
-          when :date
-            :date_select
-          when :datetime
-            :datetime_select
-          when :text
-            :text_area
-          else
-            :text_field
-          end
+        if AdminAssistant.default_inputs[@column.field_type]
+          AdminAssistant.default_inputs[@column.field_type]
+        else
+          case @column.field_type
+            when :boolean
+              :check_box
+            when :date
+              :date_select
+            when :datetime
+              :datetime_select
+            when :text
+              :text_area
+            else
+              :text_field
+            end
+        end
       end
       
       def ordered_us_state_names_and_codes

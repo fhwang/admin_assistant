@@ -588,10 +588,16 @@ class Admin::BlogPostsIntegrationTest < ActionController::IntegrationTest
       response.body
     )
     
-    # should use a textarea for the body field
-    assert_match(
-      %r|<textarea.*name="blog_post\[body\]".*>.*</textarea>|, response.body
-    )
+    if ENV['AA_CONFIG'] == '2'
+      # if you're using AA config 2, text columns are rendered as inputs, not 
+      # textareas, by default
+      assert_select("input[name=?]", "blog_post[body]")
+    else
+      # by default, should use a textarea for the body field
+      assert_match(
+        %r|<textarea.*name="blog_post\[body\]".*>.*</textarea>|, response.body
+      )
+    end
       
     # should show a link back to the index page
     assert_select("a[href=/admin/blog_posts]", 'Back to index')

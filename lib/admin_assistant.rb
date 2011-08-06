@@ -15,7 +15,8 @@ files.each do |file|
 end
 
 class AdminAssistant
-  cattr_accessor :request_start_time, :routes
+  cattr_accessor :default_inputs, :request_start_time, :routes
+  self.default_inputs = {}
   self.routes = []
   
   def self.profile(msg)

@@ -10,7 +10,7 @@ GIT
 PATH
   remote: ../../admin_assistant
   specs:
-    admin_assistant (2.0.1)
+    admin_assistant (2.1.1)
       dynamic_form
       will_paginate (= 3.0.pre2)
 

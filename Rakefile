@@ -34,6 +34,11 @@ task :test do
     puts cmd
     puts `#{cmd}`
   end
+  # alternate config tests
+  path = File.join(base, 'rails_3_0')
+  cmd = "cd #{path} && AA_CONFIG=2 bundle exec rake"
+  puts cmd
+  puts `#{cmd}`
 end
 
 begin
