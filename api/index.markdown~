@@ -8,12 +8,12 @@ subnav:   api
 
 The API reference is broken down into a few sections:
 
-* [Core](/admin_assistant/core.html): Settings that apply to an admin controller in general.
-* [Destroy](/admin_assistant/destroy.html): Settings that apply to destroying records. Note that `destroy` is turned off by default. To turn it on, use the core [actions](/admin_assistant/core.html#builder_actions) method.
-* [Form](/admin_assistant/form.html): Settings that apply to creating or updating records.
-* [Index](/admin_assistant/idx.html): Settings that apply to the index view, which you use to view records, paginate, and sort.
-* [Search](/admin_assistant/search.html): Settings that apply to how searches work.
-* [Show](/admin_assistant/show.html): Settings that apply to how the show view.
+* [Core](/admin_assistant/api/core.html): Settings that apply to an admin controller in general.
+* [Destroy](/admin_assistant/api/destroy.html): Settings that apply to destroying records. Note that `destroy` is turned off by default. To turn it on, use the core [actions](/admin_assistant/api/core.html#builder_actions) method.
+* [Form](/admin_assistant/api/form.html): Settings that apply to creating or updating records.
+* [Index](/admin_assistant/api/idx.html): Settings that apply to the index view, which you use to view records, paginate, and sort.
+* [Search](/admin_assistant/api/search.html): Settings that apply to how searches work.
+* [Show](/admin_assistant/api/show.html): Settings that apply to how the show view.
 
 
 ### Configuration overview

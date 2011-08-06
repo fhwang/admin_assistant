@@ -58,6 +58,14 @@
 
 <p>There are a number of ways to configure admin_assistant:</p>
 
+<h4 id='applicationwide_configuration'>Application-wide configuration</h4>
+
+<p>To set the default inputs that admin_assistant uses, put the following code in <code>config/initializers/admin_assistant.rb</code>:</p>
+
+<pre><code>AdminAssistant.default_inputs[:text] = :text_field</code></pre>
+
+<p>The above code comes in handy if you&#8217;re a RDBMS like Postgres, where you might use <code>text</code> columns everywhere instead of <code>varchar(255)</code> columns, but don&#8217;t want those columns to be rendered as textareas in your controllers.</p>
+
 <h4 id='through_builder_objects'>Through builder objects</h4>
 
 <p><code>admin_assistant_for</code> takes a block that yields a core builder object:</p>
