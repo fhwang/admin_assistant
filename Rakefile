@@ -47,8 +47,8 @@ begin
     gem.authors = ["Francis Hwang"]
     gem.add_dependency "will_paginate", "3.0.pre2"
     gem.add_dependency "dynamic_form"
-    gem.files.exclude "rails_3_0"
-    gem.files.exclude "rails_3_1"
+    gem.files.exclude "rails_3_0/**/*"
+    gem.files.exclude "rails_3_1/**/*"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new
