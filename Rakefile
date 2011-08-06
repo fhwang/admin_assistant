@@ -41,6 +41,13 @@ task :test do
   puts `#{cmd}`
 end
 
+desc 'Run a local copy of jekyll for previewing the documentation site.'
+task :preview_website do
+  cmd = 'cd website && jekyll --auto --server --base-url "/admin_assistant/"'
+  puts cmd
+  puts `#{cmd}`
+end
+
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|

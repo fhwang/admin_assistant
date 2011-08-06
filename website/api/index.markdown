@@ -21,6 +21,14 @@ The API reference is broken down into a few sections:
 
 There are a number of ways to configure admin\_assistant:
 
+#### Application-wide configuration
+
+To set the default inputs that admin\_assistant uses, put the following code in `config/initializers/admin_assistant.rb`:
+
+    AdminAssistant.default_inputs[:text] = :text_field
+
+The above code comes in handy if you're a RDBMS like Postgres, where you might use `text` columns everywhere instead of `varchar(255)` columns, but don't want those columns to be rendered as textareas in your controllers.
+    
 #### Through builder objects
 
 `admin_assistant_for` takes a block that yields a core builder object:
