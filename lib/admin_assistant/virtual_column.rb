@@ -47,6 +47,8 @@ class AdminAssistant
         input = @input || :text_field
         html = if input == :check_box
           check_box_and_hidden_tags(input_name, value(object))
+        elsif input == :file_field
+          @action_view.send("#{input}_tag", input_name, :value => string(object))
         else
           @action_view.send("#{input}_tag", input_name, string(object))
         end

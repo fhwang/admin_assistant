@@ -251,6 +251,10 @@ class AdminAssistant
           name, ordered_us_state_names_and_codes, :include_blank => true
         )
       end
+
+      def file_field_html(form)
+        form.file_field name
+      end
     end
     
     class IndexView < AdminAssistant::Column::View
