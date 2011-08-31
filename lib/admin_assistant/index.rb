@@ -139,18 +139,40 @@ class AdminAssistant
           settings.sort_by
         end
       end
+
+      def order_mongo
+        if (sc = sort_column)
+          first_part = if (by_assoc = belongs_to_sort_column)
+            by_assoc.order_sql_field
+          else
+            sc.name
+          end
+          [first_part, @index.sort_order]
+        else
+          settings.sort_by
+        end
+      end
       
       def run
-        @ar_query = ARQuery.new(
-          :order => order_sql, :include => find_include,
-          :per_page => settings.per_page, :page => @index.url_params[:page]
-        )
-        add_base_condition_sqls
-        search.add_to_query @ar_query
-        @ar_query.total_entries = optimized_total_entries
-        records = @index.model_class.paginate(:all, @ar_query.to_hash)
-        if caching_total_entries? && @ar_query.to_hash[:total_entries].nil?
-          cache_total_entries records.total_entries
+        if @index.model_class.ancestors.include? Mongoid::Document
+          scope = @index.model_class
+          case o = order_mongo
+          when String then scope = scope.order_by(o.split(' '))
+          else scope = scope.order_by(*order_mongo)
+          end
+          records = scope.paginate :page => @index.url_params[:page], :per_page => settings.per_page
+        else
+          @ar_query = ARQuery.new(
+            :order => order_sql, :include => find_include,
+            :per_page => settings.per_page, :page => @index.url_params[:page]
+          )
+          add_base_condition_sqls
+          search.add_to_query @ar_query
+          @ar_query.total_entries = optimized_total_entries
+          records = @index.model_class.paginate(:all, @ar_query.to_hash)
+          if caching_total_entries? && @ar_query.to_hash[:total_entries].nil?
+            cache_total_entries records.total_entries
+          end
         end
         records
       end
