@@ -13,11 +13,11 @@ Gem::Specification.new do |s|
   s.description = %q{admin_assistant is a Rails plugin that automates a lot of features typically needed in admin interfaces.}
   s.email = %q{sera@fhwang.net}
   s.extra_rdoc_files = [
-    "README"
+    "README.md"
   ]
   s.files = [
     "MIT-LICENSE",
-    "README",
+    "README.md",
     "Rakefile",
     "VERSION",
     "admin_assistant.gemspec",
