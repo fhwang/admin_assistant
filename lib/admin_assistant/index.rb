@@ -160,6 +160,7 @@ class AdminAssistant
           when String then scope = scope.order_by(o.split(' '))
           else scope = scope.order_by(*order_mongo)
           end
+          scope = search.add_to_mongo_query scope
           records = scope.paginate :page => @index.url_params[:page], :per_page => settings.per_page
         else
           @ar_query = ARQuery.new(

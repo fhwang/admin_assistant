@@ -20,6 +20,34 @@ class AdminAssistant
       @params[name]
     end
   
+    def add_to_mongo_query(mongo_criteria)
+      columns = @admin_assistant.search_settings.column_names
+      columns = @admin_assistant.index_settings.column_names if columns.empty?
+      return mongo_criteria if @params.empty?
+      if @parms.kind_of? String
+        searches = columns.map do |column|
+          {column => /#{params}/}
+        end
+        mongo_criteria = mongo_criteria.any_of *searches
+      else
+        searches = columns.map do |column|
+          next if blank?(column.to_s)
+          next unless (val = @params[column.to_s]).present?
+          {column => /#{val}/}
+        end
+        if match_any_conditions?
+          mongo_criteria = mongo_criteria.any_of *searches
+        else
+          searches.each do |search|
+            mongo_criteria = mongo_criteria.where search
+          end
+        end
+      end
+
+
+      mongo_criteria
+    end
+
     def add_to_query(ar_query)
       unless @params.empty?
         ar_query.add_condition do |cond|
