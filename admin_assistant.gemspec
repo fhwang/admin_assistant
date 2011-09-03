@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Francis Hwang"]
-  s.date = %q{2011-08-06}
+  s.date = %q{2011-09-03}
   s.description = %q{admin_assistant is a Rails plugin that automates a lot of features typically needed in admin interfaces.}
   s.email = %q{sera@fhwang.net}
   s.extra_rdoc_files = [
@@ -158,14 +158,14 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<will_paginate>, ["= 3.0.pre2"])
+      s.add_runtime_dependency(%q<will_paginate>, ["= 3.0"])
       s.add_runtime_dependency(%q<dynamic_form>, [">= 0"])
     else
-      s.add_dependency(%q<will_paginate>, ["= 3.0.pre2"])
+      s.add_dependency(%q<will_paginate>, ["= 3.0"])
       s.add_dependency(%q<dynamic_form>, [">= 0"])
     end
   else
-    s.add_dependency(%q<will_paginate>, ["= 3.0.pre2"])
+    s.add_dependency(%q<will_paginate>, ["= 3.0"])
     s.add_dependency(%q<dynamic_form>, [">= 0"])
   end
 end

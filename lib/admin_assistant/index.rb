@@ -148,7 +148,7 @@ class AdminAssistant
         add_base_condition_sqls
         search.add_to_query @ar_query
         @ar_query.total_entries = optimized_total_entries
-        records = @index.model_class.paginate(:all, @ar_query.to_hash)
+        records = @index.model_class.paginate(@ar_query.to_hash)
         if caching_total_entries? && @ar_query.to_hash[:total_entries].nil?
           cache_total_entries records.total_entries
         end
