@@ -161,7 +161,8 @@ class AdminAssistant
           else scope = scope.order_by(*order_mongo)
           end
           scope = search.add_to_mongo_query scope
-          records = scope.paginate :page => @index.url_params[:page], :per_page => settings.per_page
+          page = @index.url_params[:page].to_i
+          scope.paginate :page => @index.url_params[:page], :per_page => settings.per_page
         else
           @ar_query = ARQuery.new(
             :order => order_sql, :include => find_include,
@@ -174,8 +175,8 @@ class AdminAssistant
           if caching_total_entries? && @ar_query.to_hash[:total_entries].nil?
             cache_total_entries records.total_entries
           end
+          records
         end
-        records
       end
       
       def search
