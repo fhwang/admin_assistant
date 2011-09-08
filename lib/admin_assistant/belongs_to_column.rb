@@ -8,6 +8,10 @@ class AdminAssistant
       @sort_by = opts[:sort_by]
       @association_target = AssociationTarget.new associated_class
     end
+
+    def sort_possible? total_entries
+      total_entries < 100_000
+    end
     
     def add_to_query_condition(ar_query_condition, search)
       if @match_text_fields_in_search

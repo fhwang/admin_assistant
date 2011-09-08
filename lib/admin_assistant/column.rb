@@ -1,5 +1,7 @@
 class AdminAssistant
   class Column    
+    def sort_possible?(total_entries) false end
+
     def form_view(action_view, admin_assistant, opts = {})
       view 'FormView', action_view, admin_assistant, opts
     end
@@ -378,8 +380,7 @@ class AdminAssistant
       end
       
       def sort_possible?(total_entries)
-        @column.is_a?(ActiveRecordColumn) ||
-            (@column.is_a?(BelongsToColumn) && total_entries < 100_000)
+        @column.sort_possible? total_entries
       end
       
       def string(record)

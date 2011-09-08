@@ -4,6 +4,8 @@ class AdminAssistant
       @ar_column = ar_column
     end
     
+    def sort_possible?; true end
+
     def add_to_query_condition(ar_query_condition, search)
       ConditionUpdate.new(ar_query_condition, search, name, field_type).run
     end

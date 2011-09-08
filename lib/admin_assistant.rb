@@ -4,7 +4,7 @@ require 'kaminari'
 
 require 'find'
 files = %w(
-  column virtual_column active_record_column association_target
+  column virtual_column active_record_column mongoid_column association_target
   belongs_to_column builder default_search_column form_view has_many_column 
   helper index init model paperclip_column polymorphic_belongs_to_column 
   request/base request/autocomplete request/create request/destroy request/edit
@@ -96,7 +96,11 @@ class AdminAssistant
     elsif belongs_to_assoc = @model.belongs_to_assoc_by_polymorphic_type(name)
       # skip it, actually
     elsif (ar_column = @model_class.columns_hash[name.to_s])
-      ActiveRecordColumn.new ar_column
+      if @model_class.ancestors.include? Mongoid::Document
+        MongoidColumn.new ar_column
+      else
+        ActiveRecordColumn.new ar_column
+      end
     elsif has_many_assoc = @model.has_many_assoc(name)
       HasManyColumn.new(
         has_many_assoc,
