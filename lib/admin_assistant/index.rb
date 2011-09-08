@@ -161,8 +161,27 @@ class AdminAssistant
           else scope = scope.order_by(*order_mongo)
           end
           scope = search.add_to_mongo_query scope
-          page = @index.url_params[:page].to_i
-          scope.paginate :page => @index.url_params[:page], :per_page => settings.per_page
+          scope.page(@index.url_params[:page].to_i).per settings.per_page 
+          #scope = scope.limit 
+          #scope = scope.offset($page * $per_page)
+          ##scope.paginate :page => @index.url_params[:page], :per_page => settings.per_page
+          #scope.instance_eval do
+            #def total_entries
+              #@total_entries ||= count
+            #end
+            #def total_pages
+              #@total_entries / $per_page
+            #end
+            #def current_page
+              #$page
+            #end
+            #def previous_page
+              #$page - 1
+            #end
+            #def next_page
+              #$page + 1
+            #end
+          #end
         else
           @ar_query = ARQuery.new(
             :order => order_sql, :include => find_include,

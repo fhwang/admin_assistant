@@ -60,7 +60,7 @@
     <% index_view.columns.each do |column| %>
       <% th_class = column.header_css_class %>
       <th<%= raw(" class=\"#{th_class}\"") if th_class %>><%=
-        if column.sort_possible?(@index.records.total_entries)
+        if column.sort_possible?(@index.records.size)
           link_to(h(column.label), column.next_sort_params)
         else
           h(column.label)
@@ -94,18 +94,18 @@
 <div class="aa_footer">
 <div class="pagination">
   <div class="links">
-    <%= will_paginate @index.records, :container => false %>
+    <%= paginate @index.records, :container => false %>
   </div>
-<% if @index.records.total_pages > 10 %>
+<% if @index.records.size > 10 %>
   <%= form_tag({:action => 'index'}, :method => 'get') do %>
     <%= text_field_tag('page', nil, :size => 2) %>
     <%= submit_tag('Jump') %>
   <% end %>
 <% end %>
 </div>
-<%= @index.records.empty? ? 'No' : @index.records.total_entries %> <%=
+<%= @index.records.empty? ? 'No' : @index.records.size %> <%=
   name = @admin_assistant.model_class_name
-  @index.records.total_entries == 1 ? name : name.pluralize
+  @index.records.size == 1 ? name : name.pluralize
 %> found
 </div>
 </div>

@@ -1,6 +1,6 @@
 $: << File.join(File.dirname(__FILE__), '../vendor/ar_query/lib')
 require 'dynamic_form'
-require 'will_paginate'
+require 'kaminari'
 
 require 'find'
 files = %w(
