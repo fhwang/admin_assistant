@@ -252,8 +252,8 @@ class AdminAssistant
         @edit ||= @admin_assistant.edit?
       end
       
-      def edit_link(record)
-        @action_view.link_to 'Edit', :action => 'edit', :id => record.id
+      def edit_link(record, name='Edit')
+        @action_view.link_to name, :action => 'edit', :id => record.id
       end
       
       def new?
@@ -292,15 +292,25 @@ class AdminAssistant
             @admin_assistant.index_settings.right_column_links
       end
       
+      def show_link record, name='Show'
+        @action_view.link_to(
+          'Show', :action => 'show', :id => record.id
+        )
+      end
+
+      def edit_or_show_link record, content
+        if render_edit_link?(record)
+          edit_link(record, content)
+        else
+          show_link(record, content)
+        end
+      end
+
       def right_column_links(record)
         links = []
         links << edit_link(record) if render_edit_link?(record)
         links << delete_link(record) if render_delete_link?(record)
-        if render_show_link?(record)
-          links << @action_view.link_to(
-            'Show', :action => 'show', :id => record.id
-          )
-        end
+        links << show_link(record) if render_show_link?(record)
         right_column_lambdas.each do |lambda|
           link_args = lambda.call record
           links << @action_view.link_to(*link_args)
