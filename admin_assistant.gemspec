@@ -161,7 +161,7 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<will_paginate>, ["= 3.0.pre2"])
       s.add_runtime_dependency(%q<dynamic_form>, [">= 0"])
     else
-      s.add_dependency(%q<will_paginate>, ["= 3.0.pre2"])
+      s.add_dependency(%q<will_paginate>, ["~> 3.0.0"])
       s.add_dependency(%q<dynamic_form>, [">= 0"])
     end
   else
