@@ -76,7 +76,7 @@ class Admin::BlogPostsIntegrationTest < ActionController::IntegrationTest
         'published_at(5i)' => ''
       }
     )
-    @blog_post = BlogPost.find_by_title(title)
+    @blog_post = BlogPost.where(:title => title)
   
     # should create a new BlogPost
     assert_not_nil(@blog_post)
@@ -93,7 +93,7 @@ class Admin::BlogPostsIntegrationTest < ActionController::IntegrationTest
     )
       
     # should not create a new BlogPost
-    assert_nil(BlogPost.find_by_title(''))
+    assert_nil(BlogPost.where(:title => ''))
     
     # should print all the errors
     assert_response :success
@@ -715,7 +715,7 @@ class Admin::BlogPostsIntegrationTest < ActionController::IntegrationTest
       }
     )
     assert_redirected_to(:action => 'index')
-    @blog_post_prime = BlogPost.find_by_title(title2)
+    @blog_post_prime = BlogPost.where(:title => title2)
   
     # should update a pre-existing BlogPost
     assert_not_nil(@blog_post_prime)
@@ -732,7 +732,7 @@ class Admin::BlogPostsIntegrationTest < ActionController::IntegrationTest
     )
     
     # should not create a new BlogPost
-    assert_nil(BlogPost.find_by_title(''))
+    assert_nil(BlogPost.where(:title => ''))
     
     # should print all the errors
     assert_response :success

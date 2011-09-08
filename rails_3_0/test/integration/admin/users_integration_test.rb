@@ -10,7 +10,7 @@ class Admin::UsersIntegrationTest < ActionController::IntegrationTest
     post("/admin/users", :user => { :username => 'bill', :password => '' })
     
     # should assign a new random password
-    user = User.find_by_username 'bill'
+    user = User.where(:username => 'bill')
     assert_not_nil(user)
     assert_not_equal(user.password, '')
   end
@@ -30,7 +30,7 @@ class Admin::UsersIntegrationTest < ActionController::IntegrationTest
     delete "/admin/users/#{@user.id}"
     
     # should destroy the user
-    assert_nil(User.find_by_id(@user.id))
+    assert_nil(User.where(:id => @user).id)
   end
   
   def test_edit
