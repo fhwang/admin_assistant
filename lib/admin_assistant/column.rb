@@ -379,8 +379,12 @@ class AdminAssistant
         @column.is_a?(PaperclipColumn)
       end
       
-      def sort_possible?(total_entries)
-        @column.sort_possible? total_entries
+      def sort_possible?(total_entries, admin_assistant)
+        if admin_assistant.search_settings.column_names.include? @column.name.to_sym
+          true
+        else
+          @column.sort_possible? total_entries
+        end
       end
       
       def string(record)

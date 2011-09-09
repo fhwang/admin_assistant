@@ -60,7 +60,7 @@
     <% index_view.columns.each do |column| %>
       <% th_class = column.header_css_class %>
       <th<%= raw(" class=\"#{th_class}\"") if th_class %>><%=
-        if column.sort_possible?(@index.records.size)
+        if column.sort_possible?(@index.records.size, @admin_assistant)
           link_to(h(column.label), column.next_sort_params)
         else
           h(column.label)
