@@ -2,21 +2,27 @@
 <div class="admin_assistant index <%=
   @admin_assistant.controller_css_class(controller)
 %>">
-<div class="aa_header">
-<div class="actions">
-<% if index_view.render_search_link? %>
-  <%= link_to('Search', '#', :id => 'show_search_form') %>
-<% end %>
-<% if index_view.render_new_link? %>
-  <%= index_view.new_link %>
-<% end %>
-<% @admin_assistant.index_settings.actions.each do |action, params| %>
-  <%= link_to_unless_current(action, params) %>
-<% end %>
-</div>
-<h2><%= h(index_view.header) %></h2>
-<%= index_view.render_after_index_header %>
-</div>
+  <div class="aa_header">
+    <div class="actions">
+    <% linked_actions = false %>
+    <% if index_view.render_search_link? %>
+      <%= link_to('Search', '#', :id => 'show_search_form') %>
+      <% linked_actions = true %>
+    <% end %>
+    <% if index_view.render_new_link? %>
+      <%= '|' if linked_actions %>
+      <%= index_view.new_link %>
+      <% linked_actions = true %>
+    <% end %>
+    <% @admin_assistant.index_settings.actions.each do |action, params| %>
+      <%= '|' if linked_actions %>
+      <%= link_to_unless_current(action, params) %> |
+      <% linked_actions = true %>
+    <% end %>
+    </div>
+    <h2><%= h(index_view.header) %></h2>
+    <%= index_view.render_after_index_header %>
+  </div>
 
 <%= form_for(
   @index.search,
