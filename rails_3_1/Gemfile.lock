@@ -12,7 +12,7 @@ PATH
   specs:
     admin_assistant (2.2.0)
       dynamic_form
-      will_paginate (= 3.0.pre2)
+      kaminari (>= 0.12.4)
 
 GEM
   remote: http://rubygems.org/
@@ -54,6 +54,8 @@ GEM
     hike (1.2.0)
     i18n (0.6.0)
     json (1.5.3)
+    kaminari (0.12.4)
+      rails (>= 3.0.0)
     mail (2.3.0)
       i18n (>= 0.4.0)
       mime-types (~> 1.16)
@@ -102,7 +104,6 @@ GEM
       polyglot
       polyglot (>= 0.3.1)
     tzinfo (0.3.29)
-    will_paginate (3.0.pre2)
 
 PLATFORMS
   ruby
