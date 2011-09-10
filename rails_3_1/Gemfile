@@ -5,6 +5,8 @@ gem 'rails', '3.1.0.rc5'
 gem 'admin_assistant', :path => "../../admin_assistant"
 gem 'paperclip', '2.3.11'
 gem 'sqlite3'
+gem 'mongoid'
+gem 'bson_ext'
 
 group :development, :test do
   gem 'json'
