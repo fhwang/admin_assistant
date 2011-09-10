@@ -1,3 +1,4 @@
+require 'delegate'
 class AdminAssistant
   module FormViewMethods
     def action
