@@ -1,12 +1,33 @@
 source 'http://rubygems.org'
 
-gem 'rails', '3.1.0.rc8'
+gem 'rails', '3.1.0'
 
 gem 'admin_assistant', :path => "../../admin_assistant"
 gem 'paperclip', '2.3.11'
 gem 'sqlite3'
 
+gem 'json'
+
+# Gems used only for assets and not required
+# in production environments by default.
+group :assets do
+  gem 'sass-rails', "  ~> 3.1.0"
+  gem 'coffee-rails', "~> 3.1.0"
+  gem 'uglifier'
+end
+
+gem 'jquery-rails'
+
+# Use unicorn as the web server
+# gem 'unicorn'
+
+# Deploy with Capistrano
+# gem 'capistrano'
+
+# To use debugger
+# gem 'ruby-debug'
+
 group :development, :test do
-  gem 'json'
   gem 'webrat', '>=0.7.2.pre', :git => 'http://github.com/kalv/webrat.git'
 end
+

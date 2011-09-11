@@ -19,6 +19,22 @@ class AdminAssistant
   self.default_inputs = {}
   self.routes = []
   
+  # From http://stackoverflow.com/questions/3974087/how-to-make-rubys-find-find-follow-symlinks
+  def self.all_files_under(*paths)
+    paths.flatten!
+    paths.map! { |p| Pathname.new(p) }
+    files = paths.select { |p| p.file? }
+    (paths - files).each do |dir|
+      files << all_files_under(dir.children)
+    end
+    files.flatten.map(&:to_s)
+  end
+  
+  def self.app_uses_sprockets?
+    # For now, we assume you're using Sprockets if app/assets exists.
+    File.exist?("#{Rails.root}/app/assets")
+  end
+
   def self.profile(msg)
     if self.request_start_time
       Rails.logger.info "#{msg}: #{Time.now - self.request_start_time}"
@@ -28,7 +44,7 @@ class AdminAssistant
   def self.template_file(template_name)
     "#{File.dirname(__FILE__)}/views/#{template_name}.html.erb"
   end
-
+  
   attr_reader   :base_settings, :controller_class, :form_settings, 
                 :index_settings, :model_class, :show_settings
   attr_accessor :actions, :custom_destroy, :default_search_matches_on
