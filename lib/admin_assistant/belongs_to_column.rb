@@ -9,7 +9,7 @@ class AdminAssistant
       @association_target = AssociationTarget.new associated_class
     end
 
-    def sort_possible? total_entries
+    def sort_possible? _, total_entries
       total_entries < 100_000
     end
     

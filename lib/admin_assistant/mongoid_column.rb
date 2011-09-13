@@ -1,7 +1,7 @@
 class AdminAssistant
   class MongoidColumn < ActiveRecordColumn
-    def sort_possible?(total_entries)
-      YapShow.index_options.keys.include?(name.to_sym)
+    def sort_possible?(model, total_entries)
+      model.index_options.keys.include?(name.to_sym)
     end
   end
 end
