@@ -39,10 +39,12 @@ class Admin::BlogPosts3IntegrationTest < ActionController::IntegrationTest
     get "/admin/blog_posts3"
     assert_response :success
 
-    # should use the activescaffold-themed CSS
-    assert_select(
-      'link[href^=/stylesheets/admin_assistant/activescaffold.css]'
-    )
+    unless Rails.version =~ /^3.1/
+      # should use the activescaffold-themed CSS
+      assert_select(
+        'link[href^=/stylesheets/admin_assistant/admin_assistant_activescaffold.css]'
+      )
+    end
   
     # should say 'Posts'
     assert_select('h2', :text => 'Posts')

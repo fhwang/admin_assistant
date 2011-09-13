@@ -1,7 +1,8 @@
 # In development mode, we need to ensure that all controllers are loaded,
 # because that's how AdminAssistant knows what routes to create
 unless Rails.configuration.cache_classes
-  Find.find("#{Rails.root}/app/controllers") do |path|
+  controllers_path = "#{Rails.root}/app/controllers"
+  AdminAssistant.all_files_under(controllers_path).each do |path|
     if path =~ /\.rb$/
       require path
     end

@@ -200,10 +200,12 @@ class Admin::BlogPostsIntegrationTest < ActionController::IntegrationTest
     # should use the admin layout
     assert_match(/admin_assistant sample Rails app/, response.body)
       
-    # should use the default admin_assistant CSS
-    assert_select(
-      'link[href^=/stylesheets/admin_assistant/default.css]'
-    )
+    unless Rails.version =~ /^3.1/
+      # should use the default admin_assistant CSS
+      assert_select(
+        'link[href^=/stylesheets/admin_assistant/admin_assistant.css]'
+      )
+    end
   end
   
   def test_index_when_there_is_one_record

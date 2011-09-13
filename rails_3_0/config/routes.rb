@@ -1,4 +1,4 @@
-Rails3Test::Application.routes.draw do
+TestApp::Application.routes.draw do
   namespace :admin do
     resources :comments
     resources :users

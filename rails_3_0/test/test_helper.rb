@@ -126,12 +126,7 @@ class ActionController::IntegrationTest
   end
   
   def assert_will_paginate_link(base, page, content = nil)
-    select = []
-    if Rails.version =~ /^3.1/
-      select << "a[href=#{base}?escape=false&amp;page=#{page}]"
-    else
-      select << "a[href=#{base}?page=#{page}]"
-    end
+    select = ["a[href=#{base}?page=#{page}]"]
     select << content if content
     assert_select(select)
   end
