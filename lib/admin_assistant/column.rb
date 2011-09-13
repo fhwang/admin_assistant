@@ -380,12 +380,12 @@ class AdminAssistant
       end
       
       def sort_possible?(records, admin_assistant)
-        total_entries = records.size
-        return false if records.empty?
-        model_class = model.first.class
         if admin_assistant.search_settings.column_names.include? @column.name.to_sym
           true
         else
+          total_entries = records.size
+          return false if total_entries == 0
+          model_class = records.first.class
           @column.sort_possible? model_class, total_entries
         end
       end
