@@ -155,11 +155,20 @@ class AdminAssistant
       
       def run
         if @index.model_class.ancestors.include? Mongoid::Document
-          scope = @index.model_class
+          scope = if c = settings.conditions
+                    if c.respond_to?(:call)
+                      c.call @index.url_params
+                    else c
+                    end
+                  else
+                    @index.model_class
+                  end
+
           case o = order_mongo
           when String then scope = scope.order_by(o.split(' '))
           else scope = scope.order_by(*order_mongo)
           end
+
           scope = search.add_to_mongo_query scope
           scope.page(@index.url_params[:page].to_i).per settings.per_page 
         else
