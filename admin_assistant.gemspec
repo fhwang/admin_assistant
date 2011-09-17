@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{admin_assistant}
-  s.version = "2.2.0"
+  s.version = "2.2.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Francis Hwang"]
-  s.date = %q{2011-09-03}
+  s.date = %q{2011-09-17}
   s.description = %q{admin_assistant is a Rails plugin that automates a lot of features typically needed in admin interfaces.}
   s.email = %q{sera@fhwang.net}
   s.extra_rdoc_files = [
@@ -51,23 +51,20 @@ Gem::Specification.new do |s|
     "lib/admin_assistant/search.rb",
     "lib/admin_assistant/show_view.rb",
     "lib/admin_assistant/virtual_column.rb",
-    "lib/images/sort-asc.png",
-    "lib/images/sort-desc.png",
-    "lib/javascripts/admin_assistant.js",
-    "lib/javascripts/jquery.tokeninput.js",
-    "lib/stylesheets/activescaffold.css",
-    "lib/stylesheets/default.css",
-    "lib/stylesheets/token-input.css",
     "lib/views/_polymorphic_field_search.html.erb",
     "lib/views/_token_input.html.erb",
     "lib/views/form.html.erb",
     "lib/views/index.html.erb",
     "lib/views/multi_form.html.erb",
     "lib/views/show.html.erb",
-    "rails_3_0/.gitignore",
     "rails_3_0/lib/tasks/.gitkeep",
     "rails_3_0/public/stylesheets/.gitkeep",
     "rails_3_0/vendor/plugins/.gitkeep",
+    "rails_3_1/app/mailers/.gitkeep",
+    "rails_3_1/lib/assets/.gitkeep",
+    "rails_3_1/lib/tasks/.gitkeep",
+    "rails_3_1/log/.gitkeep",
+    "rails_3_1/vendor/plugins/.gitkeep",
     "tasks/admin_assistant_tasks.rake",
     "uninstall.rb",
     "vendor/ar_query/MIT-LICENSE",
@@ -79,6 +76,13 @@ Gem::Specification.new do |s|
     "vendor/ar_query/spec/ar_query_spec.rb",
     "vendor/ar_query/tasks/ar_query_tasks.rake",
     "vendor/ar_query/uninstall.rb",
+    "vendor/assets/images/sort-asc.png",
+    "vendor/assets/images/sort-desc.png",
+    "vendor/assets/javascripts/admin_assistant.js",
+    "vendor/assets/javascripts/jquery.tokeninput.js",
+    "vendor/assets/stylesheets/admin_assistant.css",
+    "vendor/assets/stylesheets/admin_assistant_activescaffold.css",
+    "vendor/assets/stylesheets/token-input.css",
     "website/_layouts/api.html",
     "website/_layouts/api1.html",
     "website/_layouts/default.html",
