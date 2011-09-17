@@ -7,11 +7,13 @@ title:  Quick start
 This document assumes you are highly familiar with Ruby and Rails; if you are a beginning Rails user you might want to start with our <a href="/admin_assistant/tutorial.html">tutorial</a>.
 </div>
 
-1) Add the gem to your Gemfile, and install it with `bundle install`.
+### Add the gem to your Gemfile
 
     gem 'admin_assistant'
 
-2) admin\_assistant comes packaged with standard CSS and Javascript that you should include in whatever layout your admin controllers will be using. You'll also need to make sure to include jquery, if you're not including it already.
+### Include admin\_assistant's CSS and Javascript in your layout
+    
+admin\_assistant comes packaged with standard CSS and Javascript that you should include in whatever layout your admin controllers will be using. You'll also need to make sure to include jquery, if you're not including it already.
 
     <html>
       <head>
@@ -20,8 +22,23 @@ This document assumes you are highly familiar with Ruby and Rails; if you are a 
       </head>
       ...
     </html>
+    
+If you're using Sprockets, which is the default in Rails 3.1, you should include the CSS and Javascript assets in the manifest files that you use for your admin layout.
 
-3) Setup an admin controller by attaching it to a model and using the admin layout:
+Javascript:
+
+    //= require admin_assistant
+    //= require jquery.tokeninput.js
+
+CSS:
+
+    //= require admin_assistant
+    //= require token-input
+
+
+### Setup an admin controller
+    
+Use the admin layout, and call `admin_assistant_for` with the model class.
 
     class Admin::BlogPostsController < ApplicationController
       layout 'admin'

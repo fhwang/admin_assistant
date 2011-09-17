@@ -31,20 +31,26 @@
     <div class='note'>
 This document assumes you are a beginning Rails user; if you are familiar with Rails you might want to check out our <a href='/admin_assistant/quick_start.html'>quick start</a>.
 </div>
-<p>1) Add the gem to <code>Gemfile</code> in the root of your Rails project.</p>
+<h3 id='add_the_gem_to_your_gemfile'>Add the gem to your Gemfile</h3>
+
+<p>This is found at <code>Gemfile</code> in the root of your Rails project.</p>
 
 <pre><code>gem &#39;admin_assistant&#39;</code></pre>
 
-<p>2) Install the gem locally.</p>
+<h3 id='install_the_gem_locally'>Install the gem locally</h3>
 
 <pre><code>$ bundle install</code></pre>
 
-<p>3) admin_assistant uses jQuery. You may already have jQuery installed for your project, but if not, you can get it like so:</p>
+<h3 id='install_jquery_if_you_need_to'>Install jQuery if you need to</h3>
+
+<p>admin_assistant uses jQuery. You may already have jQuery installed for your project (it&#8217;s the standard starting with Rails 3.1), but if not, you can get it like so:</p>
 
 <pre><code>$ curl http://code.jquery.com/jquery-1.6.2.min.js &gt; \
     public/javascripts/jquery-1.6.2.min.js</code></pre>
 
-<p>4) If you don&#8217;t have any admin controllers in your Rails project yet, you probably need to create a separate admin layout. Create a file called <code>app/views/layouts/admin.html.erb</code> like this:</p>
+<h3 id='create_a_separate_admin_layout_without_sprockets'>Create a separate admin layout (without Sprockets)</h3>
+
+<p>If you don&#8217;t have any admin controllers in your Rails project yet, you probably need to create a separate admin layout. Create a file called <code>app/views/layouts/admin.html.erb</code> like this:</p>
 
 <pre><code>&lt;html&gt;
   &lt;head&gt;
@@ -58,11 +64,41 @@ This document assumes you are a beginning Rails user; if you are familiar with R
 
 <p>If you&#8217;ve already created an admin layout, you should add the javascript references, and the call to <code>admin_assistant_includes</code>. This includes the standard CSS and Javascript that are packed with admin_assistant.</p>
 
-<p>5) Create your new admin controller for a pre-existing model. We&#8217;ll be using a BlogPost as an example but you should be able to use any model in your Rails app.</p>
+<h3 id='create_a_separate_admin_layout_with_sprockets'>Create a separate admin layout (with Sprockets)</h3>
+
+<p>Rails 3.1 recommends Sprockets as the default asset packager. If you&#8217;re using Sprockets, you&#8217;ll probably want to create separate <code>admin.js</code> and <code>admin.css</code> manifest files. <code>app/views/layouts/admin.html.erb</code> will look like this:</p>
+
+<pre><code>&lt;html&gt;
+  &lt;head&gt;
+    &lt;%= javascript_include_tag &quot;admin&quot; %&gt;
+    &lt;%= stylesheet_link_tag &quot;admin&quot; %&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;%= yield %&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+<p>And you will add admin_assistant&#8217;s assets to the manifest files, which you will most likely put at <code>app/assets/javascripts/admin.js</code> and <code>app/assets/stylesheets/admin.css</code>.</p>
+
+<p>Javascript:</p>
+
+<pre><code>//= require admin_assistant
+//= require jquery.tokeninput.js</code></pre>
+
+<p>CSS:</p>
+
+<pre><code>//= require admin_assistant
+//= require token-input</code></pre>
+
+<h3 id='create_an_admin_controller'>Create an admin controller</h3>
+
+<p>Create your new admin controller for a pre-existing model. We&#8217;ll be using a BlogPost as an example but you should be able to use any model in your Rails app.</p>
 
 <pre><code>./script/generate controller admin/blog_posts</code></pre>
 
-<p>6) Open <code>app/controllers/admin/blog_posts_controller.rb</code> and set it up to use the admin layout and to use admin_assistant for the BlogPost model:</p>
+<h3 id='edit_your_admin_controller'>Edit your admin controller</h3>
+
+<p>Open <code>app/controllers/admin/blog_posts_controller.rb</code> and set it up to use the admin layout and to use admin_assistant for the BlogPost model:</p>
 
 <pre><code>class Admin::BlogPostsController &lt; ApplicationController
   layout &#39;admin&#39;
@@ -70,9 +106,13 @@ This document assumes you are a beginning Rails user; if you are familiar with R
   admin_assistant_for BlogPost
 end</code></pre>
 
-<p>7) If you were already running your Rails app with <code>./script/server</code> etc, you should restart it.</p>
+<h3 id='restart_your_rails_app'>Restart your Rails app</h3>
 
-<p>8) Visit <code>/admin/blog_posts</code> in your browser and you&#8217;ll see something like this:</p>
+<p>If you were already running your Rails app with <code>./script/server</code> etc, you should restart it.</p>
+
+<h3 id='check_out_the_controller'>Check out the controller</h3>
+
+<p>Visit <code>/admin/blog_posts</code> in your browser and you&#8217;ll see something like this:</p>
 
 <p><img src='/admin_assistant/img/blog_posts-index.png' alt='index' /></p>
 
