@@ -4,6 +4,8 @@ class AdminAssistant
       @ar_column = ar_column
     end
     
+    def sort_possible?(*args); true end
+
     def add_to_query_condition(ar_query_condition, search)
       ConditionUpdate.new(ar_query_condition, search, name, field_type).run
     end
@@ -250,6 +252,10 @@ class AdminAssistant
         form.select(
           name, ordered_us_state_names_and_codes, :include_blank => true
         )
+      end
+
+      def file_field_html(form)
+        form.file_field name
       end
     end
     

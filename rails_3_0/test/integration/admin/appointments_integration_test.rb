@@ -149,17 +149,17 @@ class Admin::AppointmentsIntegrationTest < ActionController::IntegrationTest
     @user = User.first
     @user ||= User.create! :username => random_word
     @yesterday = 1.day.ago.to_date.to_time.utc
-    @yesterdays_appt = Appointment.find_by_time @yesterday
+    @yesterdays_appt = Appointment.where(:time => @yesterday)
     @yesterdays_appt ||= Appointment.create!(
       :subject => random_word, :user => @user, :time => @yesterday
     )
     @today = Time.now.to_date.to_time.utc
-    @todays_appt = Appointment.find_by_time @today
+    @todays_appt = Appointment.where(:time => @today)
     @todays_appt ||= Appointment.create!(
       :subject => random_word, :user => @user, :time => @today
     )
     @tomorrow = 1.day.from_now.to_date.to_time.utc
-    @tomorrows_appt = Appointment.find_by_time @tomorrow
+    @tomorrows_appt = Appointment.where(:time => @tomorrow)
     @tomorrows_appt ||= Appointment.create!(
       :subject => random_word, :user => @user, :time => @tomorrow
     )
@@ -210,17 +210,17 @@ class Admin::AppointmentsIntegrationTest < ActionController::IntegrationTest
     @user = User.first
     @user ||= User.create! :username => random_word
     @yesterday = 1.day.ago.to_date.to_time.utc
-    @yesterdays_appt = Appointment.find_by_time @yesterday
+    @yesterdays_appt = Appointment.where(:time => @yesterday)
     @yesterdays_appt ||= Appointment.create!(
       :subject => random_word, :user => @user, :time => @yesterday
     )
     @today = 0.minutes.ago.to_date.to_time.utc
-    @todays_appt = Appointment.find_by_time @today
+    @todays_appt = Appointment.where(:time => @today)
     @todays_appt ||= Appointment.create!(
       :subject => random_word, :user => @user, :time => @today
     )
     @tomorrow = 1.day.from_now.to_date.to_time.utc
-    @tomorrows_appt = Appointment.find_by_time @tomorrow
+    @tomorrows_appt = Appointment.where(:time => @tomorrow)
     @tomorrows_appt ||= Appointment.create!(
       :subject => random_word, :user => @user, :time => @tomorrow
     )
@@ -270,17 +270,17 @@ class Admin::AppointmentsIntegrationTest < ActionController::IntegrationTest
     @user = User.first
     @user ||= User.create! :username => random_word
     @yesterday = 1.day.ago.to_date.to_time.utc
-    @yesterdays_appt = Appointment.find_by_time @yesterday
+    @yesterdays_appt = Appointment.where(:time => @yesterday)
     @yesterdays_appt ||= Appointment.create!(
       :subject => random_word, :user => @user, :time => @yesterday
     )
     @today = 0.minutes.ago.to_date.to_time.utc
-    @todays_appt = Appointment.find_by_time @today
+    @todays_appt = Appointment.where(:time => @today)
     @todays_appt ||= Appointment.create!(
       :subject => random_word, :user => @user, :time => @today
     )
     @tomorrow = 1.day.from_now.to_date.to_time.utc
-    @tomorrows_appt = Appointment.find_by_time @tomorrow
+    @tomorrows_appt = Appointment.where(:time => @tomorrow)
     @tomorrows_appt ||= Appointment.create!(
       :subject => random_word, :user => @user, :time => @tomorrow
     )

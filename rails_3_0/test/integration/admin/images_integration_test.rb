@@ -28,7 +28,7 @@ class Admin::ImagesIntegrationTest < ActionController::IntegrationTest
       },
       :html => {:multipart => true}
     )
-    @image = Image.find_by_image_file_name 'ruby_throated.jpg'
+    @image = Image.where(:image_file_name => 'ruby_throated.jpg')
     
     # should save an image record
     assert_not_nil @image

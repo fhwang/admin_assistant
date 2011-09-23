@@ -2,21 +2,27 @@
 <div class="admin_assistant index <%=
   @admin_assistant.controller_css_class(controller)
 %>">
-<div class="aa_header">
-<div class="actions">
-<% if index_view.render_search_link? %>
-  <%= link_to('Search', '#', :id => 'show_search_form') %>
-<% end %>
-<% if index_view.render_new_link? %>
-  <%= index_view.new_link %>
-<% end %>
-<% @admin_assistant.index_settings.actions.each do |action, params| %>
-  <%= link_to_unless_current(action, params) %>
-<% end %>
-</div>
-<h2><%= h(index_view.header) %></h2>
-<%= index_view.render_after_index_header %>
-</div>
+  <div class="aa_header">
+    <div class="actions">
+    <% linked_actions = false %>
+    <% if index_view.render_search_link? %>
+      <%= link_to('Search', '#', :id => 'show_search_form') %>
+      <% linked_actions = true %>
+    <% end %>
+    <% if index_view.render_new_link? %>
+      <%= '|' if linked_actions %>
+      <%= index_view.new_link %>
+      <% linked_actions = true %>
+    <% end %>
+    <% @admin_assistant.index_settings.actions.each do |action, params| %>
+      <%= '|' if linked_actions %>
+      <%= link_to_unless_current(action, params) %> |
+      <% linked_actions = true %>
+    <% end %>
+    </div>
+    <h2><%= h(index_view.header) %></h2>
+    <%= index_view.render_after_index_header %>
+  </div>
 
 <%= form_for(
   @index.search,
@@ -60,7 +66,7 @@
     <% index_view.columns.each do |column| %>
       <% th_class = column.header_css_class %>
       <th<%= raw(" class=\"#{th_class}\"") if th_class %>><%=
-        if column.sort_possible?(@index.records.total_entries)
+        if column.sort_possible?(@index.records, @admin_assistant)
           link_to(h(column.label), column.next_sort_params)
         else
           h(column.label)
@@ -75,11 +81,18 @@
     <tr class="<%= index_view.tr_css_classes(record) %>" id="<%= 
       @admin_assistant.model_class.name.underscore
     %>_<%= record.id %>">
+      <% first_column = true %>
       <% index_view.columns.each do |column| %>
         <% td_class = column.td_css_classes(column, record) %>
-        <td<%= raw(" class=\"#{td_class}\"") unless td_class.blank? %>><%=
-          raw(column.html(record))
-        %></td>
+        <td<%= raw(" class=\"#{td_class}\"") unless td_class.blank? %>>
+          <% if first_column %>
+            <%= index_view.edit_or_show_link record, raw(column.html(record)) %>
+          <% else %>
+            <%= raw(column.html(record)) %>
+          <% end %>
+        </td>
+
+        <% first_column = false %>
       <% end %>
       <% if index_view.right_column? %>
       <td class="actions">
@@ -94,18 +107,18 @@
 <div class="aa_footer">
 <div class="pagination">
   <div class="links">
-    <%= will_paginate @index.records, :container => false %>
+    <%= paginate @index.records, :container => false %>
   </div>
-<% if @index.records.total_pages > 10 %>
+<% if @index.records.size > 10 %>
   <%= form_tag({:action => 'index'}, :method => 'get') do %>
     <%= text_field_tag('page', nil, :size => 2) %>
     <%= submit_tag('Jump') %>
   <% end %>
 <% end %>
 </div>
-<%= @index.records.empty? ? 'No' : @index.records.total_entries %> <%=
+<%= @index.records.empty? ? 'No' : @index.records.size %> <%=
   name = @admin_assistant.model_class_name
-  @index.records.total_entries == 1 ? name : name.pluralize
+  @index.records.size == 1 ? name : name.pluralize
 %> found
 </div>
 </div>

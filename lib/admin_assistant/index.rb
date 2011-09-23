@@ -139,20 +139,52 @@ class AdminAssistant
           settings.sort_by
         end
       end
+
+      def order_mongo
+        if (sc = sort_column)
+          first_part = if (by_assoc = belongs_to_sort_column)
+            by_assoc.order_sql_field
+          else
+            sc.name
+          end
+          [first_part, @index.sort_order]
+        else
+          settings.sort_by
+        end
+      end
       
       def run
-        @ar_query = ARQuery.new(
-          :order => order_sql, :include => find_include,
-          :per_page => settings.per_page, :page => @index.url_params[:page]
-        )
-        add_base_condition_sqls
-        search.add_to_query @ar_query
-        @ar_query.total_entries = optimized_total_entries
-        records = @index.model_class.paginate(@ar_query.to_hash)
-        if caching_total_entries? && @ar_query.to_hash[:total_entries].nil?
-          cache_total_entries records.total_entries
+        if @index.model_class.ancestors.include? Mongoid::Document
+          scope = if c = settings.conditions
+                    if c.respond_to?(:call)
+                      c.call @index.url_params
+                    else c
+                    end
+                  else
+                    @index.model_class
+                  end
+
+          case o = order_mongo
+          when String then scope = scope.order_by(o.split(' '))
+          else scope = scope.order_by(*order_mongo)
+          end
+
+          scope = search.add_to_mongo_query scope
+          scope.page(@index.url_params[:page].to_i).per settings.per_page 
+        else
+          @ar_query = ARQuery.new(
+            :order => order_sql, :include => find_include,
+            :per_page => settings.per_page, :page => @index.url_params[:page]
+          )
+          add_base_condition_sqls
+          search.add_to_query @ar_query
+          @ar_query.total_entries = optimized_total_entries
+          records = @index.model_class.paginate(@ar_query.to_hash)
+          if caching_total_entries? && @ar_query.to_hash[:total_entries].nil?
+            cache_total_entries records.total_entries
+          end
+          records
         end
-        records
       end
       
       def search
@@ -229,8 +261,8 @@ class AdminAssistant
         @edit ||= @admin_assistant.edit?
       end
       
-      def edit_link(record)
-        @action_view.link_to 'Edit', :action => 'edit', :id => record.id
+      def edit_link(record, name='Edit')
+        @action_view.link_to name, :action => 'edit', :id => record.id
       end
       
       def new?
@@ -269,15 +301,25 @@ class AdminAssistant
             @admin_assistant.index_settings.right_column_links
       end
       
+      def show_link record, name='Show'
+        @action_view.link_to(
+          'Show', :action => 'show', :id => record.id
+        )
+      end
+
+      def edit_or_show_link record, content
+        if render_edit_link?(record)
+          edit_link(record, content)
+        else
+          show_link(record, content)
+        end
+      end
+
       def right_column_links(record)
         links = []
         links << edit_link(record) if render_edit_link?(record)
         links << delete_link(record) if render_delete_link?(record)
-        if render_show_link?(record)
-          links << @action_view.link_to(
-            'Show', :action => 'show', :id => record.id
-          )
-        end
+        links << show_link(record) if render_show_link?(record)
         right_column_lambdas.each do |lambda|
           link_args = lambda.call record
           links << @action_view.link_to(*link_args)

@@ -1,5 +1,7 @@
 class AdminAssistant
   class Column    
+    def sort_possible?(total_entries) false end
+
     def form_view(action_view, admin_assistant, opts = {})
       view 'FormView', action_view, admin_assistant, opts
     end
@@ -377,9 +379,15 @@ class AdminAssistant
         @column.is_a?(PaperclipColumn)
       end
       
-      def sort_possible?(total_entries)
-        @column.is_a?(ActiveRecordColumn) ||
-            (@column.is_a?(BelongsToColumn) && total_entries < 100_000)
+      def sort_possible?(records, admin_assistant)
+        if admin_assistant.search_settings.column_names.include? @column.name.to_sym
+          true
+        else
+          total_entries = records.size
+          return false if total_entries == 0
+          model_class = records.first.class
+          @column.sort_possible? model_class, total_entries
+        end
       end
       
       def string(record)

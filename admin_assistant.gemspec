@@ -13,11 +13,11 @@ Gem::Specification.new do |s|
   s.description = %q{admin_assistant is a Rails plugin that automates a lot of features typically needed in admin interfaces.}
   s.email = %q{sera@fhwang.net}
   s.extra_rdoc_files = [
-    "README"
+    "README.md"
   ]
   s.files = [
     "MIT-LICENSE",
-    "README",
+    "README.md",
     "Rakefile",
     "VERSION",
     "admin_assistant.gemspec",
@@ -162,14 +162,14 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<will_paginate>, ["= 3.0"])
+      s.add_dependency(%q<kaminari>, [">= 0.12.4"])
       s.add_runtime_dependency(%q<dynamic_form>, [">= 0"])
     else
-      s.add_dependency(%q<will_paginate>, ["= 3.0"])
+      s.add_dependency(%q<kaminari>, [">= 0.12.4"])
       s.add_dependency(%q<dynamic_form>, [">= 0"])
     end
   else
-    s.add_dependency(%q<will_paginate>, ["= 3.0"])
+    s.add_dependency(%q<kaminari>, [">= 0.12.4"])
     s.add_dependency(%q<dynamic_form>, [">= 0"])
   end
 end

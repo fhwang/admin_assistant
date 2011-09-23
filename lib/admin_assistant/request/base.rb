@@ -46,7 +46,7 @@ class AdminAssistant
       
       def origin
         @controller.params[:origin] || @controller.request.referer ||
-            {:action => 'index'}
+            @controller.url_for({:action => 'index'})
       end
       
       def render_single_form(record)

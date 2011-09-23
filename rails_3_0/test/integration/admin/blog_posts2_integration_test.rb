@@ -50,7 +50,7 @@ class Admin::BlogPosts2IntegrationTest < ActionController::IntegrationTest
         :user_id => @user.id
       }
     )
-    @blog_post = BlogPost.find_by_title title
+    @blog_post = BlogPost.where(:title => title)
     
     # should create a new BlogPost
     assert @blog_post
@@ -78,7 +78,7 @@ class Admin::BlogPosts2IntegrationTest < ActionController::IntegrationTest
       },
       :commit => 'Preview'
     )
-    @blog_post = BlogPost.find_by_title title
+    @blog_post = BlogPost.where(:title => title)
 
     # should redirect to the edit page with the preview flag
     assert_redirected_to(
@@ -96,7 +96,7 @@ class Admin::BlogPosts2IntegrationTest < ActionController::IntegrationTest
     )
     
     # should not create a new BlogPost
-    assert_nil BlogPost.find_by_title(@title)
+    assert_nil BlogPost.where(:title => @title)
     
     # should keep the title in the form
     assert_select(
@@ -160,7 +160,7 @@ class Admin::BlogPosts2IntegrationTest < ActionController::IntegrationTest
     assert_response :success
     
     # should not save the blog post
-    assert_nil BlogPost.find_by_title(@title)
+    assert_nil BlogPost.where(:title => @title)
     
     # should display the publish error
     assert_match(/Publish can't be .*FOOBAR.*/, response.body)
