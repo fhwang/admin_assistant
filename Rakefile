@@ -57,7 +57,7 @@ begin
     gem.email = "sera@fhwang.net"
     gem.homepage = "http://github.com/fhwang/admin_assistant"
     gem.authors = ["Francis Hwang"]
-    gem.add_dependency "will_paginate", "3.0"
+    gem.add_dependency "will_paginate", "~> 3.0"
     gem.add_dependency "dynamic_form"
     gem.files.exclude "rails_3_0/**/*"
     gem.files.exclude "rails_3_1/**/*"
