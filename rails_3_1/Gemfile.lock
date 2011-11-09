@@ -10,9 +10,9 @@ GIT
 PATH
   remote: ../../admin_assistant
   specs:
-    admin_assistant (2.2.0)
+    admin_assistant (2.2.2)
       dynamic_form
-      will_paginate (= 3.0)
+      will_paginate (~> 3.0)
 
 GEM
   remote: http://rubygems.org/
@@ -122,7 +122,7 @@ GEM
     uglifier (1.0.2)
       execjs (>= 0.3.0)
       multi_json (>= 1.0.2)
-    will_paginate (3.0.0)
+    will_paginate (3.0.2)
 
 PLATFORMS
   ruby

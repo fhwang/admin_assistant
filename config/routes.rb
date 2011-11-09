@@ -4,7 +4,9 @@ unless Rails.configuration.cache_classes
   controllers_path = "#{Rails.root}/app/controllers"
   AdminAssistant.all_files_under(controllers_path).each do |path|
     if path =~ /\.rb$/
-      require path
+      if File.readlines(path).any? { |line| line =~ /admin_assistant_for/ }
+        require path
+      end
     end
   end
 end
