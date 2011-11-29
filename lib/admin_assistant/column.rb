@@ -1,6 +1,6 @@
 class AdminAssistant
   class Column    
-    def sort_possible?(total_entries) false end
+    def sort_possible?(*args) false end
 
     def form_view(action_view, admin_assistant, opts = {})
       view 'FormView', action_view, admin_assistant, opts
