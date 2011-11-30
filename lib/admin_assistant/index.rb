@@ -369,8 +369,8 @@ class AdminAssistant
         @show ||= @admin_assistant.show?
       end
       
-      def show_link(record)
-        @action_view.link_to 'Show', :action => 'show', :id => record.id
+      def show_link(record, name = 'Show')
+        @action_view.link_to name, :action => 'show', :id => record.id
       end
     end
   end
