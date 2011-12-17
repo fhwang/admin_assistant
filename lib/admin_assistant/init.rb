@@ -18,3 +18,17 @@ class AdminAssistant
   end
 end
 
+# Rails 3.0 doesn't do a very good job of wrapping DB-driver-specific
+# exceptions in something more generic, so we catch it in a few places and
+# maybe have to define them here in case we're *not* using the exceptions but
+# still need to rescue them.
+unless Object.const_defined?(:Mysql)
+  class Mysql
+  end
+end
+
+unless Mysql.const_defined?(:Error)
+  class Mysql::Error < StandardError
+  end
+end
+

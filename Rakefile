@@ -27,7 +27,7 @@ end
 desc 'Run all specs across all supported Rails gem versions.'
 task :test do
   base = Dir.pwd
-  version_dirs = %w(rails_3_0 rails_3_1)
+  version_dirs = %w(rails_3_0 rails_3_0_mysql rails_3_1)
   version_dirs.each do |dir|
     path = File.join(base, dir)
     cmd = "cd #{path} && bundle exec rake"
