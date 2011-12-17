@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{admin_assistant}
-  s.version = "2.2.3"
+  s.version = "2.2.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Francis Hwang"]
-  s.date = %q{2011-11-09}
+  s.date = %q{2011-12-17}
   s.description = %q{admin_assistant is a Rails plugin that automates a lot of features typically needed in admin interfaces.}
   s.email = %q{sera@fhwang.net}
   s.extra_rdoc_files = [
@@ -60,6 +60,16 @@ Gem::Specification.new do |s|
     "rails_3_0/lib/tasks/.gitkeep",
     "rails_3_0/public/stylesheets/.gitkeep",
     "rails_3_0/vendor/plugins/.gitkeep",
+    "rails_3_0_mysql/Gemfile",
+    "rails_3_0_mysql/Gemfile.lock",
+    "rails_3_0_mysql/README",
+    "rails_3_0_mysql/Rakefile",
+    "rails_3_0_mysql/config.ru",
+    "rails_3_0_mysql/config/application.rb",
+    "rails_3_0_mysql/config/boot.rb",
+    "rails_3_0_mysql/config/database.yml",
+    "rails_3_0_mysql/config/environment.rb",
+    "rails_3_0_mysql/config/routes.rb",
     "rails_3_1/app/mailers/.gitkeep",
     "rails_3_1/lib/assets/.gitkeep",
     "rails_3_1/lib/tasks/.gitkeep",
@@ -155,7 +165,7 @@ Gem::Specification.new do |s|
   ]
   s.homepage = %q{http://github.com/fhwang/admin_assistant}
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.6.2}
+  s.rubygems_version = %q{1.4.2}
   s.summary = %q{admin_assistant is a Rails plugin that automates a lot of features typically needed in admin interfaces.}
 
   if s.respond_to? :specification_version then
