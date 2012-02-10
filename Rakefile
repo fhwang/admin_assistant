@@ -2,9 +2,8 @@ require 'grancher/task'
 require 'rake'
 require 'rake/testtask'
 require 'rake/rdoctask'
-require 'spec/rake/spectask'
 
-desc 'Default: run all specs across all supported Rails gem versions.'
+desc 'Default: run all tests across all supported Rails gem versions.'
 task :default => :test
 
 # run with rake publish
@@ -24,7 +23,7 @@ Rake::RDocTask.new(:rdoc) do |rdoc|
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
 
-desc 'Run all specs across all supported Rails gem versions.'
+desc 'Run all tests across all supported Rails gem versions.'
 task :test do
   base = Dir.pwd
   version_dirs = %w(rails_3_0 rails_3_0_mysql rails_3_1)
