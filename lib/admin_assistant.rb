@@ -186,8 +186,10 @@ class AdminAssistant
   def supports_action?(action)
     @memoized_action_booleans ||= {}
     unless @memoized_action_booleans.has_key?(action)
-      @memoized_action_booleans[action] = 
-          @controller_class.public_instance_methods.include?(action)
+      @memoized_action_booleans[action] =
+          @controller_class.public_instance_methods.any? { |meth|
+            meth.to_sym == action.to_sym
+          } 
     end
     @memoized_action_booleans[action]
   end
