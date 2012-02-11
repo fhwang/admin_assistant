@@ -100,7 +100,7 @@ class AdminAssistant
         @controller, @record_params = controller, record_params
         @model_class_symbol = record.class.name.underscore.to_sym
         @record_params ||= @controller.params[@model_class_symbol]
-        @model_methods = record.methods
+        @model_methods = record.methods.map(&:to_sym)
         @model_columns = record.class.columns
         @errors = Errors.new
         build_from_split_params
@@ -173,7 +173,7 @@ class AdminAssistant
       
       def model_setter?(attr)
         @model_columns.any? { |mc| mc.name.to_s == attr } or
-            @model_methods.include?("#{attr}=")
+            @model_methods.include?("#{attr}=".to_sym)
       end
       
       def split_param_key?(key)
