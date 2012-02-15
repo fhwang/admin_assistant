@@ -39,7 +39,7 @@ $(document).ready(function() {
         container = '#' + $(event.target).parent().attr('id');
         $.post(
           url,
-          {},
+          {_method: 'PUT'},
           function(data) {
             $(container).fadeOut(50, function() {
               $(container).html(data);
