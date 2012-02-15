@@ -33,7 +33,10 @@ Don't edit this file: It gets re-copied every time the server starts.
   padding: 5px
 }
 .admin_assistant td.actions {
-  position: relative; text-align: left
+  position: relative;
+  text-align: left;
+  right: 0;
+  top: 0;
 }
 .admin_assistant.index tbody tr td:first-child {
   border-left: 1px solid #ccc;
