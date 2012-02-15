@@ -4,14 +4,14 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{admin_assistant}
-  s.version = "2.2.5"
+  s.name = "admin_assistant"
+  s.version = "2.2.6"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Francis Hwang"]
-  s.date = %q{2012-02-11}
-  s.description = %q{admin_assistant is a Rails plugin that automates a lot of features typically needed in admin interfaces.}
-  s.email = %q{sera@fhwang.net}
+  s.date = "2012-02-15"
+  s.description = "admin_assistant is a Rails plugin that automates a lot of features typically needed in admin interfaces."
+  s.email = "sera@fhwang.net"
   s.extra_rdoc_files = [
     "README"
   ]
@@ -163,10 +163,10 @@ Gem::Specification.new do |s|
     "website/v1/quick_start.markdown",
     "website/v1/tutorial.markdown"
   ]
-  s.homepage = %q{http://github.com/fhwang/admin_assistant}
+  s.homepage = "http://github.com/fhwang/admin_assistant"
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.4.2}
-  s.summary = %q{admin_assistant is a Rails plugin that automates a lot of features typically needed in admin interfaces.}
+  s.rubygems_version = "1.8.10"
+  s.summary = "admin_assistant is a Rails plugin that automates a lot of features typically needed in admin interfaces."
 
   if s.respond_to? :specification_version then
     s.specification_version = 3
