@@ -306,9 +306,19 @@ class AdminAssistant
     
       def default_search_matches_on(*includes)
         if includes.empty?
-          @admin_assistant.default_search_matches_on
+          DefaultSearchMatchesOn.new(@admin_assistant)
         else
           @admin_assistant.default_search_matches_on = includes
+        end
+      end
+
+      class DefaultSearchMatchesOn
+        def initialize(admin_assistant)
+          @admin_assistant = admin_assistant
+        end
+
+        def <<(addition)
+          @admin_assistant.added_default_search_matches << addition
         end
       end
     end

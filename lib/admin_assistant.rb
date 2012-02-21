@@ -45,10 +45,11 @@ class AdminAssistant
     "#{File.dirname(__FILE__)}/views/#{template_name}.html.erb"
   end
   
-  attr_reader   :base_settings, :controller_class, :form_settings, 
-                :index_settings, :model_class, :show_settings
-  attr_accessor :actions, :custom_destroy, :default_search_matches_on
-  attr_writer   :model_class_name
+  attr_reader   :added_default_search_matches, :base_settings,
+                :controller_class, :form_settings, :index_settings,
+                :model_class, :show_settings
+  attr_accessor :actions, :custom_destroy
+  attr_writer   :default_search_matches_on, :model_class_name
   
   def initialize(controller_class, model_class)
     @controller_class, @model_class = controller_class, model_class
@@ -58,7 +59,7 @@ class AdminAssistant
     @index_settings = IndexSettings.new self
     @show_settings = ShowSettings.new self
     @base_settings = BaseSettings.new self
-    @default_search_matches_on = @model.searchable_columns.map &:name
+    @added_default_search_matches = []
   end
   
   def [](name)
@@ -88,10 +89,9 @@ class AdminAssistant
       if [:new, :create, :edit, :update].any? { |action|
         actions.include?(action)
       }
-        defaults = @model.default_column_names
-        accumulate_belongs_to_columns(defaults).each { |column|
-          ac_actions << "autocomplete_#{column.name}".to_sym
-        }
+        @model.belongs_to_associations.each do |assoc|
+          ac_actions << "autocomplete_#{assoc.name}".to_sym
+        end
       end
       if actions.include?(:index)
         base_settings.all_polymorphic_types.each do |p_type|
@@ -155,6 +155,15 @@ class AdminAssistant
   
   def default_column_names
     @model.default_column_names
+  end
+
+  def default_search_matches_on
+    if @default_search_matches_on
+      @default_search_matches_on
+    else
+      @model.searchable_columns.map(&:name).
+             concat(added_default_search_matches)
+    end
   end
   
   def method_missing(meth, *args)

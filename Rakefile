@@ -25,19 +25,28 @@ end
 
 desc 'Run all tests across all supported Rails gem versions.'
 task :test do
+  ENV['CMD'] = 'rake'
+  Rake::Task[:run_everywhere].invoke
+end
+
+desc 'Run CMD in all tested rails environments.'
+task :run_everywhere do
+  core_cmd = ENV['CMD']
+  cmds = []
   base = Dir.pwd
   version_dirs = %w(rails_3_0 rails_3_1)
   version_dirs.each do |dir|
     path = File.join(base, dir)
-    cmd = "cd #{path} && bundle exec rake"
-    puts cmd
-    puts `#{cmd}`
+    cmds << "cd #{path} && bundle exec #{core_cmd}"
   end
   # alternate config tests
   path = File.join(base, 'rails_3_0')
-  cmd = "cd #{path} && AA_CONFIG=2 bundle exec rake"
-  puts cmd
-  puts `#{cmd}`
+  cmds << "cd #{path} && AA_CONFIG=2 bundle exec #{core_cmd}"
+  cmds.each do |cmd|
+    puts cmd
+    puts `#{cmd}`
+    puts
+  end  
 end
 
 desc 'Run a local copy of jekyll for previewing the documentation site.'
