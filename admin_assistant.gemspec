@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "admin_assistant"
-  s.version = "2.2.7"
+  s.version = "2.2.8"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Francis Hwang"]
-  s.date = "2012-02-15"
+  s.date = "2012-02-21"
   s.description = "admin_assistant is a Rails plugin that automates a lot of features typically needed in admin interfaces."
   s.email = "sera@fhwang.net"
   s.extra_rdoc_files = [
@@ -60,16 +60,6 @@ Gem::Specification.new do |s|
     "rails_3_0/lib/tasks/.gitkeep",
     "rails_3_0/public/stylesheets/.gitkeep",
     "rails_3_0/vendor/plugins/.gitkeep",
-    "rails_3_0_mysql/Gemfile",
-    "rails_3_0_mysql/Gemfile.lock",
-    "rails_3_0_mysql/README",
-    "rails_3_0_mysql/Rakefile",
-    "rails_3_0_mysql/config.ru",
-    "rails_3_0_mysql/config/application.rb",
-    "rails_3_0_mysql/config/boot.rb",
-    "rails_3_0_mysql/config/database.yml",
-    "rails_3_0_mysql/config/environment.rb",
-    "rails_3_0_mysql/config/routes.rb",
     "rails_3_1/app/mailers/.gitkeep",
     "rails_3_1/lib/assets/.gitkeep",
     "rails_3_1/lib/tasks/.gitkeep",
