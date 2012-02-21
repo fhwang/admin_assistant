@@ -207,22 +207,18 @@ class AdminAssistant
   
   module ControllerClassMethods
     def admin_assistant_for(model_class, &block)
-      begin
-        self.admin_assistant = AdminAssistant.new(self, model_class)
-        builder = Builder.new self.admin_assistant
-        if block
-          block.call builder
-        end
-        self.helper AdminAssistant::Helper
-        self.admin_assistant.controller_actions.each do |action|
-          self.send(:define_method, action) do
-            self.class.admin_assistant.send(action, self)
-          end
-        end
-        AdminAssistant.routes << Route.new(self.admin_assistant)
-      rescue ActiveRecord::StatementInvalid
-        Rails.logger.info "Skipping admin_assistant_for for #{self.name} because the table doesn't exist in the DB. Hopefully that's because you're deploying with a migration."
+      self.admin_assistant = AdminAssistant.new(self, model_class)
+      builder = Builder.new self.admin_assistant
+      if block
+        block.call builder
       end
+      self.helper AdminAssistant::Helper
+      self.admin_assistant.controller_actions.each do |action|
+        self.send(:define_method, action) do
+          self.class.admin_assistant.send(action, self)
+        end
+      end
+      AdminAssistant.routes << Route.new(self.admin_assistant)
     end
   end
 
