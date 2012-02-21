@@ -13,15 +13,9 @@ class Admin::UsersController < ApplicationController
           { :controller => '/admin/blog_posts', :action => 'new',
             :blog_post => {:user_id => user.id} } ]
       }
-      if ActiveRecord::Base.connection.adapter_name == 'MySQL'
-        index.search.default_search_matches_on(
-          :username, "concat(users.first_name, ' ', users.last_name)"
-        )
-      else
-        index.search.default_search_matches_on(
-          :username, "users.first_name || ' ' || users.last_name"
-        )
-      end
+      index.search.default_search_matches_on(
+        :username, "users.first_name || ' ' || users.last_name"
+      )
     end
     
     a.form do |form|

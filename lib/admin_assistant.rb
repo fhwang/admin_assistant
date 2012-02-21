@@ -220,7 +220,7 @@ class AdminAssistant
           end
         end
         AdminAssistant.routes << Route.new(self.admin_assistant)
-      rescue ActiveRecord::StatementInvalid, Mysql::Error
+      rescue ActiveRecord::StatementInvalid
         Rails.logger.info "Skipping admin_assistant_for for #{self.name} because the table doesn't exist in the DB. Hopefully that's because you're deploying with a migration."
       end
     end
