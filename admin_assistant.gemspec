@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "admin_assistant"
-  s.version = "1.0.3"
+  s.version = "2.2.8"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Francis Hwang"]
-  s.date = "2013-02-05"
+  s.date = "2012-02-21"
   s.description = "admin_assistant is a Rails plugin that automates a lot of features typically needed in admin interfaces."
   s.email = "sera@fhwang.net"
   s.extra_rdoc_files = [
@@ -21,6 +21,7 @@ Gem::Specification.new do |s|
     "Rakefile",
     "VERSION",
     "admin_assistant.gemspec",
+    "config/routes.rb",
     "doc/img/blog_posts-index.png",
     "lib/admin_assistant.rb",
     "lib/admin_assistant/active_record_column.rb",
@@ -33,6 +34,8 @@ Gem::Specification.new do |s|
     "lib/admin_assistant/has_many_column.rb",
     "lib/admin_assistant/helper.rb",
     "lib/admin_assistant/index.rb",
+    "lib/admin_assistant/init.rb",
+    "lib/admin_assistant/model.rb",
     "lib/admin_assistant/paperclip_column.rb",
     "lib/admin_assistant/polymorphic_belongs_to_column.rb",
     "lib/admin_assistant/request/autocomplete.rb",
@@ -44,14 +47,24 @@ Gem::Specification.new do |s|
     "lib/admin_assistant/request/new.rb",
     "lib/admin_assistant/request/show.rb",
     "lib/admin_assistant/request/update.rb",
+    "lib/admin_assistant/route.rb",
     "lib/admin_assistant/search.rb",
     "lib/admin_assistant/show_view.rb",
     "lib/admin_assistant/virtual_column.rb",
     "lib/views/_polymorphic_field_search.html.erb",
+    "lib/views/_token_input.html.erb",
     "lib/views/form.html.erb",
     "lib/views/index.html.erb",
     "lib/views/multi_form.html.erb",
     "lib/views/show.html.erb",
+    "rails_3_0/lib/tasks/.gitkeep",
+    "rails_3_0/public/stylesheets/.gitkeep",
+    "rails_3_0/vendor/plugins/.gitkeep",
+    "rails_3_1/app/mailers/.gitkeep",
+    "rails_3_1/lib/assets/.gitkeep",
+    "rails_3_1/lib/tasks/.gitkeep",
+    "rails_3_1/log/.gitkeep",
+    "rails_3_1/vendor/plugins/.gitkeep",
     "tasks/admin_assistant_tasks.rake",
     "uninstall.rb",
     "vendor/ar_query/MIT-LICENSE",
@@ -63,7 +76,15 @@ Gem::Specification.new do |s|
     "vendor/ar_query/spec/ar_query_spec.rb",
     "vendor/ar_query/tasks/ar_query_tasks.rake",
     "vendor/ar_query/uninstall.rb",
+    "vendor/assets/images/sort-asc.png",
+    "vendor/assets/images/sort-desc.png",
+    "vendor/assets/javascripts/admin_assistant.js",
+    "vendor/assets/javascripts/jquery.tokeninput.js",
+    "vendor/assets/stylesheets/admin_assistant.css",
+    "vendor/assets/stylesheets/admin_assistant_activescaffold.css",
+    "vendor/assets/stylesheets/token-input.css",
     "website/_layouts/api.html",
+    "website/_layouts/api1.html",
     "website/_layouts/default.html",
     "website/api/core.markdown",
     "website/api/destroy.markdown",
@@ -120,23 +141,36 @@ Gem::Specification.new do |s|
     "website/js/scriptaculous.js",
     "website/quick_start.markdown",
     "website/screenshots.markdown",
-    "website/tutorial.markdown"
+    "website/tutorial.markdown",
+    "website/v1/api/core.markdown",
+    "website/v1/api/destroy.markdown",
+    "website/v1/api/form.markdown",
+    "website/v1/api/idx.markdown",
+    "website/v1/api/index.markdown",
+    "website/v1/api/search.markdown",
+    "website/v1/api/show.markdown",
+    "website/v1/index.markdown",
+    "website/v1/quick_start.markdown",
+    "website/v1/tutorial.markdown"
   ]
   s.homepage = "http://github.com/fhwang/admin_assistant"
   s.require_paths = ["lib"]
-  s.rubygems_version = "1.8.23"
+  s.rubygems_version = "1.8.10"
   s.summary = "admin_assistant is a Rails plugin that automates a lot of features typically needed in admin interfaces."
 
   if s.respond_to? :specification_version then
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<will_paginate>, [">= 0"])
+      s.add_runtime_dependency(%q<will_paginate>, ["~> 3.0"])
+      s.add_runtime_dependency(%q<dynamic_form>, [">= 0"])
     else
-      s.add_dependency(%q<will_paginate>, [">= 0"])
+      s.add_dependency(%q<will_paginate>, ["~> 3.0"])
+      s.add_dependency(%q<dynamic_form>, [">= 0"])
     end
   else
-    s.add_dependency(%q<will_paginate>, [">= 0"])
+    s.add_dependency(%q<will_paginate>, ["~> 3.0"])
+    s.add_dependency(%q<dynamic_form>, [">= 0"])
   end
 end
 
