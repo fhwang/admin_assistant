@@ -36,7 +36,7 @@ begin
     gem.homepage = "http://github.com/fhwang/admin_assistant"
     gem.authors = ["Francis Hwang"]
     gem.add_dependency "will_paginate"
-    gem.files.exclude "test_rails_app"
+    gem.files.exclude "test_rails_app/**/*"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new
