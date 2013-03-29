@@ -1,27 +1,8 @@
-require 'grancher/task'
 require 'rake'
 require 'rake/testtask'
-require 'rake/rdoctask'
 
 desc 'Default: run all tests across all supported Rails gem versions.'
 task :default => :test
-
-# run with rake publish
-Grancher::Task.new do |g|
-  g.branch = 'gh-pages'
-  g.push_to = 'origin' # automatically push too
-  
-  g.directory 'website'
-end
-
-desc 'Generate documentation for the admin_assistant plugin.'
-Rake::RDocTask.new(:rdoc) do |rdoc|
-  rdoc.rdoc_dir = 'rdoc'
-  rdoc.title    = 'AdminAssistant'
-  rdoc.options << '--line-numbers' << '--inline-source'
-  rdoc.rdoc_files.include('README')
-  rdoc.rdoc_files.include('lib/**/*.rb')
-end
 
 desc 'Run all tests across all supported Rails gem versions.'
 task :test do
