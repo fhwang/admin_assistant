@@ -15,13 +15,13 @@ task :run_everywhere do
   core_cmd = ENV['CMD']
   cmds = []
   base = Dir.pwd
-  version_dirs = %w(rails_3_0 rails_3_1)
+  version_dirs = %w(rails_3_1)
   version_dirs.each do |dir|
     path = File.join(base, dir)
     cmds << "cd #{path} && bundle exec #{core_cmd}"
   end
   # alternate config tests
-  path = File.join(base, 'rails_3_0')
+  path = File.join(base, 'rails_3_1')
   cmds << "cd #{path} && AA_CONFIG=2 bundle exec #{core_cmd}"
   cmds.each do |cmd|
     puts cmd
@@ -48,7 +48,6 @@ begin
     gem.authors = ["Francis Hwang"]
     gem.add_dependency "will_paginate", "~> 3.0"
     gem.add_dependency "dynamic_form"
-    gem.files.exclude "rails_3_0/**/*"
     gem.files.exclude "rails_3_1/**/*"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end

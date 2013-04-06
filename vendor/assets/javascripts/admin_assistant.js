@@ -1,7 +1,3 @@
-/******************************************************************************
-Don't edit this file: It gets re-copied every time the server starts.
-******************************************************************************/
-
 var AdminAssistant = {};
 
 $(document).ready(function() {
@@ -34,7 +30,7 @@ $(document).ready(function() {
         return false;
     });
     
-    $('.index a.toggle').live('click', function(event) {
+    $('.index a.toggle').on('click', function(event) {
         url = $(event.target).attr('href');
         container = '#' + $(event.target).parent().attr('id');
         $.post(
