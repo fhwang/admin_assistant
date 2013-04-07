@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "admin_assistant"
-  s.version = "2.2.8"
+  s.version = "2.3.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Francis Hwang"]
-  s.date = "2012-02-21"
+  s.date = "2013-04-07"
   s.description = "admin_assistant is a Rails plugin that automates a lot of features typically needed in admin interfaces."
   s.email = "sera@fhwang.net"
   s.extra_rdoc_files = [
@@ -34,7 +34,6 @@ Gem::Specification.new do |s|
     "lib/admin_assistant/has_many_column.rb",
     "lib/admin_assistant/helper.rb",
     "lib/admin_assistant/index.rb",
-    "lib/admin_assistant/init.rb",
     "lib/admin_assistant/model.rb",
     "lib/admin_assistant/paperclip_column.rb",
     "lib/admin_assistant/polymorphic_belongs_to_column.rb",
@@ -57,9 +56,6 @@ Gem::Specification.new do |s|
     "lib/views/index.html.erb",
     "lib/views/multi_form.html.erb",
     "lib/views/show.html.erb",
-    "rails_3_0/lib/tasks/.gitkeep",
-    "rails_3_0/public/stylesheets/.gitkeep",
-    "rails_3_0/vendor/plugins/.gitkeep",
     "rails_3_1/app/mailers/.gitkeep",
     "rails_3_1/lib/assets/.gitkeep",
     "rails_3_1/lib/tasks/.gitkeep",
@@ -80,8 +76,8 @@ Gem::Specification.new do |s|
     "vendor/assets/images/sort-desc.png",
     "vendor/assets/javascripts/admin_assistant.js",
     "vendor/assets/javascripts/jquery.tokeninput.js",
-    "vendor/assets/stylesheets/admin_assistant.css",
-    "vendor/assets/stylesheets/admin_assistant_activescaffold.css",
+    "vendor/assets/stylesheets/admin_assistant.css.erb",
+    "vendor/assets/stylesheets/admin_assistant_activescaffold.css.erb",
     "vendor/assets/stylesheets/token-input.css",
     "website/_layouts/api.html",
     "website/_layouts/api1.html",
@@ -155,7 +151,7 @@ Gem::Specification.new do |s|
   ]
   s.homepage = "http://github.com/fhwang/admin_assistant"
   s.require_paths = ["lib"]
-  s.rubygems_version = "1.8.10"
+  s.rubygems_version = "1.8.25"
   s.summary = "admin_assistant is a Rails plugin that automates a lot of features typically needed in admin interfaces."
 
   if s.respond_to? :specification_version then
