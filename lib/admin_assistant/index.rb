@@ -287,7 +287,7 @@ class AdminAssistant
             record
           )
         end
-        links.join(" &bull; ")
+        links.join(" ")
       end
       
       def tr_css_classes(record)
