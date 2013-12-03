@@ -45,4 +45,15 @@ class Admin::Users2IntegrationTest < ActionController::IntegrationTest
     # should match a user with two matching blog posts, only presenting that user once
     assert_select('td', :text => @friedrich.username, :count => 1)
   end
+
+  def test_index_when_searching_by_street
+    User.destroy_all
+    @soren = User.create! :username => 'soren'
+    @soren.create_address! :street => '123 Main Street'
+    @jean_paul = User.create! :username => 'jean_paul'
+    @jean_paul.create_address! :street => '456 Sunny Lane'
+    get "/admin/users2", :search => {:street => '123'}
+    assert_select('td', :text => @soren.username)
+    assert_no_match(%r|<td[^>]*>#{@jean_paul.username}</td>|, response.body)
+  end
 end

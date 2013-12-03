@@ -14,12 +14,15 @@ class AdminAssistant
     end
     
     def attributes_for_search_object(search_params, compare_to_range)
-      value = if search_params[@name.to_s] == 'true'
+      raw_value = search_params[@name.to_s]
+      value = if raw_value == 'true'
         true
-      elsif search_params[@name.to_s] == 'false'
+      elsif raw_value == 'false'
         false
-      else
+      elsif raw_value.blank?
         nil
+      else
+        raw_value
       end
       {@name => value}
     end
