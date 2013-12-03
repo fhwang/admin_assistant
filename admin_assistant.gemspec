@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "admin_assistant"
-  s.version = "2.3.2"
+  s.version = "2.4.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Francis Hwang"]
-  s.date = "2013-08-17"
+  s.date = "2013-12-03"
   s.description = "admin_assistant is a Rails plugin that automates a lot of features typically needed in admin interfaces."
   s.email = "sera@fhwang.net"
   s.extra_rdoc_files = [
